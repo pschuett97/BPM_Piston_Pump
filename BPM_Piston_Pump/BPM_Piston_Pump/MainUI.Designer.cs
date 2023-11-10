@@ -38,6 +38,10 @@
             btnDeveloper = new Button();
             pictureBox1 = new PictureBox();
             panelChildForm = new Panel();
+            linkLabel1 = new LinkLabel();
+            label5 = new Label();
+            label4 = new Label();
+            label3 = new Label();
             label2 = new Label();
             label1 = new Label();
             tableLayoutPanel1.SuspendLayout();
@@ -98,6 +102,7 @@
             // 
             // btnHelp
             // 
+            btnHelp.Cursor = Cursors.Help;
             btnHelp.Dock = DockStyle.Fill;
             btnHelp.FlatAppearance.BorderSize = 0;
             btnHelp.FlatStyle = FlatStyle.Flat;
@@ -186,6 +191,10 @@
             // 
             // panelChildForm
             // 
+            panelChildForm.Controls.Add(linkLabel1);
+            panelChildForm.Controls.Add(label5);
+            panelChildForm.Controls.Add(label4);
+            panelChildForm.Controls.Add(label3);
             panelChildForm.Controls.Add(label2);
             panelChildForm.Controls.Add(label1);
             panelChildForm.Dock = DockStyle.Fill;
@@ -194,6 +203,48 @@
             panelChildForm.Name = "panelChildForm";
             panelChildForm.Size = new Size(816, 622);
             panelChildForm.TabIndex = 1;
+            // 
+            // linkLabel1
+            // 
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(92, 198);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(41, 21);
+            linkLabel1.TabIndex = 5;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "here";
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.ForeColor = SystemColors.ControlLightLight;
+            label5.Location = new Point(3, 198);
+            label5.Name = "label5";
+            label5.Size = new Size(94, 21);
+            label5.TabIndex = 4;
+            label5.Text = "Contact him";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.ForeColor = SystemColors.ControlLightLight;
+            label4.Location = new Point(3, 177);
+            label4.Name = "label4";
+            label4.Size = new Size(459, 21);
+            label4.TabIndex = 3;
+            label4.Text = "This was the master project of Pascal Schüttengruber in 2023/24.";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 12F, FontStyle.Bold | FontStyle.Underline, GraphicsUnit.Point);
+            label3.ForeColor = SystemColors.ControlLightLight;
+            label3.Location = new Point(3, 156);
+            label3.Name = "label3";
+            label3.Size = new Size(57, 21);
+            label3.TabIndex = 2;
+            label3.Text = "About";
             // 
             // label2
             // 
@@ -251,5 +302,9 @@
         private Label label2;
         private TableLayoutPanel tableLayoutPanel2;
         private PictureBox pictureBox1;
+        private LinkLabel linkLabel1;
+        private Label label5;
+        private Label label4;
+        private Label label3;
     }
 }

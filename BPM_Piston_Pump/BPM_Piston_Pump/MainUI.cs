@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace BPM_Piston_Pump
 {
     public partial class MainUI : Form
@@ -44,6 +46,7 @@ namespace BPM_Piston_Pump
                 activeForm.Close();
         }
 
+        #region Button Hover Effect
         private void btnMeasure_MouseEnter(object sender, EventArgs e)
         {
             btnMeasure.BackColor = ColorTranslator.FromHtml("#1B171B");
@@ -82,6 +85,13 @@ namespace BPM_Piston_Pump
         private void btnHelp_MouseLeave(object sender, EventArgs e)
         {
             btnHelp.BackColor = ColorTranslator.FromHtml("#0B070B");
+        }
+        #endregion
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            linkLabel1.LinkVisited = true;
+            Process.Start(new ProcessStartInfo("mailto:p.schuettengruber@outlook.com") { UseShellExecute = true });
         }
     }
 }
