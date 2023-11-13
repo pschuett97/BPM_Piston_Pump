@@ -384,7 +384,7 @@
             // btnStartADC
             // 
             btnStartADC.Dock = DockStyle.Fill;
-            btnStartADC.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnStartADC.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnStartADC.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnStartADC.FlatStyle = FlatStyle.Flat;
             btnStartADC.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -400,7 +400,7 @@
             // btnDigitalOut1
             // 
             btnDigitalOut1.Dock = DockStyle.Fill;
-            btnDigitalOut1.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalOut1.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalOut1.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalOut1.FlatStyle = FlatStyle.Flat;
             btnDigitalOut1.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -416,7 +416,7 @@
             // btnDigitalOut2
             // 
             btnDigitalOut2.Dock = DockStyle.Fill;
-            btnDigitalOut2.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalOut2.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalOut2.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalOut2.FlatStyle = FlatStyle.Flat;
             btnDigitalOut2.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -432,7 +432,7 @@
             // btnDigitalOut3
             // 
             btnDigitalOut3.Dock = DockStyle.Fill;
-            btnDigitalOut3.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalOut3.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalOut3.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalOut3.FlatStyle = FlatStyle.Flat;
             btnDigitalOut3.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -448,7 +448,7 @@
             // btnDigitalOut4
             // 
             btnDigitalOut4.Dock = DockStyle.Fill;
-            btnDigitalOut4.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalOut4.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalOut4.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalOut4.FlatStyle = FlatStyle.Flat;
             btnDigitalOut4.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -464,7 +464,7 @@
             // btnDigitalOut5
             // 
             btnDigitalOut5.Dock = DockStyle.Fill;
-            btnDigitalOut5.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalOut5.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalOut5.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalOut5.FlatStyle = FlatStyle.Flat;
             btnDigitalOut5.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -480,7 +480,7 @@
             // btnDigitalOut6
             // 
             btnDigitalOut6.Dock = DockStyle.Fill;
-            btnDigitalOut6.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalOut6.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalOut6.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalOut6.FlatStyle = FlatStyle.Flat;
             btnDigitalOut6.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -496,7 +496,7 @@
             // btnDigitalOut7
             // 
             btnDigitalOut7.Dock = DockStyle.Fill;
-            btnDigitalOut7.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalOut7.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalOut7.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalOut7.FlatStyle = FlatStyle.Flat;
             btnDigitalOut7.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -512,7 +512,7 @@
             // btnDigitalOut8
             // 
             btnDigitalOut8.Dock = DockStyle.Fill;
-            btnDigitalOut8.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalOut8.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalOut8.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalOut8.FlatStyle = FlatStyle.Flat;
             btnDigitalOut8.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -528,7 +528,7 @@
             // btnNewDACValue
             // 
             btnNewDACValue.Dock = DockStyle.Fill;
-            btnNewDACValue.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnNewDACValue.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnNewDACValue.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnNewDACValue.FlatStyle = FlatStyle.Flat;
             btnNewDACValue.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -544,7 +544,7 @@
             // btnDigitalInput1
             // 
             btnDigitalInput1.Dock = DockStyle.Fill;
-            btnDigitalInput1.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalInput1.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalInput1.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalInput1.FlatStyle = FlatStyle.Flat;
             btnDigitalInput1.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -560,7 +560,7 @@
             // btnDigitalInput2
             // 
             btnDigitalInput2.Dock = DockStyle.Fill;
-            btnDigitalInput2.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalInput2.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalInput2.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalInput2.FlatStyle = FlatStyle.Flat;
             btnDigitalInput2.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -576,7 +576,7 @@
             // btnDigitalInput3
             // 
             btnDigitalInput3.Dock = DockStyle.Fill;
-            btnDigitalInput3.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalInput3.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalInput3.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalInput3.FlatStyle = FlatStyle.Flat;
             btnDigitalInput3.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -592,7 +592,7 @@
             // btnDigitalInput4
             // 
             btnDigitalInput4.Dock = DockStyle.Fill;
-            btnDigitalInput4.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalInput4.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalInput4.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalInput4.FlatStyle = FlatStyle.Flat;
             btnDigitalInput4.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -608,7 +608,7 @@
             // btnDigitalInput5
             // 
             btnDigitalInput5.Dock = DockStyle.Fill;
-            btnDigitalInput5.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalInput5.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalInput5.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalInput5.FlatStyle = FlatStyle.Flat;
             btnDigitalInput5.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -624,7 +624,7 @@
             // btnDigitalInput6
             // 
             btnDigitalInput6.Dock = DockStyle.Fill;
-            btnDigitalInput6.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalInput6.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalInput6.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalInput6.FlatStyle = FlatStyle.Flat;
             btnDigitalInput6.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -640,7 +640,7 @@
             // btnDigitalInput7
             // 
             btnDigitalInput7.Dock = DockStyle.Fill;
-            btnDigitalInput7.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalInput7.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalInput7.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalInput7.FlatStyle = FlatStyle.Flat;
             btnDigitalInput7.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -656,7 +656,7 @@
             // btnDigitalInput8
             // 
             btnDigitalInput8.Dock = DockStyle.Fill;
-            btnDigitalInput8.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnDigitalInput8.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnDigitalInput8.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnDigitalInput8.FlatStyle = FlatStyle.Flat;
             btnDigitalInput8.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -687,7 +687,7 @@
             // btnStartScan
             // 
             btnStartScan.Dock = DockStyle.Fill;
-            btnStartScan.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnStartScan.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnStartScan.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnStartScan.FlatStyle = FlatStyle.Flat;
             btnStartScan.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -703,7 +703,7 @@
             // btnStopScan
             // 
             btnStopScan.Dock = DockStyle.Fill;
-            btnStopScan.FlatAppearance.BorderColor = Color.FromArgb(43, 41, 52);
+            btnStopScan.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
             btnStopScan.FlatAppearance.MouseOverBackColor = Color.FromArgb(43, 41, 52);
             btnStopScan.FlatStyle = FlatStyle.Flat;
             btnStopScan.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -754,6 +754,7 @@
             numDACValue.Size = new Size(79, 19);
             numDACValue.TabIndex = 0;
             numDACValue.Tag = "";
+            numDACValue.TextAlign = HorizontalAlignment.Center;
             numDACValue.Value = new decimal(new int[] { 2, 0, 0, 0 });
             // 
             // Developer

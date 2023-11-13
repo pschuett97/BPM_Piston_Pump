@@ -12,9 +12,11 @@ namespace BPM_Piston_Pump
 {
     public partial class Calibration : Form
     {
-        public Calibration()
+        AppConfig config;
+        public Calibration(AppConfig config)
         {
             InitializeComponent();
+            this.config = config;
         }
     }
 }

@@ -12,9 +12,12 @@ namespace BPM_Piston_Pump
 {
     public partial class Measure : Form
     {
-        public Measure()
+        AppConfig config;
+
+        public Measure(AppConfig config)
         {
             InitializeComponent();
+            this.config = config;
         }
     }
 }

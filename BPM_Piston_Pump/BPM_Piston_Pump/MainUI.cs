@@ -1,12 +1,17 @@
+using System.Configuration;
 using System.Diagnostics;
 
 namespace BPM_Piston_Pump
 {
     public partial class MainUI : Form
     {
+        AppConfig config;
         public MainUI()
         {
             InitializeComponent();
+            config = new AppConfig();
+            //config.loadConfig();
+            //btnHelp.Text = config.param["log_file_name"].ToString();
         }
 
         private Form activeForm = null;
@@ -27,17 +32,17 @@ namespace BPM_Piston_Pump
 
         private void btnMeasure_Click(object sender, EventArgs e)
         {
-            openChildForm(new Measure());
+            openChildForm(new Measure(config));
         }
 
         private void btnCalibration_Click(object sender, EventArgs e)
         {
-            openChildForm(new Calibration());
+            openChildForm(new Calibration(config));
         }
 
         private void btnDeveloper_Click(object sender, EventArgs e)
         {
-            openChildForm(new Developer());
+            openChildForm(new Developer(config));
         }
 
         private void btnHelp_Click(object sender, EventArgs e)

@@ -12,7 +12,13 @@ namespace BmcmInterface
         // state of the digital inputs and outputs
         public bool[] digitalOutputs = { false, false, false, false, false, false, false, false };
         public bool[] digitalInputs = { false, false, false, false, false, false, false, false };
-        
+
+        // store parameter for restarted run
+        float sample_rate;
+        int values_per_scan;
+        int values_per_run;
+        int how_many_runs;
+
 
         public BmcmInterface(string name)
         {
@@ -45,7 +51,7 @@ namespace BmcmInterface
         /// <summary>
         /// Sets a digital output port to high
         /// </summary>
-        /// <param name="nr">Number of the port | int | 0<nr<9</param>
+        /// <param name="nr">Number of the port, value between 1 and 8</param>
         public void set_digital_output_high(int nr)
         {
             this.digitalOutputs[nr-1] = true;
@@ -56,7 +62,7 @@ namespace BmcmInterface
         /// <summary>
         /// Sets a digital output port to low
         /// </summary>
-        /// <param name="nr">Number of the port | int | 0<nr<9</param>
+        /// <param name="nr">Number of the port, value between 1 and 8</param>
         public void set_digital_output_low(int nr)
         {
             this.digitalOutputs[nr-1] = false;
@@ -67,7 +73,7 @@ namespace BmcmInterface
         /// <summary>
         /// Sets the analog output port to a certail voltage
         /// </summary>
-        /// <param name="value">Voltage to set the port to | float | 0<value<5.12</param>
+        /// <param name="value">Voltage to set the port to, float value from 0 to 5.12</param>
         public void set_analog_output(float value)
         {
             int rc;
@@ -82,8 +88,8 @@ namespace BmcmInterface
         /// <summary>
         /// Reads an analog input
         /// </summary>
-        /// <param name="nr">Number of the port | int | 0<nr<9</param>
-        /// <returns>Voltage of the disired port | float | -10.24 to 10.24</returns>
+        /// <param name="nr">Number of the port, value between 1 and 8</param>
+        /// <returns>Voltage of the disired port, float value from -10.24 to 10.24</returns>
         public float get_analog_input(int nr)
         {
             float voltage = 0;
@@ -100,7 +106,7 @@ namespace BmcmInterface
         /// <summary>
         /// Reads the digital inputs and stores them in "digital_inputs"
         /// </summary>
-        /// <param name="nr">Number of the port | int | 0<nr<9</param>
+        /// <param name="nr">Number of the port, value between 1 and 8</param>
         /// <returns>Value of the desired digital input | bool</returns>
         public bool get_digital_input(int nr)
         {
@@ -182,25 +188,30 @@ namespace BmcmInterface
         }
 
         /// <summary>
-        /// Starts a scan.
+        /// Starts a scan. Beware of the presets (hard coded values)
         /// </summary>
-        public void start_scan()
+        public void start_scan(float sample_rate, int values_per_scan, int values_per_run, int how_many_runs)
         {
             int rc;
             ad_scan_cha_desc[] chav = new ad_scan_cha_desc[1];
             ad_scan_desc sd = new ad_scan_desc();
+
+            this.sample_rate = sample_rate;
+            this.values_per_scan = values_per_scan;
+            this.values_per_run = values_per_run;            
+            this.how_many_runs = how_many_runs;
 
             chav[0].cha = AD_CHA_TYPE_ANALOG_IN | 1; // Selecting the channel
             chav[0].store = AD_STORE_DISCRETE;       // average, min, max, rms sind möglich
             chav[0].ratio = 1;                       // at ratio = 5 and average - 5 values will be averaged
             chav[0].trg_mode = AD_TRG_NONE;          // No trigger means, storing immendiatly
 
-            sd.sample_rate = 0.002f; // 500Hz sampling, max 20kHz
+            sd.sample_rate = sample_rate; // 500Hz sampling, max 20kHz
             sd.prehist = 0;
-            sd.posthist = 2000;      // how many values per scan
-            sd.ticks_per_run = 250;  // how many values per run
+            sd.posthist = Convert.ToUInt64(values_per_scan);      // how many values per scan
+            sd.ticks_per_run = Convert.ToUInt32(values_per_run);  // how many values per run
 
-            number_runs = 2000 / sd.ticks_per_run -1;
+            number_runs = Convert.ToUInt32(how_many_runs) / sd.ticks_per_run -1;
 
 
             rc = ad_start_scan(adh, ref sd, 1, chav);
@@ -233,7 +244,7 @@ namespace BmcmInterface
             if (run_id % number_runs == 0 & run_id!=0)
             {
                 rc = ad_stop_scan(adh, ref scan_result);
-                start_scan();
+                start_scan(sample_rate, values_per_scan, values_per_run, how_many_runs);
             }
 
             return result;
