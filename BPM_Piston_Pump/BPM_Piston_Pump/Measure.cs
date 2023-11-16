@@ -18,6 +18,17 @@ namespace BPM_Piston_Pump
         {
             InitializeComponent();
             this.config = config;
+            rdoNormalMode.Checked = true;
+        }
+
+        private void rdoNormalMode_CheckedChanged(object sender, EventArgs e)
+        {
+            tblLayoutMeasure.Visible = true;
+        }
+
+        private void rdoDynamicMode_CheckedChanged(object sender, EventArgs e)
+        {
+            tblLayoutMeasure.Visible = false;
         }
     }
 }

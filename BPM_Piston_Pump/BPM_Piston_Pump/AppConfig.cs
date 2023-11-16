@@ -30,12 +30,32 @@ namespace BPM_Piston_Pump
                     // standard values, hard coded
                     param["v_inflate"] = "3";
                     param["v_deflate"] = "3";
-                    param["sample_rate"] = "0.002f";
+                    param["sample_rate"] = "500"; // max 20000Hz
+                    param["volt_low_end"] = "0,05";
+                    param["volt_high_end"] = "9,5";
+                    param["hg_low_end"] = "0";
+                    param["hg_high_end"] = "300";
                     param["values_per_scan"] = "2000";
                     param["values_per_run"] = "250";
                     param["how_many_runs"] = "2000";
                     param["log_file_name"] = "log";
                     param["log_file_path"] = "./";
+                    // Port Config
+                    // do = digital out
+                    param["limit_switch1_do_port"] = "1";                    
+                    param["limit_switch2_do_port"] = "2";                   
+                    param["emergency_valve_do_port"] = "3";
+                    param["test_valve_do_port"] = "4";
+                    param["membrane_pump_do_port"] = "5";
+                    param["piston_pump_dir_do_port"] = "6";
+                    param["piston_pump_ena_do_port"] = "7";
+                    // di = digital input
+                    param["limit_switch1_di_port"] = "1";
+                    param["limit_switch2_do_port"] = "2";
+                    // ao = analog output
+                    param["piston_pump_ao_port"] = "1";
+                    // ai = analog input
+                    param["pressure_sensor_ai_port"] = "1";
                     // add new standard values here if needed:
                     // ..
                     saveConfig();

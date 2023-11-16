@@ -206,7 +206,7 @@ namespace BmcmInterface
             chav[0].ratio = 1;                       // at ratio = 5 and average - 5 values will be averaged
             chav[0].trg_mode = AD_TRG_NONE;          // No trigger means, storing immendiatly
 
-            sd.sample_rate = sample_rate; // 500Hz sampling, max 20kHz
+            sd.sample_rate = 1/sample_rate; // 500Hz sampling, max 20kHz
             sd.prehist = 0;
             sd.posthist = Convert.ToUInt64(values_per_scan);      // how many values per scan
             sd.ticks_per_run = Convert.ToUInt32(values_per_run);  // how many values per run
