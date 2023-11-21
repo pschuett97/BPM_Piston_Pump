@@ -120,7 +120,7 @@
             // 
             tableLayoutPanel2.ColumnCount = 4;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 65F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Controls.Add(numSampleRate, 0, 0);
@@ -204,7 +204,7 @@
             numHgLowEnd.DecimalPlaces = 3;
             numHgLowEnd.ForeColor = SystemColors.ControlLightLight;
             numHgLowEnd.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            numHgLowEnd.Location = new Point(203, 71);
+            numHgLowEnd.Location = new Point(233, 71);
             numHgLowEnd.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
             numHgLowEnd.Name = "numHgLowEnd";
             numHgLowEnd.Size = new Size(59, 23);
@@ -220,7 +220,7 @@
             numHgHighEnd.BorderStyle = BorderStyle.None;
             numHgHighEnd.DecimalPlaces = 1;
             numHgHighEnd.ForeColor = SystemColors.ControlLightLight;
-            numHgHighEnd.Location = new Point(203, 139);
+            numHgHighEnd.Location = new Point(233, 139);
             numHgHighEnd.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
             numHgHighEnd.Name = "numHgHighEnd";
             numHgHighEnd.Size = new Size(59, 23);
@@ -237,7 +237,7 @@
             label3.Location = new Point(93, 2);
             label3.Margin = new Padding(3, 2, 3, 0);
             label3.Name = "label3";
-            label3.Size = new Size(104, 66);
+            label3.Size = new Size(134, 66);
             label3.TabIndex = 6;
             label3.Text = "samples/s";
             // 
@@ -248,7 +248,7 @@
             label4.Location = new Point(93, 70);
             label4.Margin = new Padding(3, 2, 3, 0);
             label4.Name = "label4";
-            label4.Size = new Size(104, 66);
+            label4.Size = new Size(134, 66);
             label4.TabIndex = 7;
             label4.Text = "volt correspond to";
             // 
@@ -259,14 +259,14 @@
             label5.Location = new Point(93, 138);
             label5.Margin = new Padding(3, 2, 3, 0);
             label5.Name = "label5";
-            label5.Size = new Size(104, 69);
+            label5.Size = new Size(134, 69);
             label5.TabIndex = 8;
             label5.Text = "volt correspond to";
             // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(268, 70);
+            label7.Location = new Point(298, 70);
             label7.Margin = new Padding(3, 2, 3, 0);
             label7.Name = "label7";
             label7.Size = new Size(55, 20);
@@ -276,7 +276,7 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(268, 138);
+            label8.Location = new Point(298, 138);
             label8.Margin = new Padding(3, 2, 3, 0);
             label8.Name = "label8";
             label8.Size = new Size(55, 20);
@@ -300,7 +300,7 @@
             // 
             tableLayoutPanel3.ColumnCount = 3;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel3.Controls.Add(numSpeedDeflation, 0, 1);
             tableLayoutPanel3.Controls.Add(numSpeedInflation, 0, 0);
@@ -356,7 +356,7 @@
             label6.Location = new Point(93, 2);
             label6.Margin = new Padding(3, 2, 3, 0);
             label6.Name = "label6";
-            label6.Size = new Size(68, 40);
+            label6.Size = new Size(119, 20);
             label6.TabIndex = 5;
             label6.Text = "inflation velocity";
             // 
@@ -366,7 +366,7 @@
             label9.Location = new Point(93, 76);
             label9.Margin = new Padding(3, 2, 3, 0);
             label9.Name = "label9";
-            label9.Size = new Size(73, 40);
+            label9.Size = new Size(124, 20);
             label9.TabIndex = 6;
             label9.Text = "deflation velocity";
             // 
@@ -376,14 +376,14 @@
             tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel4.Controls.Add(btnCalibrateSpeed, 0, 1);
             tableLayoutPanel4.Dock = DockStyle.Fill;
-            tableLayoutPanel4.Location = new Point(203, 3);
+            tableLayoutPanel4.Location = new Point(223, 3);
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 3;
             tableLayoutPanel3.SetRowSpan(tableLayoutPanel4, 2);
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 5F));
-            tableLayoutPanel4.Size = new Size(530, 142);
+            tableLayoutPanel4.Size = new Size(510, 142);
             tableLayoutPanel4.TabIndex = 7;
             // 
             // btnCalibrateSpeed

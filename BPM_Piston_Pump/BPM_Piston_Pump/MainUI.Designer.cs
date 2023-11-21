@@ -54,7 +54,7 @@
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 2;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 205F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 159F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Controls.Add(panelSideMenu, 0, 0);
             tableLayoutPanel1.Controls.Add(panelChildForm, 1, 0);
@@ -64,7 +64,7 @@
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(1029, 630);
+            tableLayoutPanel1.Size = new Size(800, 450);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // panelSideMenu
@@ -75,7 +75,7 @@
             panelSideMenu.Location = new Point(0, 0);
             panelSideMenu.Margin = new Padding(0);
             panelSideMenu.Name = "panelSideMenu";
-            panelSideMenu.Size = new Size(205, 630);
+            panelSideMenu.Size = new Size(159, 450);
             panelSideMenu.TabIndex = 0;
             // 
             // tableLayoutPanel2
@@ -89,6 +89,7 @@
             tableLayoutPanel2.Controls.Add(pictureBox1, 0, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(0, 0);
+            tableLayoutPanel2.Margin = new Padding(2);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 6;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 15F));
@@ -97,7 +98,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-            tableLayoutPanel2.Size = new Size(205, 630);
+            tableLayoutPanel2.Size = new Size(159, 450);
             tableLayoutPanel2.TabIndex = 5;
             // 
             // btnHelp
@@ -108,10 +109,11 @@
             btnHelp.FlatStyle = FlatStyle.Flat;
             btnHelp.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             btnHelp.ForeColor = SystemColors.ControlLightLight;
-            btnHelp.Location = new Point(3, 569);
+            btnHelp.Location = new Point(2, 406);
+            btnHelp.Margin = new Padding(2);
             btnHelp.Name = "btnHelp";
-            btnHelp.Padding = new Padding(5, 0, 0, 0);
-            btnHelp.Size = new Size(199, 58);
+            btnHelp.Padding = new Padding(4, 0, 0, 0);
+            btnHelp.Size = new Size(155, 42);
             btnHelp.TabIndex = 4;
             btnHelp.Text = "Help";
             btnHelp.TextAlign = ContentAlignment.MiddleLeft;
@@ -127,10 +129,11 @@
             btnMeasure.FlatStyle = FlatStyle.Flat;
             btnMeasure.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             btnMeasure.ForeColor = SystemColors.ControlLightLight;
-            btnMeasure.Location = new Point(3, 97);
+            btnMeasure.Location = new Point(2, 69);
+            btnMeasure.Margin = new Padding(2);
             btnMeasure.Name = "btnMeasure";
-            btnMeasure.Padding = new Padding(5, 0, 0, 0);
-            btnMeasure.Size = new Size(199, 57);
+            btnMeasure.Padding = new Padding(4, 0, 0, 0);
+            btnMeasure.Size = new Size(155, 41);
             btnMeasure.TabIndex = 1;
             btnMeasure.Text = "Measure";
             btnMeasure.TextAlign = ContentAlignment.MiddleLeft;
@@ -146,10 +149,11 @@
             btnCalibration.FlatStyle = FlatStyle.Flat;
             btnCalibration.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             btnCalibration.ForeColor = SystemColors.ControlLightLight;
-            btnCalibration.Location = new Point(3, 160);
+            btnCalibration.Location = new Point(2, 114);
+            btnCalibration.Margin = new Padding(2);
             btnCalibration.Name = "btnCalibration";
-            btnCalibration.Padding = new Padding(5, 0, 0, 0);
-            btnCalibration.Size = new Size(199, 57);
+            btnCalibration.Padding = new Padding(4, 0, 0, 0);
+            btnCalibration.Size = new Size(155, 41);
             btnCalibration.TabIndex = 2;
             btnCalibration.Text = "Calibration";
             btnCalibration.TextAlign = ContentAlignment.MiddleLeft;
@@ -165,10 +169,11 @@
             btnDeveloper.FlatStyle = FlatStyle.Flat;
             btnDeveloper.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             btnDeveloper.ForeColor = SystemColors.ControlLightLight;
-            btnDeveloper.Location = new Point(3, 223);
+            btnDeveloper.Location = new Point(2, 159);
+            btnDeveloper.Margin = new Padding(2);
             btnDeveloper.Name = "btnDeveloper";
-            btnDeveloper.Padding = new Padding(5, 0, 0, 0);
-            btnDeveloper.Size = new Size(199, 57);
+            btnDeveloper.Padding = new Padding(4, 0, 0, 0);
+            btnDeveloper.Size = new Size(155, 41);
             btnDeveloper.TabIndex = 3;
             btnDeveloper.Text = "Developer";
             btnDeveloper.TextAlign = ContentAlignment.MiddleLeft;
@@ -181,10 +186,10 @@
             // 
             pictureBox1.Dock = DockStyle.Fill;
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(10, 5);
-            pictureBox1.Margin = new Padding(10, 5, 10, 5);
+            pictureBox1.Location = new Point(8, 4);
+            pictureBox1.Margin = new Padding(8, 4, 8, 4);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(185, 84);
+            pictureBox1.Size = new Size(143, 59);
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 5;
             pictureBox1.TabStop = false;
@@ -198,18 +203,18 @@
             panelChildForm.Controls.Add(label2);
             panelChildForm.Controls.Add(label1);
             panelChildForm.Dock = DockStyle.Fill;
-            panelChildForm.Location = new Point(209, 4);
-            panelChildForm.Margin = new Padding(4);
+            panelChildForm.Location = new Point(162, 3);
             panelChildForm.Name = "panelChildForm";
-            panelChildForm.Size = new Size(816, 622);
+            panelChildForm.Size = new Size(635, 444);
             panelChildForm.TabIndex = 1;
             // 
             // linkLabel1
             // 
             linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(92, 198);
+            linkLabel1.Location = new Point(79, 147);
+            linkLabel1.Margin = new Padding(2, 0, 2, 0);
             linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(41, 21);
+            linkLabel1.Size = new Size(30, 15);
             linkLabel1.TabIndex = 5;
             linkLabel1.TabStop = true;
             linkLabel1.Text = "here";
@@ -219,9 +224,10 @@
             // 
             label5.AutoSize = true;
             label5.ForeColor = SystemColors.ControlLightLight;
-            label5.Location = new Point(3, 198);
+            label5.Location = new Point(2, 147);
+            label5.Margin = new Padding(2, 0, 2, 0);
             label5.Name = "label5";
-            label5.Size = new Size(94, 21);
+            label5.Size = new Size(73, 15);
             label5.TabIndex = 4;
             label5.Text = "Contact him";
             // 
@@ -229,9 +235,10 @@
             // 
             label4.AutoSize = true;
             label4.ForeColor = SystemColors.ControlLightLight;
-            label4.Location = new Point(3, 177);
+            label4.Location = new Point(2, 132);
+            label4.Margin = new Padding(2, 0, 2, 0);
             label4.Name = "label4";
-            label4.Size = new Size(459, 21);
+            label4.Size = new Size(345, 15);
             label4.TabIndex = 3;
             label4.Text = "This was the master project of Pascal Schüttengruber in 2023/24.";
             // 
@@ -240,7 +247,8 @@
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 12F, FontStyle.Bold | FontStyle.Underline, GraphicsUnit.Point);
             label3.ForeColor = SystemColors.ControlLightLight;
-            label3.Location = new Point(3, 156);
+            label3.Location = new Point(2, 111);
+            label3.Margin = new Padding(2, 0, 2, 0);
             label3.Name = "label3";
             label3.Size = new Size(57, 21);
             label3.TabIndex = 2;
@@ -250,9 +258,10 @@
             // 
             label2.AutoSize = true;
             label2.ForeColor = SystemColors.ControlLightLight;
-            label2.Location = new Point(3, 30);
+            label2.Location = new Point(2, 29);
+            label2.Margin = new Padding(2, 0, 2, 0);
             label2.Name = "label2";
-            label2.Size = new Size(160, 21);
+            label2.Size = new Size(122, 15);
             label2.TabIndex = 1;
             label2.Text = "ToDo - Write help text";
             // 
@@ -261,7 +270,8 @@
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold | FontStyle.Underline, GraphicsUnit.Point);
             label1.ForeColor = SystemColors.ControlLightLight;
-            label1.Location = new Point(3, 5);
+            label1.Location = new Point(2, 4);
+            label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
             label1.Size = new Size(54, 25);
             label1.TabIndex = 0;
@@ -269,15 +279,14 @@
             // 
             // MainUI
             // 
-            AutoScaleDimensions = new SizeF(9F, 21F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(23, 21, 32);
-            ClientSize = new Size(1029, 630);
+            ClientSize = new Size(800, 450);
             Controls.Add(tableLayoutPanel1);
-            Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(4);
-            MinimumSize = new Size(800, 500);
+            MinimumSize = new Size(700, 450);
             Name = "MainUI";
             Text = "Blood Pressure Measurement Device";
             tableLayoutPanel1.ResumeLayout(false);

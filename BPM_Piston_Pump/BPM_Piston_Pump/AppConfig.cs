@@ -14,6 +14,8 @@ namespace BPM_Piston_Pump
     public class AppConfig
     {
         public Dictionary<string, string> param;
+        public float k;
+        public float d;
 
         public AppConfig()
         {
@@ -38,8 +40,9 @@ namespace BPM_Piston_Pump
                     param["values_per_scan"] = "2000";
                     param["values_per_run"] = "250";
                     param["how_many_runs"] = "2000";
-                    param["log_file_name"] = "log";
-                    param["log_file_path"] = "./";
+                    param["log_file_name"] = "log.csv";
+                    param["log_file_path"] = "./"; // @"C:\"
+                    param["start_pressure"] = "100";
                     // Port Config
                     // do = digital out
                     param["limit_switch1_do_port"] = "1";                    
@@ -64,7 +67,9 @@ namespace BPM_Piston_Pump
                 {
                     throw e;
                 }
-            }            
+            }
+            k = (float.Parse(param["hg_high_end"]) - float.Parse(param["hg_low_end"])) / (float.Parse(param["volt_high_end"]) - float.Parse(param["volt_low_end"]));
+            d = float.Parse(param["hg_high_end"]) - k * float.Parse(param["volt_high_end"]);
         }
 
         /// <summary>
@@ -92,6 +97,17 @@ namespace BPM_Piston_Pump
                 string val = line.Split(';')[1];
                 param[key] = val;
             }
+        }
+
+        public void InitPressureSensor()
+        {
+            k = (float.Parse(param["hg_high_end"]) - float.Parse(param["hg_low_end"])) / (float.Parse(param["volt_high_end"]) - float.Parse(param["volt_low_end"]));
+            d = float.Parse(param["hg_high_end"]) - k * float.Parse(param["volt_high_end"]);
+        }
+
+        public float VoltageToMmHg(float voltage)
+        {
+            return k * voltage + d;
         }
     }
 }

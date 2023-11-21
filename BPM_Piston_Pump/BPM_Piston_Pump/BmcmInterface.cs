@@ -228,7 +228,7 @@ namespace BmcmInterface
         /// <returns>Values of the run | float[]</returns>
         public float[] get_values(uint run_id)
         {
-            float[] result = new float[250];
+            float[] result = new float[values_per_run]; 
             int rc;
             int scan_result=1;
             ad_scan_state state = new ad_scan_state();
