@@ -1,10 +1,10 @@
 v_inflate;3
 v_deflate;3
 sample_rate;500
-volt_low_end;0,05
-volt_high_end;9,5
-hg_low_end;0
-hg_high_end;300
+volt_low_end;0,92
+volt_high_end;2,27
+hg_low_end;40,0
+hg_high_end;100
 values_per_scan;2000
 values_per_run;250
 how_many_runs;2000

@@ -33,10 +33,10 @@ namespace BPM_Piston_Pump
                     param["v_inflate"] = "3";
                     param["v_deflate"] = "3";
                     param["sample_rate"] = "500"; // max 20000Hz
-                    param["volt_low_end"] = "0,05";
-                    param["volt_high_end"] = "9,5";
-                    param["hg_low_end"] = "0";
-                    param["hg_high_end"] = "300";
+                    param["volt_low_end"] = "0,92";
+                    param["volt_high_end"] = "2,27";
+                    param["hg_low_end"] = "40";
+                    param["hg_high_end"] = "100";
                     param["values_per_scan"] = "2000";
                     param["values_per_run"] = "250";
                     param["how_many_runs"] = "2000";
