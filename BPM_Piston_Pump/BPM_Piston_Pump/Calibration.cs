@@ -14,6 +14,9 @@ namespace BPM_Piston_Pump
     {
         AppConfig config; // configuration
         public BmcmInterface.BmcmInterface inter; // connection to the bmcm interface
+        BackgroundWorker workerLeakProofTest;
+        BackgroundWorker workerCalibrateSpeed;
+
         public Calibration(AppConfig config)
         {
             InitializeComponent();
@@ -26,13 +29,36 @@ namespace BPM_Piston_Pump
             numSpeedInflation.Value = decimal.Parse(this.config.param["v_inflate"]);
             numSpeedDeflation.Value = decimal.Parse(this.config.param["v_deflate"]);
             inter = new BmcmInterface.BmcmInterface("usbad14f");
+            workerLeakProofTest = new BackgroundWorker();
+            workerCalibrateSpeed = new BackgroundWorker();
         }
 
         private void btnLeakproofTestStart_Click(object sender, EventArgs e)
         {
             progressBar1.Visible = true;
-            progressBar1.Minimum = 0;
-            progressBar1.Maximum = 100;
+            workerLeakProofTest.WorkerReportsProgress = true;
+
+            workerLeakProofTest.DoWork += (s, e) =>
+            {
+                e.Result = leakProofTest();
+            };
+            workerLeakProofTest.ProgressChanged += (s, e) =>
+            {
+                progressBar1.PerformStep();
+                // this.progressBar1.Value = e.ProgressPercentage;
+            };
+            workerLeakProofTest.RunWorkerCompleted += (s, e) =>
+            {
+                lblLeakprooftestResult.Text = e.Result.ToString();
+                progressBar1.Visible = false;
+                progressBar1.Value = 0;
+            };
+            workerLeakProofTest.RunWorkerAsync();
+        }
+
+
+        private string leakProofTest()
+        {
             float voltage = 0;
             bool proof = true;
             int cnt = 0;
@@ -60,52 +86,70 @@ namespace BPM_Piston_Pump
 
             voltage = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 1; i < 11; i++)
             {
-                progressBar1.PerformStep();
-                wait(500); // timer damit sich UI nicht ganz vertschüsst
-                // System.Threading.Thread.Sleep(1000);
+                workerLeakProofTest.ReportProgress(10 * i);
+                //wait(500); // timer damit sich UI nicht ganz vertschüsst
+                Thread.Sleep(500);
                 float voltage2 = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
                 if ((voltage - voltage2) > 0.9) proof = false; // ADJUST VALUE HERE!
             }
 
-            progressBar1.Visible = false;
-            progressBar1.Value = 0;
-
-            if (proof) lblLeakprooftestResult.Text = "Result: Good!";
-            else lblLeakprooftestResult.Text = "Result: NOT LEAKPROOF!";
 
 
-        }
-
-        public void wait(int milliseconds)
-        {
-            var timer1 = new System.Windows.Forms.Timer();
-            if (milliseconds == 0 || milliseconds < 0) return;
-
-            // Console.WriteLine("start wait timer");
-            timer1.Interval = milliseconds;
-            timer1.Enabled = true;
-            timer1.Start();
-
-            timer1.Tick += (s, e) =>
-            {
-                timer1.Enabled = false;
-                timer1.Stop();
-                // Console.WriteLine("stop wait timer");
-            };
-
-            while (timer1.Enabled)
-            {
-                Application.DoEvents();
-            }
+            if (proof) return "Result: Good!";
+            else return "Result: NOT LEAKPROOF!";
         }
 
         private void btnCalibrateSpeed_Click(object sender, EventArgs e)
         {
-            // ToDo
-            // Speed Calibration
+            progressBar1.Visible = true;
+            workerCalibrateSpeed.WorkerReportsProgress = true;
 
+            workerCalibrateSpeed.DoWork += (s, e) =>
+            {
+                e.Result = calibrateSpeed((float)numSpeedInflation.Value, (float)numSpeedDeflation.Value);
+            };
+            workerCalibrateSpeed.ProgressChanged += (s, e) =>
+            {
+                progressBar1.Value = e.ProgressPercentage;
+            };
+            workerCalibrateSpeed.RunWorkerCompleted += (s, e) =>
+            {
+                lblLeakprooftestResult.Text = e.Result.ToString();
+                progressBar1.Visible = false;
+                progressBar1.Value = 0;
+            };
+            workerCalibrateSpeed.RunWorkerAsync();
+
+        }
+
+        private float calibrateSpeed(float speedInflation, float speedDeflation)
+        {
+            float analogOutVoltage = 3;
+            bool ready = false;
+            int cnt = 0;
+
+            while (!ready)
+            {
+                if (cnt < 100)
+                {
+                    inter.set_analog_output(analogOutVoltage);
+                    //inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
+                    inter.set_digital_output_high(1); // ToDo change port
+                    inter.set_digital_output_high(2);
+                }
+                else
+                {
+                    return -1;
+                }
+                cnt++;
+            }
+
+
+
+
+            return analogOutVoltage;
         }
 
         #region Value Changed of num selectors

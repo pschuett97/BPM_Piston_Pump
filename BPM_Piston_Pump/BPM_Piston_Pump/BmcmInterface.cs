@@ -71,7 +71,7 @@ namespace BmcmInterface
         }
 
         /// <summary>
-        /// Sets the analog output port to a certail voltage
+        /// Sets the analog output port to a certain voltage
         /// </summary>
         /// <param name="value">Voltage to set the port to, float value from 0 to 5.12</param>
         public void set_analog_output(float value)
