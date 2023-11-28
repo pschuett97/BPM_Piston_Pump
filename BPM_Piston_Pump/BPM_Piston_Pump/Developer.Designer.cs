@@ -748,7 +748,7 @@
             numDACValue.ForeColor = SystemColors.ControlLightLight;
             numDACValue.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
             numDACValue.Location = new Point(0, 0);
-            numDACValue.Maximum = new decimal(new int[] { 4, 0, 0, 0 });
+            numDACValue.Maximum = new decimal(new int[] { 47, 0, 0, 65536 });
             numDACValue.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numDACValue.Name = "numDACValue";
             numDACValue.Size = new Size(79, 19);

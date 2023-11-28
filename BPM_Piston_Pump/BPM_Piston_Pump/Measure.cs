@@ -90,23 +90,23 @@ namespace BPM_Piston_Pump
             // Stop Membrane Pump
 
             // Start Piston Pump
+            // ToDo
+            inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
+            inter.set_digital_output_high(1); // ToDo change!!
+            inter.set_digital_output_high(2);
+
+            
 
 
             // Start Measurement
             inter.start_scan(float.Parse(config.param["sample_rate"]), int.Parse(config.param["values_per_scan"]), int.Parse(config.param["values_per_run"]), int.Parse(config.param["how_many_runs"]));
-            timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+            timer = new PeriodicTimer(TimeSpan.FromMilliseconds(500));
+            // Start new Thread maybe?
             RepeatForEver();
         }
 
-        /// <summary>
-        /// When this method is called, the timer "timer" was started before.
-        /// When "timer" elapses, the code in the while loop gets executed.
-        /// It reads n values (eg. 1000) and prints just the first one.
-        /// The values are getting stored in data.
-        /// </summary>
         async void RepeatForEver()
         {
-            // float[] values;  // maybe put that here to increase performance
             while (await timer.WaitForNextTickAsync())
             {
                 float[] values = inter.get_values(run_id);
@@ -127,16 +127,17 @@ namespace BPM_Piston_Pump
             btnStop.Visible = false;
             inter.stop_scan();
             timer.Dispose();
-            using (var outf = new StreamWriter(config.param["log_file_path"]))
+            inter.set_digital_output_low(1); // ToDo CHANGE!!
+            using (var outf = new StreamWriter(config.param["log_file_path"] + config.param["log_file_name"]))
             {
-                outf.WriteLine(triggerTime.ToString());                
+                outf.WriteLine(triggerTime.ToString());
                 for (int i = 0; i < data.Count; i++)
                 {
                     for (int j = 0; j < data[i].Value.Length; j++)
                     {
                         outf.WriteLine(data[i].Value[j].ToString() + ";" + data[i].Time + ";" + data[i].Direction);
                     }
-                }                               
+                }
             }
         }
 
@@ -147,7 +148,7 @@ namespace BPM_Piston_Pump
             // Calculate Blood Preassure Parameters
 
             // Control Piston Pump
-
+            
             // Define Pump up and Down
 
         }

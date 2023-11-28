@@ -42,6 +42,7 @@
             numStartPressure = new NumericUpDown();
             label4 = new Label();
             panel3 = new Panel();
+            btnTrigger = new Button();
             btnStop = new Button();
             btnStart = new Button();
             panelResult = new Panel();
@@ -49,7 +50,6 @@
             lblMABP = new Label();
             lblDiastolic = new Label();
             lblSystolic = new Label();
-            btnTrigger = new Button();
             panel1.SuspendLayout();
             tblLayoutMeasure.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -231,7 +231,19 @@
             panel3.Name = "panel3";
             panel3.Size = new Size(368, 253);
             panel3.TabIndex = 8;
-            panel3.Visible = false;
+            // 
+            // btnTrigger
+            // 
+            btnTrigger.FlatStyle = FlatStyle.Flat;
+            btnTrigger.ForeColor = SystemColors.ControlLightLight;
+            btnTrigger.Location = new Point(5, 34);
+            btnTrigger.Name = "btnTrigger";
+            btnTrigger.Size = new Size(75, 25);
+            btnTrigger.TabIndex = 2;
+            btnTrigger.Text = "Trigger";
+            btnTrigger.UseVisualStyleBackColor = true;
+            btnTrigger.Visible = false;
+            btnTrigger.Click += btnTrigger_Click;
             // 
             // btnStop
             // 
@@ -309,18 +321,6 @@
             lblSystolic.Size = new Size(53, 15);
             lblSystolic.TabIndex = 0;
             lblSystolic.Text = "Systolic: ";
-            // 
-            // btnTrigger
-            // 
-            btnTrigger.FlatStyle = FlatStyle.Flat;
-            btnTrigger.ForeColor = SystemColors.ControlLightLight;
-            btnTrigger.Location = new Point(5, 34);
-            btnTrigger.Name = "btnTrigger";
-            btnTrigger.Size = new Size(75, 25);
-            btnTrigger.TabIndex = 2;
-            btnTrigger.Text = "Trigger";
-            btnTrigger.UseVisualStyleBackColor = true;
-            btnTrigger.Click += btnTrigger_Click;
             // 
             // Measure
             // 

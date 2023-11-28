@@ -16,6 +16,8 @@ namespace BPM_Piston_Pump
         public BmcmInterface.BmcmInterface inter; // connection to the bmcm interface
         BackgroundWorker workerLeakProofTest;
         BackgroundWorker workerCalibrateSpeed;
+        private PeriodicTimer timer = null; // timer that runs on a different thread
+        private bool running = false;
 
         public Calibration(AppConfig config)
         {
@@ -28,6 +30,8 @@ namespace BPM_Piston_Pump
             numHgHighEnd.Value = decimal.Parse(this.config.param["hg_high_end"]);
             numSpeedInflation.Value = decimal.Parse(this.config.param["v_inflate"]);
             numSpeedDeflation.Value = decimal.Parse(this.config.param["v_deflate"]);
+            numTolerance.Value = decimal.Parse(this.config.param["tolerance"]);
+            numStepSize.Value = decimal.Parse(this.config.param["step_size"]);
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             workerLeakProofTest = new BackgroundWorker();
             workerCalibrateSpeed = new BackgroundWorker();
@@ -108,7 +112,7 @@ namespace BPM_Piston_Pump
 
             workerCalibrateSpeed.DoWork += (s, e) =>
             {
-                e.Result = calibrateSpeed((float)numSpeedInflation.Value, (float)numSpeedDeflation.Value);
+                calibrateSpeed();
             };
             workerCalibrateSpeed.ProgressChanged += (s, e) =>
             {
@@ -116,7 +120,6 @@ namespace BPM_Piston_Pump
             };
             workerCalibrateSpeed.RunWorkerCompleted += (s, e) =>
             {
-                lblLeakprooftestResult.Text = e.Result.ToString();
                 progressBar1.Visible = false;
                 progressBar1.Value = 0;
             };
@@ -124,32 +127,79 @@ namespace BPM_Piston_Pump
 
         }
 
-        private float calibrateSpeed(float speedInflation, float speedDeflation)
+        private void calibrateSpeed()
         {
-            float analogOutVoltage = 3;
-            bool ready = false;
-            int cnt = 0;
-
-            while (!ready)
+            running = true;
+            inter.set_analog_output(3);  // start analog output voltage = 3
+            inter.set_digital_output_high(1); // ToDo change ports
+            inter.set_digital_output_high(2);
+            inter.start_scan(500, 10000, 1000, 10000);
+            timer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000));
+            RepeatForEver();
+            while (running)
             {
-                if (cnt < 100)
-                {
-                    inter.set_analog_output(analogOutVoltage);
-                    //inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
-                    inter.set_digital_output_high(1); // ToDo change port
-                    inter.set_digital_output_high(2);
-                }
-                else
-                {
-                    return -1;
-                }
-                cnt++;
+                Thread.Sleep(1000);
             }
+        }
+
+        async void RepeatForEver()
+        {
+            List<float> data = new List<float>(); // list to store the data
+            uint run_id = 0; // counts how many runs there were
+            float analogOutVoltage = float.Parse(config.param["v_inflate_ao"]);
+            bool success = false;
+
+            workerCalibrateSpeed.ReportProgress((int)run_id);
+
+            //inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
 
 
+            while (await timer.WaitForNextTickAsync())
+            {
+                // get new data
+                float[] values;
+                values = inter.get_values(run_id);
+                run_id++;
+                data.Add(values.Average());
 
+                // explore data and control pump
+                if (run_id > 1)
+                {
+                    float last = config.VoltageToMmHg(data.Last());
+                    float last2 = config.VoltageToMmHg(data[^2]);
 
-            return analogOutVoltage;
+                    if (last - last2 < (float)numSpeedInflation.Value + (float)numTolerance.Value && last - last2 > (float)numSpeedInflation.Value - (float)numTolerance.Value)
+                    {
+                        config.param["v_inflate_ao"] = analogOutVoltage.ToString();
+                        config.param["v_deflate_ao"] = analogOutVoltage.ToString(); // ToDo adjust deflate
+                        success = true;
+                        break;
+                    }
+                    else if (last - last2 < (float)numSpeedInflation.Value)
+                    {
+                        analogOutVoltage += (float)numStepSize.Value;
+                    }
+                    else
+                    {
+                        analogOutVoltage -= (float)numStepSize.Value;
+                    }
+                    inter.set_analog_output(analogOutVoltage);
+                }
+                workerCalibrateSpeed.ReportProgress((int)(run_id * 3 / numStepSize.Value) + 1);
+
+                if (run_id > 3 / numStepSize.Value)
+                {
+                    success = false;
+                    break;
+                }
+            }
+            inter.set_digital_output_low(1); // ToDo change ports
+            inter.set_digital_output_low(2);
+            inter.stop_scan();
+            timer.Dispose();
+            running = false;
+            if (success) MessageBox.Show("SUCCESS: Piston speed is calibrated!");
+            else MessageBox.Show("ERROR: Could not calibrate the piston speed! Change settings or adjust setup!");
         }
 
         #region Value Changed of num selectors
@@ -188,6 +238,15 @@ namespace BPM_Piston_Pump
         {
             config.param["v_inflation"] = numSpeedInflation.Value.ToString();
         }
+        private void numTolerance_ValueChanged(object sender, EventArgs e)
+        {
+            config.param["tolerance"] = numTolerance.Value.ToString();
+        }
+
+        private void numStepSize_ValueChanged(object sender, EventArgs e)
+        {
+            config.param["step_size"] = numStepSize.Value.ToString();
+        }
 
         #endregion
 
@@ -196,5 +255,7 @@ namespace BPM_Piston_Pump
             config.saveConfig();
             MessageBox.Show("Settings Saved!");
         }
+
+
     }
 }

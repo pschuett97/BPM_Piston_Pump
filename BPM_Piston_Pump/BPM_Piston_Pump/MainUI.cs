@@ -10,6 +10,12 @@ namespace BPM_Piston_Pump
         {
             InitializeComponent();
             config = new AppConfig();
+            if (int.Parse(config.param["developer"]) == 1)
+                checkDeveloper.Checked = true;
+            else
+                checkDeveloper.Checked = false;
+
+
             //config.loadConfig();
             //btnHelp.Text = config.param["log_file_name"].ToString();
         }
@@ -97,6 +103,14 @@ namespace BPM_Piston_Pump
         {
             linkLabel1.LinkVisited = true;
             Process.Start(new ProcessStartInfo("mailto:p.schuettengruber@outlook.com") { UseShellExecute = true });
+        }
+
+        private void checkDeveloper_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkDeveloper.Checked)
+                btnDeveloper.Visible = true;
+            else
+                btnDeveloper.Visible = false;
         }
     }
 }

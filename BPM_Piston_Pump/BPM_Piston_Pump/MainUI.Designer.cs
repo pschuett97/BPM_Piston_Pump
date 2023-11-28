@@ -38,6 +38,7 @@
             btnDeveloper = new Button();
             pictureBox1 = new PictureBox();
             panelChildForm = new Panel();
+            checkDeveloper = new CheckBox();
             linkLabel1 = new LinkLabel();
             label5 = new Label();
             label4 = new Label();
@@ -196,6 +197,7 @@
             // 
             // panelChildForm
             // 
+            panelChildForm.Controls.Add(checkDeveloper);
             panelChildForm.Controls.Add(linkLabel1);
             panelChildForm.Controls.Add(label5);
             panelChildForm.Controls.Add(label4);
@@ -207,6 +209,20 @@
             panelChildForm.Name = "panelChildForm";
             panelChildForm.Size = new Size(635, 444);
             panelChildForm.TabIndex = 1;
+            // 
+            // checkDeveloper
+            // 
+            checkDeveloper.AutoSize = true;
+            checkDeveloper.Checked = true;
+            checkDeveloper.CheckState = CheckState.Checked;
+            checkDeveloper.ForeColor = SystemColors.ControlLightLight;
+            checkDeveloper.Location = new Point(3, 89);
+            checkDeveloper.Name = "checkDeveloper";
+            checkDeveloper.Size = new Size(79, 19);
+            checkDeveloper.TabIndex = 6;
+            checkDeveloper.Text = "Developer";
+            checkDeveloper.UseVisualStyleBackColor = true;
+            checkDeveloper.CheckedChanged += checkDeveloper_CheckedChanged;
             // 
             // linkLabel1
             // 
@@ -315,5 +331,6 @@
         private Label label5;
         private Label label4;
         private Label label3;
+        private CheckBox checkDeveloper;
     }
 }

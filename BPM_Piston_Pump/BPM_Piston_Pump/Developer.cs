@@ -277,7 +277,7 @@ namespace BPM_Piston_Pump
         private void btnStartScan_Click(object sender, EventArgs e)
         {
             inter.start_scan(float.Parse(config.param["sample_rate"]), int.Parse(config.param["values_per_scan"]), int.Parse(config.param["values_per_run"]), int.Parse(config.param["how_many_runs"]));
-            timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+            timer = new PeriodicTimer(TimeSpan.FromMilliseconds(500));
             RepeatForEver();
         }
 
@@ -288,8 +288,10 @@ namespace BPM_Piston_Pump
         /// <param name="e">Event argument</param>
         private void btnStopScan_Click(object sender, EventArgs e)
         {
-            inter.stop_scan();
             timer.Dispose();
+            inter.stop_scan();
+            inter.set_digital_output_low(1); // ToDo CHANGE!!!
+            
             using (var outf = new StreamWriter("data.txt"))
                 for (int i = 0; i < data.Count; i++)
                     outf.WriteLine(data[i].ToString());
@@ -312,8 +314,8 @@ namespace BPM_Piston_Pump
                 float[] values; // maybe change position here to increase performance
                 values = inter.get_values(run_id);
                 run_id++;
-                boxScan.Text += values[0].ToString();
-                boxScan.Text += "\n";
+                boxScan.AppendText(values[0].ToString());
+                boxScan.AppendText(Environment.NewLine);
                 data.AddRange(values);
             }
         }

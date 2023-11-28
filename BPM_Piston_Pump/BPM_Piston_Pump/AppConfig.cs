@@ -11,12 +11,18 @@ using static System.Windows.Forms.LinkLabel;
 
 namespace BPM_Piston_Pump
 {
+    /// <summary>
+    /// This class holds all the configuration there is available.
+    /// </summary>
     public class AppConfig
     {
         public Dictionary<string, string> param;
         public float k;
         public float d;
 
+        /// <summary>
+        /// Singelton! Is only instanced once! Holds all the configuration there is available.
+        /// </summary>
         public AppConfig()
         {
             param = new Dictionary<string, string>();
@@ -29,9 +35,15 @@ namespace BPM_Piston_Pump
                 // if file does not exist, a file with standard values will be created
                 if (e.GetType() == typeof(FileNotFoundException))
                 {
+                    // developer mode
+                    param["developer"] = "0";
                     // standard values, hard coded
                     param["v_inflate"] = "3";
+                    param["v_inflate_ao"] = "2";
                     param["v_deflate"] = "3";
+                    param["v_deflate_ao"] = "2";
+                    param["tolerance"] = "0,5";
+                    param["step_size"] = "0,2";
                     param["sample_rate"] = "500"; // max 20000Hz
                     param["volt_low_end"] = "0,92";
                     param["volt_high_end"] = "2,27";
@@ -41,7 +53,7 @@ namespace BPM_Piston_Pump
                     param["values_per_run"] = "250";
                     param["how_many_runs"] = "2000";
                     param["log_file_name"] = "log.csv";
-                    param["log_file_path"] = "./"; // @"C:\"
+                    param["log_file_path"] = ""; // @"C:\"
                     param["start_pressure"] = "100";
                     // Port Config
                     // do = digital out
@@ -68,12 +80,11 @@ namespace BPM_Piston_Pump
                     throw e;
                 }
             }
-            k = (float.Parse(param["hg_high_end"]) - float.Parse(param["hg_low_end"])) / (float.Parse(param["volt_high_end"]) - float.Parse(param["volt_low_end"]));
-            d = float.Parse(param["hg_high_end"]) - k * float.Parse(param["volt_high_end"]);
+            InitPressureSensor();
         }
 
         /// <summary>
-        /// Save the currend configuration in a csv file
+        /// Save the current configurations in a csv file.
         /// </summary>
         public void saveConfig()
         {
@@ -87,7 +98,7 @@ namespace BPM_Piston_Pump
         }
 
         /// <summary>
-        /// Load a configuration via a csv file
+        /// Load a configuration via a csv file.
         /// </summary>
         public void loadConfig()
         { var lines = File.ReadLines("config.csv");
@@ -99,15 +110,38 @@ namespace BPM_Piston_Pump
             }
         }
 
+        /// <summary>
+        /// Evaluates the parameters of the pressure sensor y=k*x+d. k = slope, d = intercept.
+        /// </summary>
         public void InitPressureSensor()
         {
             k = (float.Parse(param["hg_high_end"]) - float.Parse(param["hg_low_end"])) / (float.Parse(param["volt_high_end"]) - float.Parse(param["volt_low_end"]));
             d = float.Parse(param["hg_high_end"]) - k * float.Parse(param["volt_high_end"]);
         }
 
+        /// <summary>
+        /// Calculates the mmHg value of a given voltage.
+        /// </summary>
+        /// <param name="voltage">Voltage from the pressure sensor</param>
+        /// <returns>Corresponding mmHg value.</returns>
         public float VoltageToMmHg(float voltage)
         {
             return k * voltage + d;
+        }
+
+        /// <summary>
+        /// Calculates the mmHg value of a given range of voltages.
+        /// </summary>
+        /// <param name="voltage">Voltages from the pressure sensor</param>
+        /// <returns>Corresponding mmHg values.</returns>
+        public float[] VoltageToMmHg(float[] voltage)
+        {
+            float[] mmHg = new float[voltage.Length];
+            for (int i = 0; i<voltage.Length; i++)
+            {
+                mmHg[i] = k * voltage[i] + d;
+            }
+            return mmHg;
         }
     }
 }

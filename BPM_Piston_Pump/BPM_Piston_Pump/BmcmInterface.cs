@@ -19,7 +19,10 @@ namespace BmcmInterface
         int values_per_run;
         int how_many_runs;
 
-
+        /// <summary>
+        /// Opens a connection to the interface.
+        /// </summary>
+        /// <param name="name">Name of the bmcm interface.</param>
         public BmcmInterface(string name)
         {
             // open connection to the interface
