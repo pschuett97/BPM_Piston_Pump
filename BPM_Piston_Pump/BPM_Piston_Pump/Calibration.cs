@@ -148,6 +148,7 @@ namespace BPM_Piston_Pump
             uint run_id = 0; // counts how many runs there were
             float analogOutVoltage = float.Parse(config.param["v_inflate_ao"]);
             bool success = false;
+            int increment = (int)(100 * numStepSize.Value / 3 - 1);
 
             workerCalibrateSpeed.ReportProgress((int)run_id);
 
@@ -185,7 +186,7 @@ namespace BPM_Piston_Pump
                     }
                     inter.set_analog_output(analogOutVoltage);
                 }
-                workerCalibrateSpeed.ReportProgress((int)(run_id * 3 / numStepSize.Value) + 1);
+                workerCalibrateSpeed.ReportProgress((int)run_id * increment);
 
                 if (run_id > 3 / numStepSize.Value)
                 {
