@@ -14,12 +14,16 @@ namespace BPM_Piston_Pump
     {
         AppConfig config;
         List<Measurement> data;
+        List<float> data_period;
         private PeriodicTimer timer = null; // timer that runs on a different thread
         public BmcmInterface.BmcmInterface inter; // connection to the bmcm interface
         public uint run_id = 0; // counts how many runs there were
         public bool dir = true;
         public float triggerTime = -1;
         public bool triggered = false;
+
+        FilterButterworth HighPass;
+        FilterButterworth LowPass;
 
         public readonly struct Measurement
         {
@@ -44,8 +48,10 @@ namespace BPM_Piston_Pump
             txtLogName.Text = config.param["log_file_name"];
             numStartPressure.Value = int.Parse(config.param["start_pressure"]);
             data = new List<Measurement>();
+            data_period = new List<float>();
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             config.InitPressureSensor();
+            HighPass = new FilterButterworth((float)2.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 10);
         }
 
         private void rdoNormalMode_CheckedChanged(object sender, EventArgs e)
@@ -80,6 +86,8 @@ namespace BPM_Piston_Pump
         {
             btnStop.Visible = true;
             btnTrigger.Visible = true;
+
+
 
             // ToDo
 
@@ -118,6 +126,7 @@ namespace BPM_Piston_Pump
                     triggered = false;
                 }
                 data.Add(new Measurement(values, time, this.dir));
+                data_period.AddRange(values);
                 DataAnalysis();
             }
         }
@@ -160,7 +169,7 @@ namespace BPM_Piston_Pump
 
         private void btnTrigger_Click(object sender, EventArgs e)
         {
-            btnStop.Visible = false;
+            btnTrigger.Visible = false;
             triggered = true;
         }
     }
