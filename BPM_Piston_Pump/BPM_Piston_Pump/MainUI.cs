@@ -97,6 +97,16 @@ namespace BPM_Piston_Pump
         {
             btnHelp.BackColor = ColorTranslator.FromHtml("#0B070B");
         }
+
+        private void btnAnalysis_MouseEnter(object sender, EventArgs e)
+        {
+            btnAnalysis.BackColor = ColorTranslator.FromHtml("#1B171B");
+        }
+
+        private void btnAnalysis_MouseLeave(object sender, EventArgs e)
+        {
+            btnAnalysis.BackColor = ColorTranslator.FromHtml("#0B070B");
+        }
         #endregion
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -112,5 +122,12 @@ namespace BPM_Piston_Pump
             else
                 btnDeveloper.Visible = false;
         }
+
+        private void btnAnalysis_Click(object sender, EventArgs e)
+        {
+            openChildForm(new Analysis(config));
+        }
+
+
     }
 }

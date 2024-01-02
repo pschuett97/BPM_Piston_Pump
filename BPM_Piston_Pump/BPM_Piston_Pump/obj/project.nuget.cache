@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "GVGAQ43p6wfPVhc3PAdsihUA4L1fhbyD8lAXnFo+WJL0ShTucae2m5iPT2l4lArtmxdjWL7gAz3pmDRmve4YLg==",
+  "dgSpecHash": "HmrFs/6iV6b6Uxao/W1u0Jhf7TF3ncmUBiFzgSNi/lYmvALoEEX6QZpfSxv3AaupSJ36F+kWfSjR9+4gKMVvHw==",
   "success": true,
   "projectFilePath": "C:\\Data\\BioMed\\Msc\\Masterarbeit\\Code\\BPM_Piston_Pump\\BPM_Piston_Pump\\BPM_Piston_Pump.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\pschu\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.4\\microsoft.netcore.platforms.3.1.4.nupkg.sha512",
+    "C:\\Users\\pschu\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\pschu\\.nuget\\packages\\scottplot\\4.1.70\\scottplot.4.1.70.nupkg.sha512",
+    "C:\\Users\\pschu\\.nuget\\packages\\scottplot.winforms\\4.1.70\\scottplot.winforms.4.1.70.nupkg.sha512",
+    "C:\\Users\\pschu\\.nuget\\packages\\system.drawing.common\\4.7.2\\system.drawing.common.4.7.2.nupkg.sha512",
+    "C:\\Users\\pschu\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"
+  ],
   "logs": []
 }

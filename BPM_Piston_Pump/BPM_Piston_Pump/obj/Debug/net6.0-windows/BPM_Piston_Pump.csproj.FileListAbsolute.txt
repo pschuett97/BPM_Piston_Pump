@@ -19,3 +19,7 @@ C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\obj\Debug\n
 C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\obj\Debug\net6.0-windows\BPM_Piston_Pump.Calibration.resources
 C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\obj\Debug\net6.0-windows\BPM_Piston_Pump.Measure.resources
 C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\obj\Debug\net6.0-windows\BPM_Piston_Pump.Developer.resources
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\obj\Debug\net6.0-windows\BPM_Piston_Pump.Analysis.resources
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Debug\net6.0-windows\ScottPlot.dll
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Debug\net6.0-windows\ScottPlot.WinForms.dll
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\obj\Debug\net6.0-windows\BPM_Piston_Pump.csproj.CopyComplete

@@ -32,11 +32,12 @@
             tableLayoutPanel1 = new TableLayoutPanel();
             panelSideMenu = new Panel();
             tableLayoutPanel2 = new TableLayoutPanel();
-            btnHelp = new Button();
             btnMeasure = new Button();
             btnCalibration = new Button();
-            btnDeveloper = new Button();
             pictureBox1 = new PictureBox();
+            btnHelp = new Button();
+            btnDeveloper = new Button();
+            btnAnalysis = new Button();
             panelChildForm = new Panel();
             checkDeveloper = new CheckBox();
             linkLabel1 = new LinkLabel();
@@ -83,45 +84,27 @@
             // 
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Controls.Add(btnHelp, 0, 5);
             tableLayoutPanel2.Controls.Add(btnMeasure, 0, 1);
             tableLayoutPanel2.Controls.Add(btnCalibration, 0, 2);
-            tableLayoutPanel2.Controls.Add(btnDeveloper, 0, 3);
             tableLayoutPanel2.Controls.Add(pictureBox1, 0, 0);
+            tableLayoutPanel2.Controls.Add(btnHelp, 0, 6);
+            tableLayoutPanel2.Controls.Add(btnDeveloper, 0, 4);
+            tableLayoutPanel2.Controls.Add(btnAnalysis, 0, 3);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(0, 0);
             tableLayoutPanel2.Margin = new Padding(2);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 6;
+            tableLayoutPanel2.RowCount = 7;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 15F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 35F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.Size = new Size(159, 450);
             tableLayoutPanel2.TabIndex = 5;
-            // 
-            // btnHelp
-            // 
-            btnHelp.Cursor = Cursors.Help;
-            btnHelp.Dock = DockStyle.Fill;
-            btnHelp.FlatAppearance.BorderSize = 0;
-            btnHelp.FlatStyle = FlatStyle.Flat;
-            btnHelp.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            btnHelp.ForeColor = SystemColors.ControlLightLight;
-            btnHelp.Location = new Point(2, 406);
-            btnHelp.Margin = new Padding(2);
-            btnHelp.Name = "btnHelp";
-            btnHelp.Padding = new Padding(4, 0, 0, 0);
-            btnHelp.Size = new Size(155, 42);
-            btnHelp.TabIndex = 4;
-            btnHelp.Text = "Help";
-            btnHelp.TextAlign = ContentAlignment.MiddleLeft;
-            btnHelp.UseVisualStyleBackColor = true;
-            btnHelp.Click += btnHelp_Click;
-            btnHelp.MouseEnter += btnHelp_MouseEnter;
-            btnHelp.MouseLeave += btnHelp_MouseLeave;
             // 
             // btnMeasure
             // 
@@ -163,6 +146,39 @@
             btnCalibration.MouseEnter += btnCalibration_MouseEnter;
             btnCalibration.MouseLeave += btnCalibration_MouseLeave;
             // 
+            // pictureBox1
+            // 
+            pictureBox1.Dock = DockStyle.Fill;
+            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new Point(8, 4);
+            pictureBox1.Margin = new Padding(8, 4, 8, 4);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(143, 59);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.TabIndex = 5;
+            pictureBox1.TabStop = false;
+            // 
+            // btnHelp
+            // 
+            btnHelp.Cursor = Cursors.Help;
+            btnHelp.Dock = DockStyle.Fill;
+            btnHelp.FlatAppearance.BorderSize = 0;
+            btnHelp.FlatStyle = FlatStyle.Flat;
+            btnHelp.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            btnHelp.ForeColor = SystemColors.ControlLightLight;
+            btnHelp.Location = new Point(2, 406);
+            btnHelp.Margin = new Padding(2);
+            btnHelp.Name = "btnHelp";
+            btnHelp.Padding = new Padding(4, 0, 0, 0);
+            btnHelp.Size = new Size(155, 42);
+            btnHelp.TabIndex = 4;
+            btnHelp.Text = "Help";
+            btnHelp.TextAlign = ContentAlignment.MiddleLeft;
+            btnHelp.UseVisualStyleBackColor = true;
+            btnHelp.Click += btnHelp_Click;
+            btnHelp.MouseEnter += btnHelp_MouseEnter;
+            btnHelp.MouseLeave += btnHelp_MouseLeave;
+            // 
             // btnDeveloper
             // 
             btnDeveloper.Dock = DockStyle.Fill;
@@ -170,7 +186,7 @@
             btnDeveloper.FlatStyle = FlatStyle.Flat;
             btnDeveloper.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             btnDeveloper.ForeColor = SystemColors.ControlLightLight;
-            btnDeveloper.Location = new Point(2, 159);
+            btnDeveloper.Location = new Point(2, 204);
             btnDeveloper.Margin = new Padding(2);
             btnDeveloper.Name = "btnDeveloper";
             btnDeveloper.Padding = new Padding(4, 0, 0, 0);
@@ -183,17 +199,25 @@
             btnDeveloper.MouseEnter += btnDeveloper_MouseEnter;
             btnDeveloper.MouseLeave += btnDeveloper_MouseLeave;
             // 
-            // pictureBox1
+            // btnAnalysis
             // 
-            pictureBox1.Dock = DockStyle.Fill;
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(8, 4);
-            pictureBox1.Margin = new Padding(8, 4, 8, 4);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(143, 59);
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.TabIndex = 5;
-            pictureBox1.TabStop = false;
+            btnAnalysis.Dock = DockStyle.Fill;
+            btnAnalysis.FlatAppearance.BorderSize = 0;
+            btnAnalysis.FlatStyle = FlatStyle.Flat;
+            btnAnalysis.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            btnAnalysis.ForeColor = SystemColors.ControlLightLight;
+            btnAnalysis.Location = new Point(2, 159);
+            btnAnalysis.Margin = new Padding(2);
+            btnAnalysis.Name = "btnAnalysis";
+            btnAnalysis.Padding = new Padding(4, 0, 0, 0);
+            btnAnalysis.Size = new Size(155, 41);
+            btnAnalysis.TabIndex = 7;
+            btnAnalysis.Text = "Analysis";
+            btnAnalysis.TextAlign = ContentAlignment.MiddleLeft;
+            btnAnalysis.UseVisualStyleBackColor = true;
+            btnAnalysis.Click += btnAnalysis_Click;
+            btnAnalysis.MouseEnter += btnAnalysis_MouseEnter;
+            btnAnalysis.MouseLeave += btnAnalysis_MouseLeave;
             // 
             // panelChildForm
             // 
@@ -332,5 +356,6 @@
         private Label label4;
         private Label label3;
         private CheckBox checkDeveloper;
+        private Button btnAnalysis;
     }
 }
