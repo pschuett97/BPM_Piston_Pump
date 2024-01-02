@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ScottPlot.MarkerShapes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,12 @@ namespace BPM_Piston_Pump
         AppConfig config;
         List<Measurement> data;
         List<float> data_period;
+        List<float> data_work;
+        List<Peaks> maximas;
+        List<double> hist;
+        int cnt = 0;
+        int max_cnt = 0;
+        bool ascending = false;
         private PeriodicTimer timer = null; // timer that runs on a different thread
         public BmcmInterface.BmcmInterface inter; // connection to the bmcm interface
         public uint run_id = 0; // counts how many runs there were
@@ -39,6 +46,17 @@ namespace BPM_Piston_Pump
             public bool Direction { get; init; }
         }
 
+        public struct Peaks
+        {       
+            public Peaks(double volt, int pos)
+            {
+                Volt = volt;
+                Pos = pos;
+            }
+            public double Volt { get; set; }
+            public int Pos { get; set; }
+        }
+
 
         public Measure(AppConfig config)
         {
@@ -49,6 +67,9 @@ namespace BPM_Piston_Pump
             numStartPressure.Value = int.Parse(config.param["start_pressure"]);
             data = new List<Measurement>();
             data_period = new List<float>();
+            data_work = new List<float>();
+            maximas = new List<Peaks>();
+            hist = new List<double>();
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             config.InitPressureSensor();
             HighPass = new FilterButterworth((float)2.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 10);
@@ -126,6 +147,7 @@ namespace BPM_Piston_Pump
                     triggered = false;
                 }
                 data.Add(new Measurement(values, time, this.dir));
+                data_period.Clear();
                 data_period.AddRange(values);
                 DataAnalysis();
             }
@@ -152,12 +174,60 @@ namespace BPM_Piston_Pump
 
         private void DataAnalysis()
         {
+                       
+            //MovingAverage avg = new MovingAverage();
+
             // ToDo
+            foreach (float f in data_period)
+            {
+                HighPass.Update(f);
+                //avg.ComputeAverage(HighPass.Value);
+                //filtered.Add(avg.Average);
+                float d = HighPass.Value;
+
+                // peak detection
+                if (cnt > 3000)
+                {
+                    if (hist.Count < 100)
+                    {
+                        hist.Add(d);
+                    }
+                    else
+                    {
+                        if (hist.Max() < d && !ascending)
+                        {
+                            ascending = true;
+                        }
+                        if (d > hist.Max())
+                        {
+                            max_cnt = 0;
+                        }
+                        if (max_cnt > 99)
+                        {
+                            maximas.Add(new Peaks(hist.First(), cnt));
+                            max_cnt = 0;
+                            ascending = false;
+
+                        }
+                        if (ascending)
+                        {
+                            max_cnt++;
+                        }
+                        hist.RemoveAt(0);
+                        hist.Add(d);
+                    }
+                }
+                cnt++;
+            }
+
+            // look at the maximas = peaks
+            // if the global maximum of the maximas did not change for some time declare this to be the MAP
+
 
             // Calculate Blood Preassure Parameters
 
             // Control Piston Pump
-            
+
             // Define Pump up and Down
 
         }

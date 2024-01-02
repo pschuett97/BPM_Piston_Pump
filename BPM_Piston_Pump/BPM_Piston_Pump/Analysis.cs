@@ -138,9 +138,7 @@ namespace BPM_Piston_Pump
                         hist.RemoveAt(0);
                         hist.Add(d);
 
-
                     }
-
                 }
                 else
                 {
