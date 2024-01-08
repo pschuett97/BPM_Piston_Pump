@@ -19,6 +19,7 @@ namespace BPM_Piston_Pump
         List<float> data_work;
         List<Peaks> maximas;
         List<double> hist;
+        List<float> simulation_data;
         int cnt = 0;
         int max_cnt = 0;
         bool ascending = false;
@@ -47,7 +48,7 @@ namespace BPM_Piston_Pump
         }
 
         public struct Peaks
-        {       
+        {
             public Peaks(double volt, int pos)
             {
                 Volt = volt;
@@ -70,6 +71,7 @@ namespace BPM_Piston_Pump
             data_work = new List<float>();
             maximas = new List<Peaks>();
             hist = new List<double>();
+            simulation_data = new List<float>();
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             config.InitPressureSensor();
             HighPass = new FilterButterworth((float)2.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 10);
@@ -124,7 +126,7 @@ namespace BPM_Piston_Pump
             inter.set_digital_output_high(1); // ToDo change!!
             inter.set_digital_output_high(2);
 
-            
+
 
 
             // Start Measurement
@@ -136,9 +138,27 @@ namespace BPM_Piston_Pump
 
         async void RepeatForEver()
         {
+            using (StreamReader file = new StreamReader("data_2.txt"))
+            {
+                string ln;
+                while ((ln = file.ReadLine()) != null)
+                {
+                    simulation_data.Add(float.Parse(ln));
+                }
+                file.Close();
+            }
             while (await timer.WaitForNextTickAsync())
             {
-                float[] values = inter.get_values(run_id);
+                float[] values;
+                if (checkSimulation.Checked)
+                {
+                    values = simulation_data.GetRange((int)run_id*250, 250).ToArray();
+                }
+                else
+                {
+                    values = inter.get_values(run_id);
+                }
+                
                 float time = run_id * int.Parse(config.param["values_per_run"]) / int.Parse(config.param["sample_rate"]);
                 run_id++;
                 if (triggered)
@@ -174,7 +194,7 @@ namespace BPM_Piston_Pump
 
         private void DataAnalysis()
         {
-                       
+
             //MovingAverage avg = new MovingAverage();
 
             // ToDo
@@ -218,6 +238,11 @@ namespace BPM_Piston_Pump
                     }
                 }
                 cnt++;
+            }
+
+            if (cnt>10000)
+            {
+                lblMABP.Text = maximas.Last().Pos.ToString();
             }
 
             // look at the maximas = peaks

@@ -50,6 +50,7 @@
             lblMABP = new Label();
             lblDiastolic = new Label();
             lblSystolic = new Label();
+            checkSimulation = new CheckBox();
             panel1.SuspendLayout();
             tblLayoutMeasure.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -98,6 +99,7 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(checkSimulation);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(rdoDynamicMode);
             panel1.Controls.Add(rdoNormalMode);
@@ -322,6 +324,17 @@
             lblSystolic.TabIndex = 0;
             lblSystolic.Text = "Systolic: ";
             // 
+            // checkSimulation
+            // 
+            checkSimulation.AutoSize = true;
+            checkSimulation.ForeColor = SystemColors.ControlLightLight;
+            checkSimulation.Location = new Point(229, 37);
+            checkSimulation.Name = "checkSimulation";
+            checkSimulation.Size = new Size(83, 19);
+            checkSimulation.TabIndex = 3;
+            checkSimulation.Text = "Simulation";
+            checkSimulation.UseVisualStyleBackColor = true;
+            // 
             // Measure
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -370,5 +383,6 @@
         private Label lblHR;
         private Label lblMABP;
         private Button btnTrigger;
+        private CheckBox checkSimulation;
     }
 }
