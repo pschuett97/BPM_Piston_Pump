@@ -57,6 +57,7 @@ namespace BPM_Piston_Pump
             current_max = 0;
             int cnt = 0;
             int max_cnt = 0;
+            int min_cnt = 0;
             bool ascending = false;
             List<double> maximas = new List<double>();
             MovingAverage avg = new MovingAverage();
@@ -94,9 +95,9 @@ namespace BPM_Piston_Pump
             foreach (float f in data)
             {
                 HighPass.Update(f);
-                //avg.ComputeAverage(HighPass.Value);
-                //filtered.Add(avg.Average);
-                filtered.Add(HighPass.Value);
+                avg.ComputeAverage(HighPass.Value); //
+                filtered.Add(avg.Average);  //
+                //filtered.Add(HighPass.Value);
             }
 
             // peak detection
@@ -110,21 +111,32 @@ namespace BPM_Piston_Pump
                     }
                     else
                     {
-                        if (hist.Max() < d && !ascending)
+                        /*
+                        if (hist.Max() < d && !ascending) // obsolete - nur bei maximum only detection
                         {
                             ascending = true;
                         }
+                        */
                         if (d > hist.Max())
                         {
                             max_cnt = 0;
                         }
+                        if (d < hist.Min())
+                        {
+                            min_cnt = 0;
+                        }
                         if (max_cnt > 99)
                         {
                             peaks.Add(hist.First());
-                            //peaks.Add(1);
-                            max_cnt = 0;
+                            //peaks.Add(1);                                
                             ascending = false;
-
+                            max_cnt = 0;
+                        }
+                        else if (min_cnt > 99)
+                        {
+                            peaks.Add(hist.First());
+                            min_cnt = 0;
+                            ascending = true;
                         }
                         else
                         {
@@ -135,9 +147,12 @@ namespace BPM_Piston_Pump
                         {
                             max_cnt++;
                         }
+                        else
+                        {
+                            min_cnt++;
+                        }
                         hist.RemoveAt(0);
                         hist.Add(d);
-
                     }
                 }
                 else

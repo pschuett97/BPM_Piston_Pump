@@ -240,7 +240,7 @@ namespace BPM_Piston_Pump
                 cnt++;
             }
 
-            if (cnt>10000)
+            if (cnt>10000) // debug only
             {
                 lblMABP.Text = maximas.Last().Pos.ToString();
             }
