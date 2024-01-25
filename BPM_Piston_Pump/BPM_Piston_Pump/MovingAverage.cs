@@ -9,7 +9,7 @@ namespace BPM_Piston_Pump
     public class MovingAverage
     {
         private Queue<float> samples = new Queue<float>();
-        private int windowSize = 10;
+        public int windowSize = 10;
         private float sampleAccumulator;
         public float Average { get; private set; }
 

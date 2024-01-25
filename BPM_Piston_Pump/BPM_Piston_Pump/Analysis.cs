@@ -15,12 +15,18 @@ namespace BPM_Piston_Pump
     {
         AppConfig config; // configuration
         FilterButterworth HighPass;
+        FilterButterworth LowPass;
         List<double> data;
         List<double> filtered;
         List<double> peaks;
+        List<double> envelop;
+        List<double> env_avg;
+        List<double> MABPs;
         ScottPlot.Plottable.SignalPlot plt_data;
         ScottPlot.Plottable.SignalPlot plt_filtered;
         ScottPlot.Plottable.SignalPlot plt_peaks;
+        ScottPlot.Plottable.SignalPlot plt_envelop;
+        ScottPlot.Plottable.SignalPlot plt_lowpass;
         double[] x;
         double[] hist;
         double current_max;
@@ -33,7 +39,11 @@ namespace BPM_Piston_Pump
             data = new List<double>();
             filtered = new List<double>();
             peaks = new List<double>();
+            envelop = new List<double>();
+            env_avg = new List<double>();
+            MABPs = new List<double>();
             HighPass = new FilterButterworth((float)0.5, 500, FilterButterworth.PassType.Highpass, 1);
+            LowPass = new FilterButterworth((float)0.05, 500, FilterButterworth.PassType.Lowpass, 1);
 
             plotData.Plot.XAxis.Label("Time (seconds)");
             plotData.Plot.YAxis.Label("Voltage (V)");
@@ -47,6 +57,8 @@ namespace BPM_Piston_Pump
             data.Clear();
             filtered.Clear();
             peaks.Clear();
+            envelop.Clear();
+            env_avg.Clear();
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = config.param["log_file_path"];
@@ -73,7 +85,7 @@ namespace BPM_Piston_Pump
                         {
                             data.Add(float.Parse(ln));
                         }
-                    }                    
+                    }
                     else if (ofd.FileName.Split(".").Last() == "csv")
                     {
                         string ln;
@@ -81,10 +93,10 @@ namespace BPM_Piston_Pump
                         {
                             data.Add(float.Parse(ln.Split(";")[0]));
                         }
-                    }                    
+                    }
                     else
                     {
-                        MessageBox.Show("Cannot read file: " +  ofd.FileName);
+                        MessageBox.Show("Cannot read file: " + ofd.FileName);
                         return;
                     }
                     file.Close();
@@ -162,9 +174,164 @@ namespace BPM_Piston_Pump
                 cnt++;
             }
 
+            // calculate envelop
+            double save = 0;
+            bool artefact = false;
+
+            for (int i = 0; i < peaks.Count; i++)
+            {
+                if (peaks[i] < 0)
+                {
+                    if (artefact)
+                    {
+                        envelop.Add(peaks[i] * (-1)); // hier kein save addiert weil der Peak sonst überproportional groß ist
+                        save = 0;
+                        artefact = false;
+                    }
+                    else
+                    {
+                        save = peaks[i];
+                        envelop.Add(0);
+                        artefact = true;
+                    }
+
+                }
+                else if (peaks[i] > 0)
+                {
+                    if (!artefact) // ist auch Artefakt
+                    {
+                        save = -peaks[i];
+                        envelop.Add(0);
+                        artefact = true;
+                    }
+                    else
+                    {
+                        envelop.Add(peaks[i] - save);
+                        save = 0;
+                        artefact = false;
+                    }
+                }
+                else
+                {
+                    envelop.Add(0);
+                }
+            }
+
+            double x0 = 0, x1 = 0, y0 = 0, y1 = 0;
+            bool rdy = false;
+
+            for (int i = 0; i < envelop.Count; i++)
+            {
+                if (envelop[i] > 0 && rdy)
+                {
+                    x1 = i;
+                    y1 = envelop[i];
+
+                    for (int j = 1; j < (x1 - x0); j++)
+                    {
+                        envelop[i - j] = y0 + (i - j - x0) * (y1 - y0) / (x1 - x0);
+                    }
+                    x0 = x1;
+                    y0 = y1;
+                }
+                else if (envelop[i] > 0 && !rdy)
+                {
+                    x0 = i;
+                    y0 = envelop[i];
+                    rdy = true;
+                }
+            }
+
+
+            //MovingAverage avg2 = new MovingAverage();
+            //avg2.windowSize = 1000;
+
+            foreach (float env in envelop)
+            {
+                LowPass.Update(env);
+                env_avg.Add(LowPass.Value);
+                //avg2.ComputeAverage(env); 
+                //env_avg.Add(avg2.Average);
+            }
+            env_avg.RemoveRange(0, (int)4.2 * 500); // Zeitkorrektur, empirisch erhoben
+
+
+            // Another peak detection:
+
+            hist.Clear();
+            cnt = 0;
+            ascending = false;
+            double threshold = env_avg.Max() * 0.60;
+
+            foreach (double d in env_avg)
+            {
+                if (hist.Count < 1000)
+                {
+                    hist.Add(d);
+                }
+                else
+                {
+                    double max = hist.Max();
+                    if (max < d && !ascending)
+                    {
+                        ascending = true;
+                    }
+                    if (d > max)
+                    {
+                        max_cnt = 0;
+                    }
+                    if (max_cnt > 999)
+                    {
+                        if (max > threshold)
+                        {
+                            MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000]));
+                            for (int i = 1; i < cnt; i++)
+                            {
+                                if (env_avg[cnt - 1000 - i] < 0.601 * max)
+                                {
+                                    MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 - i]));
+                                    break;
+                                }
+                            }
+                            for (int i = 1; i < cnt; i++)
+                            {
+                                if (env_avg[cnt - 1000 + i] < 0.601 * max)
+                                {
+                                    MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 + i]));
+                                    break;
+                                }
+                            }
+                        }
+                        ascending = false;
+                        max_cnt = 0;
+                    }
+                    if (ascending)
+                    {
+                        max_cnt++;
+                    }
+                    hist.RemoveAt(0);
+                    hist.Add(d);
+
+                }
+                cnt++;
+            }
+
+            cnt = 1;
+            foreach (double d in MABPs)
+            {                
+                txtBP.Text += string.Format("{0:N1}", d);
+                if (cnt % 3 == 0) txtBP.Text += "\r\n";
+                else txtBP.Text += " - ";
+                cnt++;
+            }
+
+
+
             checkSignal.Checked = false;
-            checkHighpass.Checked = false;           
+            checkHighpass.Checked = false;
             checkPeaks.Checked = false;
+            checkEnvelop.Checked = false;
+            checkLowpass.Checked = false;
             checkSignal.Checked = true;
         }
 
@@ -203,6 +370,37 @@ namespace BPM_Piston_Pump
             else
             {
                 plotData.Plot.Remove(plt_peaks);
+            }
+            plotData.Refresh();
+        }
+
+        private void plotData_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkEnvelop_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkEnvelop.Checked)
+            {
+                plt_envelop = plotData.Plot.AddSignal(envelop.ToArray(), sampleRate: 500);
+            }
+            else
+            {
+                plotData.Plot.Remove(plt_envelop);
+            }
+            plotData.Refresh();
+        }
+
+        private void checkLowpass_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkLowpass.Checked)
+            {
+                plt_lowpass = plotData.Plot.AddSignal(env_avg.ToArray(), sampleRate: 500);
+            }
+            else
+            {
+                plotData.Plot.Remove(plt_lowpass);
             }
             plotData.Refresh();
         }

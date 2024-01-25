@@ -38,6 +38,9 @@
             checkSignal = new CheckBox();
             checkHighpass = new CheckBox();
             checkPeaks = new CheckBox();
+            checkEnvelop = new CheckBox();
+            checkLowpass = new CheckBox();
+            txtBP = new TextBox();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
@@ -52,6 +55,7 @@
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 1);
             tableLayoutPanel1.Controls.Add(plotData, 0, 2);
             tableLayoutPanel1.Controls.Add(flowLayoutPanel2, 1, 1);
+            tableLayoutPanel1.Controls.Add(txtBP, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -122,6 +126,8 @@
             flowLayoutPanel2.Controls.Add(checkSignal);
             flowLayoutPanel2.Controls.Add(checkHighpass);
             flowLayoutPanel2.Controls.Add(checkPeaks);
+            flowLayoutPanel2.Controls.Add(checkEnvelop);
+            flowLayoutPanel2.Controls.Add(checkLowpass);
             flowLayoutPanel2.Dock = DockStyle.Fill;
             flowLayoutPanel2.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanel2.Location = new Point(377, 43);
@@ -165,6 +171,39 @@
             checkPeaks.UseVisualStyleBackColor = true;
             checkPeaks.CheckedChanged += checkPeaks_CheckedChanged;
             // 
+            // checkEnvelop
+            // 
+            checkEnvelop.AutoSize = true;
+            checkEnvelop.ForeColor = SystemColors.ControlLightLight;
+            checkEnvelop.Location = new Point(84, 28);
+            checkEnvelop.Name = "checkEnvelop";
+            checkEnvelop.Size = new Size(68, 19);
+            checkEnvelop.TabIndex = 3;
+            checkEnvelop.Text = "Envelop";
+            checkEnvelop.UseVisualStyleBackColor = true;
+            checkEnvelop.CheckedChanged += checkEnvelop_CheckedChanged;
+            // 
+            // checkLowpass
+            // 
+            checkLowpass.AutoSize = true;
+            checkLowpass.ForeColor = SystemColors.ControlLightLight;
+            checkLowpass.Location = new Point(158, 3);
+            checkLowpass.Name = "checkLowpass";
+            checkLowpass.Size = new Size(119, 19);
+            checkLowpass.TabIndex = 4;
+            checkLowpass.Text = "Lowpass/Average";
+            checkLowpass.UseVisualStyleBackColor = true;
+            checkLowpass.CheckedChanged += checkLowpass_CheckedChanged;
+            // 
+            // txtBP
+            // 
+            txtBP.Dock = DockStyle.Fill;
+            txtBP.Location = new Point(377, 3);
+            txtBP.Multiline = true;
+            txtBP.Name = "txtBP";
+            txtBP.Size = new Size(368, 34);
+            txtBP.TabIndex = 7;
+            // 
             // Analysis
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -195,5 +234,8 @@
         private CheckBox checkSignal;
         private CheckBox checkHighpass;
         private CheckBox checkPeaks;
+        private CheckBox checkEnvelop;
+        private CheckBox checkLowpass;
+        private TextBox txtBP;
     }
 }
