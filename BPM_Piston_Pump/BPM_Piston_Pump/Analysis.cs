@@ -318,7 +318,7 @@ namespace BPM_Piston_Pump
 
             cnt = 1;
             foreach (double d in MABPs)
-            {                
+            {
                 txtBP.Text += string.Format("{0:N1}", d);
                 if (cnt % 3 == 0) txtBP.Text += "\r\n";
                 else txtBP.Text += " - ";

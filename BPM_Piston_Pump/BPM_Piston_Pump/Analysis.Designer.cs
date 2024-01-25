@@ -198,9 +198,11 @@
             // txtBP
             // 
             txtBP.Dock = DockStyle.Fill;
+            txtBP.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             txtBP.Location = new Point(377, 3);
             txtBP.Multiline = true;
             txtBP.Name = "txtBP";
+            txtBP.ScrollBars = ScrollBars.Vertical;
             txtBP.Size = new Size(368, 34);
             txtBP.TabIndex = 7;
             // 
