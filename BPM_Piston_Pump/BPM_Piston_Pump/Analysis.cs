@@ -27,9 +27,6 @@ namespace BPM_Piston_Pump
         ScottPlot.Plottable.SignalPlot plt_peaks;
         ScottPlot.Plottable.SignalPlot plt_envelop;
         ScottPlot.Plottable.SignalPlot plt_lowpass;
-        double[] x;
-        double[] hist;
-        double current_max;
 
         public Analysis(AppConfig config)
         {
@@ -59,6 +56,13 @@ namespace BPM_Piston_Pump
             peaks.Clear();
             envelop.Clear();
             env_avg.Clear();
+            MABPs.Clear();
+            checkSignal.Checked = false;
+            checkHighpass.Checked = false;
+            checkPeaks.Checked = false;
+            checkEnvelop.Checked = false;
+            checkLowpass.Checked = false;
+            txtBP.Text = "";
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = config.param["log_file_path"];
@@ -66,7 +70,6 @@ namespace BPM_Piston_Pump
             ofd.Filter = "txt files (*.txt)|*.txt|csv files (*.csv)|*.csv|All files (*.*)|*.*";
 
             List<double> hist = new List<double>();
-            current_max = 0;
             int cnt = 0;
             int max_cnt = 0;
             int min_cnt = 0;
