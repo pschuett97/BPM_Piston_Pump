@@ -30,9 +30,6 @@
         {
             tableLayoutPanel1 = new TableLayoutPanel();
             label1 = new Label();
-            flowLayoutPanel1 = new FlowLayoutPanel();
-            label2 = new Label();
-            btnGo = new Button();
             plotData = new ScottPlot.FormsPlot();
             flowLayoutPanel2 = new FlowLayoutPanel();
             checkSignal = new CheckBox();
@@ -41,9 +38,16 @@
             checkEnvelop = new CheckBox();
             checkLowpass = new CheckBox();
             txtBP = new TextBox();
+            flowLayoutPanel1 = new FlowLayoutPanel();
+            label2 = new Label();
+            btnGo = new Button();
+            butXLarge = new Button();
+            butXSmall = new Button();
+            butYLarge = new Button();
+            butYSmall = new Button();
             tableLayoutPanel1.SuspendLayout();
-            flowLayoutPanel1.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
+            flowLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -52,16 +56,16 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Controls.Add(label1, 0, 0);
-            tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 1);
             tableLayoutPanel1.Controls.Add(plotData, 0, 2);
             tableLayoutPanel1.Controls.Add(flowLayoutPanel2, 1, 1);
             tableLayoutPanel1.Controls.Add(txtBP, 1, 0);
+            tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Size = new Size(748, 583);
             tableLayoutPanel1.TabIndex = 0;
@@ -77,48 +81,16 @@
             label1.TabIndex = 1;
             label1.Text = "Analysis";
             // 
-            // flowLayoutPanel1
-            // 
-            flowLayoutPanel1.Controls.Add(label2);
-            flowLayoutPanel1.Controls.Add(btnGo);
-            flowLayoutPanel1.Dock = DockStyle.Fill;
-            flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
-            flowLayoutPanel1.Location = new Point(3, 43);
-            flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(368, 54);
-            flowLayoutPanel1.TabIndex = 4;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.ForeColor = SystemColors.ControlLightLight;
-            label2.Location = new Point(3, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(166, 15);
-            label2.TabIndex = 2;
-            label2.Text = "Choose data and start analysis";
-            // 
-            // btnGo
-            // 
-            btnGo.FlatStyle = FlatStyle.Flat;
-            btnGo.ForeColor = SystemColors.ControlLightLight;
-            btnGo.Location = new Point(3, 18);
-            btnGo.Name = "btnGo";
-            btnGo.Size = new Size(166, 30);
-            btnGo.TabIndex = 3;
-            btnGo.Text = "Go";
-            btnGo.UseVisualStyleBackColor = true;
-            btnGo.Click += btnGo_Click;
-            // 
             // plotData
             // 
             tableLayoutPanel1.SetColumnSpan(plotData, 2);
             plotData.Dock = DockStyle.Fill;
-            plotData.ForeColor = SystemColors.ControlText;
-            plotData.Location = new Point(4, 103);
-            plotData.Margin = new Padding(4, 3, 4, 3);
+            plotData.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
+            plotData.ForeColor = SystemColors.ControlLightLight;
+            plotData.Location = new Point(5, 114);
+            plotData.Margin = new Padding(5, 4, 5, 4);
             plotData.Name = "plotData";
-            plotData.Size = new Size(740, 477);
+            plotData.Size = new Size(738, 465);
             plotData.TabIndex = 0;
             // 
             // flowLayoutPanel2
@@ -132,7 +104,7 @@
             flowLayoutPanel2.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanel2.Location = new Point(377, 43);
             flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(368, 54);
+            flowLayoutPanel2.Size = new Size(368, 64);
             flowLayoutPanel2.TabIndex = 6;
             // 
             // checkSignal
@@ -197,14 +169,99 @@
             // 
             // txtBP
             // 
-            txtBP.Dock = DockStyle.Fill;
-            txtBP.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            txtBP.Dock = DockStyle.Left;
+            txtBP.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             txtBP.Location = new Point(377, 3);
             txtBP.Multiline = true;
             txtBP.Name = "txtBP";
             txtBP.ScrollBars = ScrollBars.Vertical;
-            txtBP.Size = new Size(368, 34);
+            txtBP.Size = new Size(258, 34);
             txtBP.TabIndex = 7;
+            // 
+            // flowLayoutPanel1
+            // 
+            flowLayoutPanel1.Controls.Add(label2);
+            flowLayoutPanel1.Controls.Add(btnGo);
+            flowLayoutPanel1.Controls.Add(butXLarge);
+            flowLayoutPanel1.Controls.Add(butXSmall);
+            flowLayoutPanel1.Controls.Add(butYLarge);
+            flowLayoutPanel1.Controls.Add(butYSmall);
+            flowLayoutPanel1.Dock = DockStyle.Fill;
+            flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
+            flowLayoutPanel1.Location = new Point(3, 43);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Size = new Size(368, 64);
+            flowLayoutPanel1.TabIndex = 8;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.ForeColor = SystemColors.ControlLightLight;
+            label2.Location = new Point(3, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(166, 15);
+            label2.TabIndex = 2;
+            label2.Text = "Choose data and start analysis";
+            // 
+            // btnGo
+            // 
+            btnGo.FlatStyle = FlatStyle.Flat;
+            btnGo.ForeColor = SystemColors.ControlLightLight;
+            btnGo.Location = new Point(3, 18);
+            btnGo.Name = "btnGo";
+            btnGo.Size = new Size(166, 30);
+            btnGo.TabIndex = 3;
+            btnGo.Text = "Go";
+            btnGo.UseVisualStyleBackColor = true;
+            btnGo.Click += btnGo_Click;
+            // 
+            // butXLarge
+            // 
+            butXLarge.FlatStyle = FlatStyle.Flat;
+            butXLarge.ForeColor = SystemColors.ControlLightLight;
+            butXLarge.Location = new Point(175, 3);
+            butXLarge.Name = "butXLarge";
+            butXLarge.Size = new Size(26, 26);
+            butXLarge.TabIndex = 7;
+            butXLarge.Text = "x";
+            butXLarge.UseVisualStyleBackColor = true;
+            butXLarge.Click += butXLarge_Click;
+            // 
+            // butXSmall
+            // 
+            butXSmall.FlatStyle = FlatStyle.Flat;
+            butXSmall.ForeColor = SystemColors.ControlLightLight;
+            butXSmall.Location = new Point(175, 35);
+            butXSmall.Name = "butXSmall";
+            butXSmall.Size = new Size(26, 26);
+            butXSmall.TabIndex = 4;
+            butXSmall.Text = "x";
+            butXSmall.UseVisualStyleBackColor = true;
+            butXSmall.Click += butXSmall_Click;
+            // 
+            // butYLarge
+            // 
+            butYLarge.FlatStyle = FlatStyle.Flat;
+            butYLarge.ForeColor = SystemColors.ControlLightLight;
+            butYLarge.Location = new Point(207, 3);
+            butYLarge.Name = "butYLarge";
+            butYLarge.Size = new Size(26, 26);
+            butYLarge.TabIndex = 6;
+            butYLarge.Text = "y";
+            butYLarge.UseVisualStyleBackColor = true;
+            butYLarge.Click += butYLarge_Click;
+            // 
+            // butYSmall
+            // 
+            butYSmall.FlatStyle = FlatStyle.Flat;
+            butYSmall.ForeColor = SystemColors.ControlLightLight;
+            butYSmall.Location = new Point(207, 35);
+            butYSmall.Name = "butYSmall";
+            butYSmall.Size = new Size(26, 26);
+            butYSmall.TabIndex = 5;
+            butYSmall.Text = "y";
+            butYSmall.UseVisualStyleBackColor = true;
+            butYSmall.Click += butYSmall_Click;
             // 
             // Analysis
             // 
@@ -217,10 +274,10 @@
             Text = "Form1";
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
-            flowLayoutPanel1.ResumeLayout(false);
-            flowLayoutPanel1.PerformLayout();
             flowLayoutPanel2.ResumeLayout(false);
             flowLayoutPanel2.PerformLayout();
+            flowLayoutPanel1.ResumeLayout(false);
+            flowLayoutPanel1.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -229,7 +286,6 @@
         private TableLayoutPanel tableLayoutPanel1;
         private ScottPlot.FormsPlot plotData;
         private Label label1;
-        private FlowLayoutPanel flowLayoutPanel1;
         private Label label2;
         private Button btnGo;
         private FlowLayoutPanel flowLayoutPanel2;
@@ -239,5 +295,10 @@
         private CheckBox checkEnvelop;
         private CheckBox checkLowpass;
         private TextBox txtBP;
+        private FlowLayoutPanel flowLayoutPanel1;
+        private Button butXSmall;
+        private Button butYSmall;
+        private Button butYLarge;
+        private Button butXLarge;
     }
 }

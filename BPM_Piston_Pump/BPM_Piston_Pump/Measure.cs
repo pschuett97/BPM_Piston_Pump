@@ -5,9 +5,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static BPM_Piston_Pump.Measure;
 
 namespace BPM_Piston_Pump
 {
@@ -18,11 +20,17 @@ namespace BPM_Piston_Pump
         List<float> data_period;
         List<float> data_work;
         List<Peaks> maximas;
-        List<double> hist;
+        List<float> hist;
         List<float> simulation_data;
+        List<float> envelop;
         int cnt = 0;
         int max_cnt = 0;
+        int min_cnt = 0;
         bool ascending = false;
+        bool artefact =  false;
+        bool first = true;
+        float save = 0;
+        float x0 = 0, x1 = 0, y0 = 0, y1 = 0;
         private PeriodicTimer timer = null; // timer that runs on a different thread
         public BmcmInterface.BmcmInterface inter; // connection to the bmcm interface
         public uint run_id = 0; // counts how many runs there were
@@ -49,13 +57,15 @@ namespace BPM_Piston_Pump
 
         public struct Peaks
         {
-            public Peaks(double volt, int pos)
+            public Peaks(float volt, int pos, bool dir)
             {
                 Volt = volt;
                 Pos = pos;
+                Dir = dir;
             }
-            public double Volt { get; set; }
+            public float Volt { get; set; }
             public int Pos { get; set; }
+            public bool Dir { get; init; }
         }
 
 
@@ -70,11 +80,13 @@ namespace BPM_Piston_Pump
             data_period = new List<float>();
             data_work = new List<float>();
             maximas = new List<Peaks>();
-            hist = new List<double>();
+            hist = new List<float>();
+            envelop = new List<float>();
             simulation_data = new List<float>();
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             config.InitPressureSensor();
-            HighPass = new FilterButterworth((float)2.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 10);
+            HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
+            LowPass = new FilterButterworth((float)0.05, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
         }
 
         private void rdoNormalMode_CheckedChanged(object sender, EventArgs e)
@@ -195,7 +207,7 @@ namespace BPM_Piston_Pump
         private void DataAnalysis()
         {
 
-            //MovingAverage avg = new MovingAverage();
+            //MovingAverage avg = new MovingAverage(); // rauf in Konstruktor!!!
 
             // ToDo
             foreach (float f in data_period)
@@ -205,8 +217,8 @@ namespace BPM_Piston_Pump
                 //filtered.Add(avg.Average);
                 float d = HighPass.Value;
 
-                // peak detection
-                if (cnt > 3000)
+                // peak detection and sum the minimum to corresponding maximum
+                if (cnt > 3000) // ersten Werte unzulässig wegen Einschwingverhalten des Filters
                 {
                     if (hist.Count < 100)
                     {
@@ -214,25 +226,52 @@ namespace BPM_Piston_Pump
                     }
                     else
                     {
-                        if (hist.Max() < d && !ascending)
-                        {
-                            ascending = true;
-                        }
-                        if (d > hist.Max())
-                        {
-                            max_cnt = 0;
-                        }
+                        if (d > hist.Max()) max_cnt = 0;
+                        if (d < hist.Min()) min_cnt = 0;
                         if (max_cnt > 99)
                         {
-                            maximas.Add(new Peaks(hist.First(), cnt));
+                            if (!artefact)
+                            {
+                                save = hist.First();
+                                //maximas.Add(new Peaks(0, cnt, dir));
+                                artefact = true;
+                            }
+                            else
+                            {
+                                maximas.Add(new Peaks(hist.First()-save, cnt, dir));
+                                linearPeakInterpolation();
+                                save = 0;
+                                artefact = false;
+                            }
                             max_cnt = 0;
                             ascending = false;
 
                         }
-                        if (ascending)
+                        else if (min_cnt > 99)
                         {
-                            max_cnt++;
+                            if (artefact)
+                            {
+                                maximas.Add(new Peaks(hist.First() * (-1), cnt, dir));
+                                linearPeakInterpolation();
+                                save = 0;
+                                artefact = false;
+                            }
+                            else
+                            {
+                                save = hist.First();
+                                //maximas.Add(new Peaks(0, cnt, dir));
+                                artefact = true;
+                            }
+                            min_cnt = 0;
+                            ascending = true;
                         }
+                        //else
+                        //{
+                        //    maximas.Add(new Peaks(0, cnt, dir));
+                        //}
+                        if (ascending) max_cnt++;                        
+                        else min_cnt++;
+
                         hist.RemoveAt(0);
                         hist.Add(d);
                     }
@@ -250,10 +289,37 @@ namespace BPM_Piston_Pump
 
 
             // Calculate Blood Preassure Parameters
+            // make time shift of envelop
+            // envelop.RemoveRange(0, (int)4.2 * 500); // Zeitkorrektur, empirisch erhoben, 500=sample-rate
+            // peak detection
 
             // Control Piston Pump
 
             // Define Pump up and Down
+
+        }
+
+        private void linearPeakInterpolation() // with low pass filtering
+        {
+            if (!first)
+            {
+                x1 = maximas.Last().Pos;
+                y1 = maximas.Last().Volt;
+
+                for (int i = (int)x0; i < x1; i++)
+                {
+                    LowPass.Update(y0 + (i - x0) * (y1 - y0) / (x1 - x0));
+                    envelop.Add(LowPass.Value);
+                }
+                x0 = x1;
+                y0 = y1;
+            }
+            else // first peak
+            {
+                first = false;
+                x0 = maximas.Last().Pos;
+                y0 = maximas.Last().Volt;
+            }
 
         }
 

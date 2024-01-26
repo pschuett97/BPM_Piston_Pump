@@ -328,8 +328,6 @@ namespace BPM_Piston_Pump
                 cnt++;
             }
 
-
-
             checkSignal.Checked = false;
             checkHighpass.Checked = false;
             checkPeaks.Checked = false;
@@ -337,6 +335,8 @@ namespace BPM_Piston_Pump
             checkLowpass.Checked = false;
             checkSignal.Checked = true;
         }
+
+        #region Checkboxes
 
         private void checkSignal_CheckedChanged(object sender, EventArgs e)
         {
@@ -377,11 +377,6 @@ namespace BPM_Piston_Pump
             plotData.Refresh();
         }
 
-        private void plotData_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void checkEnvelop_CheckedChanged(object sender, EventArgs e)
         {
             if (checkEnvelop.Checked)
@@ -407,5 +402,60 @@ namespace BPM_Piston_Pump
             }
             plotData.Refresh();
         }
+        #endregion
+
+        #region x and y buttons
+        private void butXSmall_Click(object sender, EventArgs e)
+        {
+            AxisLimits limits = plotData.Plot.GetAxisLimits();
+            double xMin = limits.XMin;
+            double xMax = limits.XMax;
+            double yMin = limits.YMin;
+            double yMax = limits.YMax;
+            double xSpan = limits.XSpan;
+
+            plotData.Plot.SetAxisLimits(xMin + xSpan / 4, xMax - xSpan / 4, yMin, yMax);
+            plotData.Refresh();
+        }
+
+        private void butYSmall_Click(object sender, EventArgs e)
+        {
+            AxisLimits limits = plotData.Plot.GetAxisLimits();
+            double xMin = limits.XMin;
+            double xMax = limits.XMax;
+            double yMin = limits.YMin;
+            double yMax = limits.YMax;
+            double ySpan = limits.YSpan;
+
+            plotData.Plot.SetAxisLimits(xMin, xMax, yMin + ySpan / 4, yMax - ySpan / 4);
+            plotData.Refresh();
+        }
+
+        private void butYLarge_Click(object sender, EventArgs e)
+        {
+            AxisLimits limits = plotData.Plot.GetAxisLimits();
+            double xMin = limits.XMin;
+            double xMax = limits.XMax;
+            double yMin = limits.YMin;
+            double yMax = limits.YMax;
+            double ySpan = limits.YSpan;
+
+            plotData.Plot.SetAxisLimits(xMin, xMax, yMin - ySpan / 4, yMax + ySpan / 4);
+            plotData.Refresh();
+        }
+
+        private void butXLarge_Click(object sender, EventArgs e)
+        {
+            AxisLimits limits = plotData.Plot.GetAxisLimits();
+            double xMin = limits.XMin;
+            double xMax = limits.XMax;
+            double yMin = limits.YMin;
+            double yMax = limits.YMax;
+            double xSpan = limits.XSpan;
+
+            plotData.Plot.SetAxisLimits(xMin - xSpan / 4, xMax + xSpan / 4, yMin, yMax);
+            plotData.Refresh();
+        }
+        #endregion
     }
 }
