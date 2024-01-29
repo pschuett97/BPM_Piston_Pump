@@ -16,6 +16,7 @@ namespace BPM_Piston_Pump
         AppConfig config; // configuration
         FilterButterworth HighPass;
         FilterButterworth LowPass;
+        List<float> datax;
         List<double> data;
         List<double> filtered;
         List<double> peaks;
@@ -33,6 +34,7 @@ namespace BPM_Piston_Pump
             InitializeComponent();
             this.config = config;
 
+            datax = new List<float>();
             data = new List<double>();
             filtered = new List<double>();
             peaks = new List<double>();
@@ -43,7 +45,7 @@ namespace BPM_Piston_Pump
             LowPass = new FilterButterworth((float)0.05, 500, FilterButterworth.PassType.Lowpass, 1);
 
             plotData.Plot.XAxis.Label("Time (seconds)");
-            plotData.Plot.YAxis.Label("Voltage (V)");
+            plotData.Plot.YAxis.Label("Pressure (mmHg)");
             plotData.Plot.XAxis.Color(Color.White);
             plotData.Plot.YAxis.Color(Color.White);
             plotData.Refresh();
@@ -86,7 +88,7 @@ namespace BPM_Piston_Pump
                         string ln;
                         while ((ln = file.ReadLine()) != null)
                         {
-                            data.Add(float.Parse(ln));
+                            datax.Add(float.Parse(ln));
                         }
                     }
                     else if (ofd.FileName.Split(".").Last() == "csv")
@@ -94,7 +96,7 @@ namespace BPM_Piston_Pump
                         string ln;
                         while ((ln = file.ReadLine()) != null)
                         {
-                            data.Add(float.Parse(ln.Split(";")[0]));
+                            datax.Add(float.Parse(ln.Split(";")[0]));
                         }
                     }
                     else
@@ -106,6 +108,12 @@ namespace BPM_Piston_Pump
                 }
             }
 
+            float[] data_ = config.VoltageToMmHg(datax.ToArray());
+            foreach(double el in data_)
+            {
+                data.Add(el);
+            }
+
             // highpass and moving average
             foreach (float f in data)
             {
@@ -114,6 +122,7 @@ namespace BPM_Piston_Pump
                 filtered.Add(avg.Average);  //
                 //filtered.Add(HighPass.Value);
             }
+
 
             // peak detection
             foreach (double d in filtered)
@@ -256,7 +265,7 @@ namespace BPM_Piston_Pump
                 //avg2.ComputeAverage(env); 
                 //env_avg.Add(avg2.Average);
             }
-            env_avg.RemoveRange(0, (int)4.2 * 500); // Zeitkorrektur, empirisch erhoben
+            env_avg.RemoveRange(0, (int)4.5 * 500); // Zeitkorrektur, empirisch erhoben
 
 
             // Another peak detection:
@@ -287,12 +296,12 @@ namespace BPM_Piston_Pump
                     {
                         if (max > threshold)
                         {
-                            MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000]));
+                            MABPs.Add(data[cnt - 1000]);
                             for (int i = 1; i < cnt; i++)
                             {
                                 if (env_avg[cnt - 1000 - i] < 0.601 * max)
                                 {
-                                    MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 - i]));
+                                    MABPs.Add(data[cnt - 1000 - i]);
                                     break;
                                 }
                             }
@@ -300,7 +309,7 @@ namespace BPM_Piston_Pump
                             {
                                 if (env_avg[cnt - 1000 + i] < 0.601 * max)
                                 {
-                                    MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 + i]));
+                                    MABPs.Add(data[cnt - 1000 + i]);
                                     break;
                                 }
                             }

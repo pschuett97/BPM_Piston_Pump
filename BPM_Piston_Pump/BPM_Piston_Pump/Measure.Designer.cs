@@ -32,6 +32,7 @@
             rdoNormalMode = new RadioButton();
             rdoDynamicMode = new RadioButton();
             panel1 = new Panel();
+            checkSimulation = new CheckBox();
             tblLayoutMeasure = new TableLayoutPanel();
             flowLayoutPanel1 = new FlowLayoutPanel();
             label3 = new Label();
@@ -46,11 +47,11 @@
             btnStop = new Button();
             btnStart = new Button();
             panelResult = new Panel();
+            txtDebug = new TextBox();
             lblHR = new Label();
             lblMABP = new Label();
             lblDiastolic = new Label();
             lblSystolic = new Label();
-            checkSimulation = new CheckBox();
             panel1.SuspendLayout();
             tblLayoutMeasure.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -108,6 +109,17 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(748, 65);
             panel1.TabIndex = 3;
+            // 
+            // checkSimulation
+            // 
+            checkSimulation.AutoSize = true;
+            checkSimulation.ForeColor = SystemColors.ControlLightLight;
+            checkSimulation.Location = new Point(229, 37);
+            checkSimulation.Name = "checkSimulation";
+            checkSimulation.Size = new Size(83, 19);
+            checkSimulation.TabIndex = 3;
+            checkSimulation.Text = "Simulation";
+            checkSimulation.UseVisualStyleBackColor = true;
             // 
             // tblLayoutMeasure
             // 
@@ -274,6 +286,7 @@
             // 
             // panelResult
             // 
+            panelResult.Controls.Add(txtDebug);
             panelResult.Controls.Add(lblHR);
             panelResult.Controls.Add(lblMABP);
             panelResult.Controls.Add(lblDiastolic);
@@ -283,6 +296,15 @@
             panelResult.Name = "panelResult";
             panelResult.Size = new Size(368, 253);
             panelResult.TabIndex = 9;
+            // 
+            // txtDebug
+            // 
+            txtDebug.Location = new Point(3, 70);
+            txtDebug.Multiline = true;
+            txtDebug.Name = "txtDebug";
+            txtDebug.ScrollBars = ScrollBars.Vertical;
+            txtDebug.Size = new Size(356, 180);
+            txtDebug.TabIndex = 4;
             // 
             // lblHR
             // 
@@ -323,17 +345,6 @@
             lblSystolic.Size = new Size(53, 15);
             lblSystolic.TabIndex = 0;
             lblSystolic.Text = "Systolic: ";
-            // 
-            // checkSimulation
-            // 
-            checkSimulation.AutoSize = true;
-            checkSimulation.ForeColor = SystemColors.ControlLightLight;
-            checkSimulation.Location = new Point(229, 37);
-            checkSimulation.Name = "checkSimulation";
-            checkSimulation.Size = new Size(83, 19);
-            checkSimulation.TabIndex = 3;
-            checkSimulation.Text = "Simulation";
-            checkSimulation.UseVisualStyleBackColor = true;
             // 
             // Measure
             // 
@@ -384,5 +395,6 @@
         private Label lblMABP;
         private Button btnTrigger;
         private CheckBox checkSimulation;
+        private TextBox txtDebug;
     }
 }

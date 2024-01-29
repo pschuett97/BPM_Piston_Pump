@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,12 +24,19 @@ namespace BPM_Piston_Pump
         List<float> hist;
         List<float> simulation_data;
         List<float> envelop;
+        List<float> hist_env;
+        int cnt_env = 0, max_cnt_env = 0;
+        bool ascending_env = false;
+        float threshold = 0;
         int cnt = 0;
         int max_cnt = 0;
         int min_cnt = 0;
+        int peak_cnt = 0;
         bool ascending = false;
-        bool artefact =  false;
+        bool artefact = false;
         bool first = true;
+        bool first_env = true;
+        float maximum = 0;
         float save = 0;
         float x0 = 0, x1 = 0, y0 = 0, y1 = 0;
         private PeriodicTimer timer = null; // timer that runs on a different thread
@@ -81,6 +89,7 @@ namespace BPM_Piston_Pump
             data_work = new List<float>();
             maximas = new List<Peaks>();
             hist = new List<float>();
+            hist_env = new List<float>();
             envelop = new List<float>();
             simulation_data = new List<float>();
             inter = new BmcmInterface.BmcmInterface("usbad14f");
@@ -164,13 +173,26 @@ namespace BPM_Piston_Pump
                 float[] values;
                 if (checkSimulation.Checked)
                 {
-                    values = simulation_data.GetRange((int)run_id*250, 250).ToArray();
+                    try
+                    {
+                        values = simulation_data.GetRange((int)run_id * 250, 250).ToArray();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message); // wenn simulation fertig ist
+                        timer.Dispose();
+                        btnStop.Visible = false;
+                        btnTrigger.Visible = false;
+                        MessageBox.Show("Simulation finished!");
+                        break;
+                    }
+                    
                 }
                 else
                 {
                     values = inter.get_values(run_id);
                 }
-                
+
                 float time = run_id * int.Parse(config.param["values_per_run"]) / int.Parse(config.param["sample_rate"]);
                 run_id++;
                 if (triggered)
@@ -181,6 +203,7 @@ namespace BPM_Piston_Pump
                 data.Add(new Measurement(values, time, this.dir));
                 data_period.Clear();
                 data_period.AddRange(values);
+                data_work.AddRange(values);
                 DataAnalysis();
             }
         }
@@ -188,6 +211,7 @@ namespace BPM_Piston_Pump
         private void btnStop_Click(object sender, EventArgs e)
         {
             btnStop.Visible = false;
+            btnTrigger.Visible = false;
             inter.stop_scan();
             timer.Dispose();
             inter.set_digital_output_low(1); // ToDo CHANGE!!
@@ -220,10 +244,7 @@ namespace BPM_Piston_Pump
                 // peak detection and sum the minimum to corresponding maximum
                 if (cnt > 3000) // ersten Werte unzulässig wegen Einschwingverhalten des Filters
                 {
-                    if (hist.Count < 100)
-                    {
-                        hist.Add(d);
-                    }
+                    if (hist.Count < 100) hist.Add(d);
                     else
                     {
                         if (d > hist.Max()) max_cnt = 0;
@@ -233,19 +254,17 @@ namespace BPM_Piston_Pump
                             if (!artefact)
                             {
                                 save = hist.First();
-                                //maximas.Add(new Peaks(0, cnt, dir));
                                 artefact = true;
                             }
                             else
                             {
-                                maximas.Add(new Peaks(hist.First()-save, cnt, dir));
+                                maximas.Add(new Peaks(hist.First() - save, cnt, dir));
                                 linearPeakInterpolation();
                                 save = 0;
                                 artefact = false;
                             }
                             max_cnt = 0;
                             ascending = false;
-
                         }
                         else if (min_cnt > 99)
                         {
@@ -259,29 +278,20 @@ namespace BPM_Piston_Pump
                             else
                             {
                                 save = hist.First();
-                                //maximas.Add(new Peaks(0, cnt, dir));
                                 artefact = true;
                             }
                             min_cnt = 0;
                             ascending = true;
                         }
-                        //else
-                        //{
-                        //    maximas.Add(new Peaks(0, cnt, dir));
-                        //}
-                        if (ascending) max_cnt++;                        
-                        else min_cnt++;
+                        if (ascending) max_cnt++;
+                        else min_cnt++;          
 
                         hist.RemoveAt(0);
                         hist.Add(d);
                     }
                 }
                 cnt++;
-            }
-
-            if (cnt>10000) // debug only
-            {
-                lblMABP.Text = maximas.Last().Pos.ToString();
+                
             }
 
             // look at the maximas = peaks
@@ -299,7 +309,7 @@ namespace BPM_Piston_Pump
 
         }
 
-        private void linearPeakInterpolation() // with low pass filtering
+        private void linearPeakInterpolation() // with low pass filtering to build envelop
         {
             if (!first)
             {
@@ -309,7 +319,63 @@ namespace BPM_Piston_Pump
                 for (int i = (int)x0; i < x1; i++)
                 {
                     LowPass.Update(y0 + (i - x0) * (y1 - y0) / (x1 - x0));
-                    envelop.Add(LowPass.Value);
+                    //envelop.Add(LowPass.Value);
+                    float d = LowPass.Value;
+
+                    // peak detection of envelop
+                    if (hist_env.Count < 1000)
+                    {
+                        hist_env.Add(d);
+                    }
+                    else
+                    {
+                        float max = hist_env.Max();
+                        if (max < d && !ascending_env)
+                        {
+                            ascending_env = true;
+                        }
+                        if (d > max)
+                        {
+                            max_cnt_env = 0;
+                        }
+                        if (max_cnt_env > 999)
+                        {
+                            if (max > threshold)
+                            {
+                                threshold = max * 0.60f;
+                                lblMABP.Text += " " + string.Format("{0:N1}", config.VoltageToMmHg((float)data_work[cnt_env - 1000]));
+                                /*
+                                MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000]));
+                                for (int i = 1; i < cnt; i++)
+                                {
+                                    if (env_avg[cnt - 1000 - i] < 0.601 * max)
+                                    {
+                                        MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 - i]));
+                                        break;
+                                    }
+                                }
+                                for (int i = 1; i < cnt; i++)
+                                {
+                                    if (env_avg[cnt - 1000 + i] < 0.601 * max)
+                                    {
+                                        MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 + i]));
+                                        break;
+                                    }
+                                }
+                                */
+                            }
+                            ascending_env = false;
+                            max_cnt_env = 0;
+                        }
+                        if (ascending_env)
+                        {
+                            max_cnt_env++;
+                        }
+                        hist_env.RemoveAt(0);
+                        hist_env.Add(d);
+
+                    }
+                    cnt_env++;
                 }
                 x0 = x1;
                 y0 = y1;
@@ -319,7 +385,113 @@ namespace BPM_Piston_Pump
                 first = false;
                 x0 = maximas.Last().Pos;
                 y0 = maximas.Last().Volt;
+                float[] arr = new float[cnt - 5 * 500]; // Zeitkorrektur, empirisch erhoben
+                Array.Clear(arr, 0, arr.Length);
+                envelop.AddRange(arr);
             }
+        }
+
+        private void envelop_peak()
+        {
+            if (first_env)
+            {
+                envelop.RemoveRange(0, (int)5 * 500); // Zeitkorrektur, empirisch erhoben
+                first_env = false;
+            }
+
+            
+
+            foreach (float d in envelop)
+            {
+                if (hist_env.Count < 1000)
+                {
+                    hist_env.Add(d);
+                }
+                else
+                {
+                    float max = hist_env.Max();
+                    if (max < d && !ascending_env)
+                    {
+                        ascending_env = true;
+                    }
+                    if (d > max)
+                    {
+                        max_cnt_env = 0;
+                    }
+                    if (max_cnt_env > 999)
+                    {
+                        if (max > threshold)
+                        {
+                            threshold = envelop.Max() * 0.60f;
+                            lblMABP.Text += " " + string.Format("{0:N1}", config.VoltageToMmHg((float)data_work[cnt_env-1000]));
+                            /*
+                            MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000]));
+                            for (int i = 1; i < cnt; i++)
+                            {
+                                if (env_avg[cnt - 1000 - i] < 0.601 * max)
+                                {
+                                    MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 - i]));
+                                    break;
+                                }
+                            }
+                            for (int i = 1; i < cnt; i++)
+                            {
+                                if (env_avg[cnt - 1000 + i] < 0.601 * max)
+                                {
+                                    MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 + i]));
+                                    break;
+                                }
+                            }
+                            */
+                        }
+                        ascending_env = false;
+                        max_cnt_env = 0;
+                    }
+                    if (ascending_env)
+                    {
+                        max_cnt_env++;
+                    }
+                    hist_env.RemoveAt(0);
+                    hist_env.Add(d);
+
+                }
+                cnt_env++;
+            }
+
+
+
+
+            //int max_index = envelop.IndexOf(envelop.Max());
+            //decimal i = Math.Floor( (decimal)max_index / (decimal)data[0].Value.Length);
+            //int j = max_index - (int)i* data[0].Value.Length;
+
+
+            //lblMABP.Text += " " + string.Format("{0:N1}", config.VoltageToMmHg((float)data_work[max_index]));
+
+
+
+
+            
+            using (var outf = new StreamWriter("debug_work.txt"))
+            {
+                for (int i = 0; i < data_work.Count; i++)
+                {
+                    outf.WriteLine(data_work[i].ToString());                    
+                }
+            }
+            using (var outf = new StreamWriter("debug_env.txt"))
+            {
+                for (int i = 0; i < envelop.Count; i++)
+                {
+                    outf.WriteLine(envelop[i].ToString());
+                }
+            } 
+
+            /*
+            data_work.RemoveRange(0, envelop.Count);
+            envelop.Clear();
+
+            */
 
         }
 
