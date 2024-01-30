@@ -48,6 +48,7 @@ namespace BPM_Piston_Pump
 
         FilterButterworth HighPass;
         FilterButterworth LowPass;
+        MovingAverage avg;
 
         public readonly struct Measurement
         {
@@ -96,6 +97,7 @@ namespace BPM_Piston_Pump
             config.InitPressureSensor();
             HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
             LowPass = new FilterButterworth((float)0.05, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
+            avg = new MovingAverage();
         }
 
         private void rdoNormalMode_CheckedChanged(object sender, EventArgs e)
@@ -200,6 +202,7 @@ namespace BPM_Piston_Pump
                     triggerTime = time;
                     triggered = false;
                 }
+                values = config.VoltageToMmHg(values);
                 data.Add(new Measurement(values, time, this.dir));
                 data_period.Clear();
                 data_period.AddRange(values);
@@ -230,16 +233,12 @@ namespace BPM_Piston_Pump
 
         private void DataAnalysis()
         {
-
-            //MovingAverage avg = new MovingAverage(); // rauf in Konstruktor!!!
-
-            // ToDo
             foreach (float f in data_period)
             {
                 HighPass.Update(f);
-                //avg.ComputeAverage(HighPass.Value);
-                //filtered.Add(avg.Average);
-                float d = HighPass.Value;
+                //float d = HighPass.Value;
+                avg.ComputeAverage(HighPass.Value);
+                float d = avg.Average;            
 
                 // peak detection and sum the minimum to corresponding maximum
                 if (cnt > 3000) // ersten Werte unzulässig wegen Einschwingverhalten des Filters
@@ -343,7 +342,7 @@ namespace BPM_Piston_Pump
                             if (max > threshold)
                             {
                                 threshold = max * 0.60f;
-                                lblMABP.Text += " " + string.Format("{0:N1}", config.VoltageToMmHg((float)data_work[cnt_env - 1000]));
+                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[cnt_env - 1000]);
                                 /*
                                 MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000]));
                                 for (int i = 1; i < cnt; i++)
@@ -385,93 +384,14 @@ namespace BPM_Piston_Pump
                 first = false;
                 x0 = maximas.Last().Pos;
                 y0 = maximas.Last().Volt;
-                float[] arr = new float[cnt - 5 * 500]; // Zeitkorrektur, empirisch erhoben
+                float[] arr = new float[(int)(cnt - 4.5 * 500)]; // Zeitkorrektur, empirisch erhoben
                 Array.Clear(arr, 0, arr.Length);
                 envelop.AddRange(arr);
             }
         }
 
-        private void envelop_peak()
-        {
-            if (first_env)
-            {
-                envelop.RemoveRange(0, (int)5 * 500); // Zeitkorrektur, empirisch erhoben
-                first_env = false;
-            }
-
-            
-
-            foreach (float d in envelop)
-            {
-                if (hist_env.Count < 1000)
-                {
-                    hist_env.Add(d);
-                }
-                else
-                {
-                    float max = hist_env.Max();
-                    if (max < d && !ascending_env)
-                    {
-                        ascending_env = true;
-                    }
-                    if (d > max)
-                    {
-                        max_cnt_env = 0;
-                    }
-                    if (max_cnt_env > 999)
-                    {
-                        if (max > threshold)
-                        {
-                            threshold = envelop.Max() * 0.60f;
-                            lblMABP.Text += " " + string.Format("{0:N1}", config.VoltageToMmHg((float)data_work[cnt_env-1000]));
-                            /*
-                            MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000]));
-                            for (int i = 1; i < cnt; i++)
-                            {
-                                if (env_avg[cnt - 1000 - i] < 0.601 * max)
-                                {
-                                    MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 - i]));
-                                    break;
-                                }
-                            }
-                            for (int i = 1; i < cnt; i++)
-                            {
-                                if (env_avg[cnt - 1000 + i] < 0.601 * max)
-                                {
-                                    MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 + i]));
-                                    break;
-                                }
-                            }
-                            */
-                        }
-                        ascending_env = false;
-                        max_cnt_env = 0;
-                    }
-                    if (ascending_env)
-                    {
-                        max_cnt_env++;
-                    }
-                    hist_env.RemoveAt(0);
-                    hist_env.Add(d);
-
-                }
-                cnt_env++;
-            }
-
-
-
-
-            //int max_index = envelop.IndexOf(envelop.Max());
-            //decimal i = Math.Floor( (decimal)max_index / (decimal)data[0].Value.Length);
-            //int j = max_index - (int)i* data[0].Value.Length;
-
-
-            //lblMABP.Text += " " + string.Format("{0:N1}", config.VoltageToMmHg((float)data_work[max_index]));
-
-
-
-
-            
+        /*
+         
             using (var outf = new StreamWriter("debug_work.txt"))
             {
                 for (int i = 0; i < data_work.Count; i++)
@@ -486,14 +406,7 @@ namespace BPM_Piston_Pump
                     outf.WriteLine(envelop[i].ToString());
                 }
             } 
-
-            /*
-            data_work.RemoveRange(0, envelop.Count);
-            envelop.Clear();
-
-            */
-
-        }
+        */
 
         private void numStartPressure_ValueChanged(object sender, EventArgs e)
         {
