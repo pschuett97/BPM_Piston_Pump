@@ -40,6 +40,7 @@ namespace BPM_Piston_Pump
         float save = 0;
         float x0 = 0, x1 = 0, y0 = 0, y1 = 0;
         private PeriodicTimer timer = null; // timer that runs on a different thread
+        private PeriodicTimer start_timer = null; // timer that runs on a different thread
         public BmcmInterface.BmcmInterface inter; // connection to the bmcm interface
         public uint run_id = 0; // counts how many runs there were
         public bool dir = true;
@@ -133,30 +134,35 @@ namespace BPM_Piston_Pump
             btnStop.Visible = true;
             btnTrigger.Visible = true;
 
-
-
-            // ToDo
-
             // Start Membrane Pump
+            inter.set_digital_output_high(int.Parse(config.param["membrane_pump_do_port"]));
+            start_timer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
+            StartTimer();    
+            // Watch until numStartPressure.Value is reached            
+        }
 
-            // Watch until numStartPressure.Value is reached
+        async void StartTimer()
+        {
+            while (await start_timer.WaitForNextTickAsync())
+            {
+                if (config.VoltageToMmHg(inter.get_analog_input(int.Parse(config.param["pressure_sensor_ai_port"]))) > (float)numStartPressure.Value || checkSimulation.Checked)
+                {
+                    // stop timer
+                    start_timer.Dispose();
+                    // Stop Membrane Pump
+                    inter.set_digital_output_low(int.Parse(config.param["membrane_pump_do_port"]));
+                    // Start Piston Pump
+                    inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
+                    inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"])); // maybe change direction?
+                    inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
+                    // Start Measurement
+                    inter.start_scan(float.Parse(config.param["sample_rate"]), int.Parse(config.param["values_per_scan"]), int.Parse(config.param["values_per_run"]), int.Parse(config.param["how_many_runs"]));
+                    timer = new PeriodicTimer(TimeSpan.FromMilliseconds(500));
+                    // Start new Thread maybe?
+                    RepeatForEver();
+                }
 
-            // Stop Membrane Pump
-
-            // Start Piston Pump
-            // ToDo
-            inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
-            inter.set_digital_output_high(1); // ToDo change!!
-            inter.set_digital_output_high(2);
-
-
-
-
-            // Start Measurement
-            inter.start_scan(float.Parse(config.param["sample_rate"]), int.Parse(config.param["values_per_scan"]), int.Parse(config.param["values_per_run"]), int.Parse(config.param["how_many_runs"]));
-            timer = new PeriodicTimer(TimeSpan.FromMilliseconds(500));
-            // Start new Thread maybe?
-            RepeatForEver();
+            }
         }
 
         async void RepeatForEver()
@@ -187,8 +193,7 @@ namespace BPM_Piston_Pump
                         btnTrigger.Visible = false;
                         MessageBox.Show("Simulation finished!");
                         break;
-                    }
-                    
+                    }                    
                 }
                 else
                 {
@@ -290,22 +295,7 @@ namespace BPM_Piston_Pump
                     }
                 }
                 cnt++;
-                
-            }
-
-            // look at the maximas = peaks
-            // if the global maximum of the maximas did not change for some time declare this to be the MAP
-
-
-            // Calculate Blood Preassure Parameters
-            // make time shift of envelop
-            // envelop.RemoveRange(0, (int)4.2 * 500); // Zeitkorrektur, empirisch erhoben, 500=sample-rate
-            // peak detection
-
-            // Control Piston Pump
-
-            // Define Pump up and Down
-
+            }         
         }
 
         private void linearPeakInterpolation() // with low pass filtering to build envelop
@@ -343,6 +333,12 @@ namespace BPM_Piston_Pump
                             {
                                 threshold = max * 0.60f;
                                 lblMABP.Text += " " + string.Format("{0:N1}", data_work[cnt_env - 1000]);
+
+                                // steuere die pumpe!!!
+                                // Control Piston Pump
+
+                                // Define Pump up and Down
+
                                 /*
                                 MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000]));
                                 for (int i = 1; i < cnt; i++)
