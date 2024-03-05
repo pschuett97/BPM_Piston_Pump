@@ -296,12 +296,14 @@ namespace BPM_Piston_Pump
                     {
                         if (max > threshold)
                         {
-                            MABPs.Add(data[cnt - 1000]);
+                            //MABPs.Add(data[cnt - 1000]);
+                            MABPs.Add(data[closestPeak(cnt - 1000)]);
+
                             for (int i = 1; i < cnt; i++)
                             {
                                 if (env_avg[cnt - 1000 - i] < 0.601 * max)
                                 {
-                                    MABPs.Add(data[cnt - 1000 - i]);
+                                    MABPs.Add(data[closestPeak(cnt - 1000 - i)]); // Wert finden, der zum Peak gehört
                                     break;
                                 }
                             }
@@ -309,7 +311,7 @@ namespace BPM_Piston_Pump
                             {
                                 if (env_avg[cnt - 1000 + i] < 0.601 * max)
                                 {
-                                    MABPs.Add(data[cnt - 1000 + i]);
+                                    MABPs.Add(data[closestPeak(cnt - 1000 + i)]);
                                     break;
                                 }
                             }
@@ -343,6 +345,32 @@ namespace BPM_Piston_Pump
             checkEnvelop.Checked = false;
             checkLowpass.Checked = false;
             checkSignal.Checked = true;
+        }
+
+        public int closestPeak (int index)
+        {
+            int i = index;
+            int j = index;
+
+            while (i<peaks.Count)
+            {
+                if (peaks[i]>0)
+                {
+                    break;
+                }
+                i++;
+            }
+            while (j > 0)
+            {
+                if (peaks[j] > 0)
+                {
+                    break;
+                }
+                j--;
+            }
+
+            if ((i - index) < (index - j)) return i;
+            else return j;
         }
 
         #region Checkboxes
