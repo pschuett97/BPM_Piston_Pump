@@ -262,7 +262,7 @@ namespace BPM_Piston_Pump
                             }
                             else
                             {
-                                maximas.Add(new Peaks(hist.First() - save, cnt, dir));
+                                maximas.Add(new Peaks(hist.First() - save, cnt - 90, dir));  // 101 = timeshift of the filter, empirisch ermittelt
                                 linearPeakInterpolation();
                                 save = 0;
                                 artefact = false;
@@ -274,7 +274,7 @@ namespace BPM_Piston_Pump
                         {
                             if (artefact)
                             {
-                                maximas.Add(new Peaks(hist.First() * (-1), cnt, dir));
+                                maximas.Add(new Peaks(hist.First() * (-1), cnt - 90, dir));
                                 linearPeakInterpolation();
                                 save = 0;
                                 artefact = false;
@@ -332,7 +332,19 @@ namespace BPM_Piston_Pump
                             if (max > threshold)
                             {
                                 threshold = max * 0.60f;
-                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[cnt_env - 1000]);
+                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[cnt_env - 1000]); // obsolete
+
+                                int nearest = 100000;
+                                int nearest_pos = 0;
+                                foreach (Peaks peak in maximas)
+                                {
+                                    if (Math.Abs(peak.Pos - cnt_env + 1000) < nearest)   // - mal - wird + !!!
+                                    {
+                                        nearest = Math.Abs(peak.Pos - cnt_env + 1000);
+                                        nearest_pos = peak.Pos;
+                                    }
+                                }
+                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[nearest_pos]);
 
                                 // steuere die pumpe!!!
                                 // Control Piston Pump
@@ -383,6 +395,7 @@ namespace BPM_Piston_Pump
                 float[] arr = new float[(int)(cnt - 4.5 * 500)]; // Zeitkorrektur, empirisch erhoben
                 Array.Clear(arr, 0, arr.Length);
                 envelop.AddRange(arr);
+                cnt_env = (int)(cnt - 4.5 * 500); // Zeitkorrektur, empirisch erhoben
             }
         }
 
