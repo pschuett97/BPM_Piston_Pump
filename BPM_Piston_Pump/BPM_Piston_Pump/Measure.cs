@@ -32,10 +32,13 @@ namespace BPM_Piston_Pump
         int max_cnt = 0;
         int min_cnt = 0;
         int peak_cnt = 0;
+        int start_interator = 1;
         bool ascending = false;
         bool artefact = false;
         bool first = true;
         bool first_env = true;
+        bool foundMABP = false;
+        float localMax = 0;
         float maximum = 0;
         float save = 0;
         float x0 = 0, x1 = 0, y0 = 0, y1 = 0;
@@ -308,7 +311,7 @@ namespace BPM_Piston_Pump
                 for (int i = (int)x0; i < x1; i++)
                 {
                     LowPass.Update(y0 + (i - x0) * (y1 - y0) / (x1 - x0));
-                    //envelop.Add(LowPass.Value);
+                    envelop.Add(LowPass.Value);
                     float d = LowPass.Value;
 
                     // peak detection of envelop
@@ -332,57 +335,61 @@ namespace BPM_Piston_Pump
                             if (max > threshold)
                             {
                                 threshold = max * 0.60f;
-                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[cnt_env - 1000]); // obsolete
+                                //lblMABP.Text += " " + string.Format("{0:N1}", data_work[cnt_env - 1000]); // obsolete
 
-                                int nearest = 100000;
-                                int nearest_pos = 0;
-                                foreach (Peaks peak in maximas)
+                                int nearest_pos = nearestPeak(cnt_env);
+                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[nearest_pos]) + " ";                               
+
+                                if (rdoNormalMode.Checked)
                                 {
-                                    if (Math.Abs(peak.Pos - cnt_env + 1000) < nearest)   // - mal - wird + !!!
+                                    foundMABP = true;
+                                    localMax = max;
+
+                                    if (dir)
                                     {
-                                        nearest = Math.Abs(peak.Pos - cnt_env + 1000);
-                                        nearest_pos = peak.Pos;
+                                        for (int n = 1; n < cnt_env; n++)
+                                        {
+                                            if (envelop[cnt_env - 1000 - n] < 0.501 * localMax)
+                                            {
+                                                lblSystolic.Text += " " + string.Format("{0:N1}", data_work[nearestPeak(cnt_env - n)]) + " ";
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int n = 1; n < cnt_env; n++)
+                                        {
+                                            if (envelop[cnt_env - 1000 - n] < 0.701 * localMax)
+                                            {
+                                                lblDiastolic.Text += " " + string.Format("{0:N1}", data_work[nearestPeak(cnt_env - n)]) + " ";
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
-                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[nearest_pos]);
-
-                                // steuere die pumpe!!!
-                                // Control Piston Pump
-
-                                // Define Pump up and Down
-
-                                /*
-                                MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000]));
-                                for (int i = 1; i < cnt; i++)
+                                else // control pump
                                 {
-                                    if (env_avg[cnt - 1000 - i] < 0.601 * max)
-                                    {
-                                        MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 - i]));
-                                        break;
-                                    }
-                                }
-                                for (int i = 1; i < cnt; i++)
-                                {
-                                    if (env_avg[cnt - 1000 + i] < 0.601 * max)
-                                    {
-                                        MABPs.Add(config.VoltageToMmHg((float)data[cnt - 1000 + i]));
-                                        break;
-                                    }
-                                }
-                                */
+                                    changeDir();
+                                }                                
                             }
+                        
                             ascending_env = false;
                             max_cnt_env = 0;
                         }
                         if (ascending_env)
                         {
                             max_cnt_env++;
-                        }
+                        }                        
                         hist_env.RemoveAt(0);
                         hist_env.Add(d);
 
                     }
                     cnt_env++;
+                }
+                if (foundMABP)
+                {
+                    findBP();
                 }
                 x0 = x1;
                 y0 = y1;
@@ -399,23 +406,71 @@ namespace BPM_Piston_Pump
             }
         }
 
-        /*
-         
-            using (var outf = new StreamWriter("debug_work.txt"))
+        /// <summary>
+        /// If a significant point in the envelop is detected, the corresponding peak has to be found.
+        /// This function finds the corresponding peak.
+        /// </summary>
+        /// <param name="position">Where the point in the envelop is</param>
+        /// <returns>The position of the corresponding peak</returns>
+        private int nearestPeak(int position)
+        {
+            int nearest = 100000;
+            int nearest_pos = 0;
+
+            foreach (Peaks peak in maximas)
             {
-                for (int i = 0; i < data_work.Count; i++)
+                if (Math.Abs(peak.Pos - position + 1000) < nearest)   // - mal - wird + !!!
                 {
-                    outf.WriteLine(data_work[i].ToString());                    
+                    nearest = Math.Abs(peak.Pos - position + 1000);
+                    nearest_pos = peak.Pos;
                 }
             }
-            using (var outf = new StreamWriter("debug_env.txt"))
+            return nearest_pos;
+        }
+
+        /// <summary>
+        /// In normal mode, when MABP is detected, one BP parameter cannot be detected yet, depending on
+        /// inflation or deflation cycle. It has to be tryed every time, if the parameter can be found.
+        /// </summary>
+        private void findBP()
+        {            
+            for (int n = start_interator; (cnt_env - 1000 + n) < envelop.Count; n++)
             {
-                for (int i = 0; i < envelop.Count; i++)
+                if (dir)
                 {
-                    outf.WriteLine(envelop[i].ToString());
+                    if (envelop[cnt_env - 1000 + n] < 0.701 * localMax)
+                    {
+                        lblDiastolic.Text += " " + string.Format("{0:N1}", data_work[nearestPeak(cnt_env + n)]) + " ";
+                        foundMABP = false;
+                        changeDir();
+                        start_interator = 1;
+                        break;
+                    }
                 }
-            } 
-        */
+                else
+                {
+                    if (envelop[cnt_env - 1000 + n] < 0.501 * localMax)
+                    {
+                        lblSystolic.Text += " " + string.Format("{0:N1}", data_work[nearestPeak(cnt_env + n)]) + " ";
+                        foundMABP = false;
+                        changeDir();
+                        start_interator = 1;
+                        break;
+                    }
+                }                
+            }
+        }
+            
+
+        /// <summary>
+        /// Changes the direction of the piston pump, which means changing from inflation to deflation and vice versa.
+        /// </summary>
+        private void changeDir()
+        {
+            if (dir) inter.set_digital_output_low(int.Parse(config.param["piston_pump_dir_do_port"]));
+            else inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"]));
+            dir = !dir;
+        }
 
         private void numStartPressure_ValueChanged(object sender, EventArgs e)
         {
