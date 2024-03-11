@@ -25,6 +25,7 @@ namespace BPM_Piston_Pump
         List<float> simulation_data;
         List<float> envelop;
         List<float> hist_env;
+        List<float> HR;
         int cnt_env = 0, max_cnt_env = 0;
         bool ascending_env = false;
         float threshold = 0;
@@ -33,6 +34,8 @@ namespace BPM_Piston_Pump
         int min_cnt = 0;
         int peak_cnt = 0;
         int start_interator = 1;
+        int ticks = 0;
+        bool tick_go = false;
         bool ascending = false;
         bool artefact = false;
         bool first = true;
@@ -89,6 +92,7 @@ namespace BPM_Piston_Pump
             rdoNormalMode.Checked = true;
             txtLogName.Text = config.param["log_file_name"];
             numStartPressure.Value = int.Parse(config.param["start_pressure"]);
+            numWaitTime.Value = int.Parse(config.param["start_wait_time"]);
             data = new List<Measurement>();
             data_period = new List<float>();
             data_work = new List<float>();
@@ -97,6 +101,7 @@ namespace BPM_Piston_Pump
             hist_env = new List<float>();
             envelop = new List<float>();
             simulation_data = new List<float>();
+            HR = new List<float>();
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             config.InitPressureSensor();
             HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
@@ -137,39 +142,49 @@ namespace BPM_Piston_Pump
             btnStop.Visible = true;
             btnTrigger.Visible = true;
 
-            start_timer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
-            StartTimer();    
+            start_timer = new PeriodicTimer(TimeSpan.FromMilliseconds(50));
+            StartTimer();
             // Watch until numStartPressure.Value is reached            
         }
 
         async void StartTimer()
         {
             // bring piston to correct position
-            // maybe open valves?
-            /*
-            inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
-            inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"])); // maybe change direction?
-            inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
-            */
+            // open/close valves            
+            if (!checkSimulation.Checked)
+            {
+                inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+                inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
+                inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
+                inter.set_analog_output(4);
+                inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"])); // maybe change direction?
+                inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
+            }
+
 
             while (await start_timer.WaitForNextTickAsync())
             {
-                if (inter.get_digital_input(int.Parse(config.param["limit_switch1_di_port"])))
+                if (inter.get_analog_input(3) > 1)
                 {
                     // reaktiviere piston wieder
+                    inter.set_digital_output_low(int.Parse(config.param["emergency_valve_do_port"]));
 
-                    // fahre in die andere richtung, bis es reicht
-                    // 20 ticks oder so?
-
-
+                    inter.set_digital_output_low(int.Parse(config.param["piston_pump_dir_do_port"]));
+                    inter.set_digital_output_high(int.Parse(config.param["limit_switch2_do_port"]));
+                    tick_go = true;
+                    ticks = 0;
                 }
 
-                /*
-                if ( tickts == 20 )
-                stop piston
-                start membrane
-                inter.set_digital_output_high(int.Parse(config.param["membrane_pump_do_port"]));
-                */
+                if (ticks > numWaitTime.Value * 20) // 13s / 50ms = 260 ticks
+                {
+                    inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
+                    inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
+                    inter.set_digital_output_high(int.Parse(config.param["membrane_pump_do_port"]));
+                }
+                else if (tick_go)
+                {
+                    ticks++;
+                }
 
                 if (config.VoltageToMmHg(inter.get_analog_input(int.Parse(config.param["pressure_sensor_ai_port"]))) > (float)numStartPressure.Value || checkSimulation.Checked)
                 {
@@ -177,9 +192,10 @@ namespace BPM_Piston_Pump
                     start_timer.Dispose();
                     // Stop Membrane Pump
                     inter.set_digital_output_low(int.Parse(config.param["membrane_pump_do_port"]));
+                    // limit switch
+                    inter.set_digital_output_low(int.Parse(config.param["limit_switch2_do_port"]));
                     // Start Piston Pump
                     inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
-                    inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"])); // maybe change direction?
                     inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
                     // Start Measurement
                     inter.start_scan(float.Parse(config.param["sample_rate"]), int.Parse(config.param["values_per_scan"]), int.Parse(config.param["values_per_run"]), int.Parse(config.param["how_many_runs"]));
@@ -187,7 +203,6 @@ namespace BPM_Piston_Pump
                     // Start new Thread maybe?
                     RepeatForEver();
                 }
-
             }
         }
 
@@ -219,7 +234,7 @@ namespace BPM_Piston_Pump
                         btnTrigger.Visible = false;
                         MessageBox.Show("Simulation finished!");
                         break;
-                    }                    
+                    }
                 }
                 else
                 {
@@ -246,9 +261,10 @@ namespace BPM_Piston_Pump
         {
             btnStop.Visible = false;
             btnTrigger.Visible = false;
+            inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
             inter.stop_scan();
             timer.Dispose();
-            inter.set_digital_output_low(1); // ToDo CHANGE!!
+            inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
             using (var outf = new StreamWriter(config.param["log_file_path"] + config.param["log_file_name"]))
             {
                 outf.WriteLine(triggerTime.ToString());
@@ -269,7 +285,7 @@ namespace BPM_Piston_Pump
                 HighPass.Update(f);
                 //float d = HighPass.Value;
                 avg.ComputeAverage(HighPass.Value);
-                float d = avg.Average;            
+                float d = avg.Average;
 
                 // peak detection and sum the minimum to corresponding maximum
                 if (cnt > 3000) // ersten Werte unzulässig wegen Einschwingverhalten des Filters
@@ -314,14 +330,14 @@ namespace BPM_Piston_Pump
                             ascending = true;
                         }
                         if (ascending) max_cnt++;
-                        else min_cnt++;          
+                        else min_cnt++;
 
                         hist.RemoveAt(0);
                         hist.Add(d);
                     }
                 }
                 cnt++;
-            }         
+            }
         }
 
         private void linearPeakInterpolation() // with low pass filtering to build envelop
@@ -330,6 +346,15 @@ namespace BPM_Piston_Pump
             {
                 x1 = maximas.Last().Pos;
                 y1 = maximas.Last().Volt;
+
+                // calculate heart rate
+                HR.Add(x1 - x0);
+                if (HR.Count > 5)
+                {
+                    float av = 60 / HR.Average() * int.Parse(config.param["sample_rate"]);
+                    lblHR.Text = "HR: " + string.Format("{0:N1}", av);
+                    HR.Remove(0);
+                }
 
                 for (int i = (int)x0; i < x1; i++)
                 {
@@ -361,7 +386,7 @@ namespace BPM_Piston_Pump
                                 //lblMABP.Text += " " + string.Format("{0:N1}", data_work[cnt_env - 1000]); // obsolete
 
                                 int nearest_pos = nearestPeak(cnt_env);
-                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[nearest_pos]) + " ";                               
+                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[nearest_pos]) + " ";
 
                                 if (rdoNormalMode.Checked)
                                 {
@@ -394,16 +419,16 @@ namespace BPM_Piston_Pump
                                 else // control pump
                                 {
                                     changeDir();
-                                }                                
+                                }
                             }
-                        
+
                             ascending_env = false;
                             max_cnt_env = 0;
                         }
                         if (ascending_env)
                         {
                             max_cnt_env++;
-                        }                        
+                        }
                         hist_env.RemoveAt(0);
                         hist_env.Add(d);
 
@@ -422,10 +447,10 @@ namespace BPM_Piston_Pump
                 first = false;
                 x0 = maximas.Last().Pos;
                 y0 = maximas.Last().Volt;
-                float[] arr = new float[(int)(cnt - 4.5 * 500)]; // Zeitkorrektur, empirisch erhoben
+                float[] arr = new float[(int)(cnt - 4.5 * int.Parse(config.param["sample_rate"]))]; // Zeitkorrektur, empirisch erhoben
                 Array.Clear(arr, 0, arr.Length);
                 envelop.AddRange(arr);
-                cnt_env = (int)(cnt - 4.5 * 500); // Zeitkorrektur, empirisch erhoben
+                cnt_env = (int)(cnt - 4.5 * int.Parse(config.param["sample_rate"])); // Zeitkorrektur, empirisch erhoben
             }
         }
 
@@ -456,7 +481,7 @@ namespace BPM_Piston_Pump
         /// inflation or deflation cycle. It has to be tryed every time, if the parameter can be found.
         /// </summary>
         private void findBP()
-        {            
+        {
             for (int n = start_interator; (cnt_env - 1000 + n) < envelop.Count; n++)
             {
                 if (dir)
@@ -480,18 +505,18 @@ namespace BPM_Piston_Pump
                         start_interator = 1;
                         break;
                     }
-                }                
+                }
             }
         }
-            
+
 
         /// <summary>
         /// Changes the direction of the piston pump, which means changing from inflation to deflation and vice versa.
         /// </summary>
         private void changeDir()
         {
-            if (dir) inter.set_digital_output_low(int.Parse(config.param["piston_pump_dir_do_port"]));
-            else inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"]));
+            if (dir) inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"]));
+            else inter.set_digital_output_low(int.Parse(config.param["piston_pump_dir_do_port"]));
             dir = !dir;
         }
 
@@ -504,6 +529,11 @@ namespace BPM_Piston_Pump
         {
             btnTrigger.Visible = false;
             triggered = true;
+        }
+
+        private void numWaitTime_ValueChanged(object sender, EventArgs e)
+        {
+            config.param["start_wait_time"] = numWaitTime.Value.ToString();
         }
     }
 }

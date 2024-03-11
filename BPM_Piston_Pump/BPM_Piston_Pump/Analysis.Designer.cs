@@ -37,7 +37,7 @@
             checkPeaks = new CheckBox();
             checkEnvelop = new CheckBox();
             checkLowpass = new CheckBox();
-            txtBP = new TextBox();
+            lblHR = new Label();
             flowLayoutPanel1 = new FlowLayoutPanel();
             label2 = new Label();
             btnGo = new Button();
@@ -55,8 +55,8 @@
             numHg1 = new NumericUpDown();
             numV1 = new NumericUpDown();
             panel2 = new Panel();
-            lblMABP = new Label();
             lblBP = new Label();
+            lblMABP = new Label();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -76,7 +76,6 @@
             tableLayoutPanel1.Controls.Add(label1, 0, 0);
             tableLayoutPanel1.Controls.Add(plotData, 0, 2);
             tableLayoutPanel1.Controls.Add(flowLayoutPanel2, 1, 1);
-            tableLayoutPanel1.Controls.Add(txtBP, 1, 0);
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 1);
             tableLayoutPanel1.Controls.Add(panel1, 0, 3);
             tableLayoutPanel1.Controls.Add(panel2, 1, 3);
@@ -122,6 +121,7 @@
             flowLayoutPanel2.Controls.Add(checkPeaks);
             flowLayoutPanel2.Controls.Add(checkEnvelop);
             flowLayoutPanel2.Controls.Add(checkLowpass);
+            flowLayoutPanel2.Controls.Add(lblHR);
             flowLayoutPanel2.Dock = DockStyle.Fill;
             flowLayoutPanel2.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanel2.Location = new Point(377, 43);
@@ -189,16 +189,16 @@
             checkLowpass.UseVisualStyleBackColor = true;
             checkLowpass.CheckedChanged += checkLowpass_CheckedChanged;
             // 
-            // txtBP
+            // lblHR
             // 
-            txtBP.Dock = DockStyle.Left;
-            txtBP.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            txtBP.Location = new Point(377, 3);
-            txtBP.Multiline = true;
-            txtBP.Name = "txtBP";
-            txtBP.ScrollBars = ScrollBars.Vertical;
-            txtBP.Size = new Size(258, 34);
-            txtBP.TabIndex = 7;
+            lblHR.AutoSize = true;
+            lblHR.ForeColor = SystemColors.ControlLightLight;
+            lblHR.Location = new Point(158, 29);
+            lblHR.Margin = new Padding(3, 4, 3, 0);
+            lblHR.Name = "lblHR";
+            lblHR.Size = new Size(29, 15);
+            lblHR.TabIndex = 11;
+            lblHR.Text = "HR: ";
             // 
             // flowLayoutPanel1
             // 
@@ -411,16 +411,6 @@
             panel2.Size = new Size(368, 54);
             panel2.TabIndex = 10;
             // 
-            // lblMABP
-            // 
-            lblMABP.AutoSize = true;
-            lblMABP.ForeColor = SystemColors.ControlLightLight;
-            lblMABP.Location = new Point(3, 2);
-            lblMABP.Name = "lblMABP";
-            lblMABP.Size = new Size(46, 15);
-            lblMABP.TabIndex = 0;
-            lblMABP.Text = "MABP: ";
-            // 
             // lblBP
             // 
             lblBP.AutoSize = true;
@@ -430,6 +420,16 @@
             lblBP.Size = new Size(27, 15);
             lblBP.TabIndex = 1;
             lblBP.Text = "BP: ";
+            // 
+            // lblMABP
+            // 
+            lblMABP.AutoSize = true;
+            lblMABP.ForeColor = SystemColors.ControlLightLight;
+            lblMABP.Location = new Point(3, 2);
+            lblMABP.Name = "lblMABP";
+            lblMABP.Size = new Size(46, 15);
+            lblMABP.TabIndex = 0;
+            lblMABP.Text = "MABP: ";
             // 
             // Analysis
             // 
@@ -470,7 +470,6 @@
         private CheckBox checkPeaks;
         private CheckBox checkEnvelop;
         private CheckBox checkLowpass;
-        private TextBox txtBP;
         private FlowLayoutPanel flowLayoutPanel1;
         private Button butXSmall;
         private Button butYSmall;
@@ -488,5 +487,6 @@
         private Panel panel2;
         private Label lblBP;
         private Label lblMABP;
+        private Label lblHR;
     }
 }

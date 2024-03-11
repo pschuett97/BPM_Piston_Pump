@@ -55,22 +55,25 @@ namespace BPM_Piston_Pump
                     param["log_file_name"] = "log.csv";
                     param["log_file_path"] = ""; // @"C:\"
                     param["start_pressure"] = "150";
+                    param["start_wait_time"] = "8";
                     // Port Config
                     // do = digital out
                     param["limit_switch1_do_port"] = "1";                    
                     param["limit_switch2_do_port"] = "2";                   
-                    param["emergency_valve_do_port"] = "3";
-                    param["test_valve_do_port"] = "4";
-                    param["membrane_pump_do_port"] = "5";
+                    param["emergency_valve_do_port"] = "5";
+                    param["test_valve_do_port"] = "3";
+                    param["membrane_pump_do_port"] = "4";
                     param["piston_pump_dir_do_port"] = "6";
                     param["piston_pump_ena_do_port"] = "7";
                     // di = digital input
                     param["limit_switch1_di_port"] = "1";
-                    param["limit_switch2_do_port"] = "2";
+                    param["limit_switch2_di_port"] = "2";
                     // ao = analog output
                     param["piston_pump_ao_port"] = "1";
                     // ai = analog input
                     param["pressure_sensor_ai_port"] = "1";
+                    param["limit_switch1_ai_port"] = "2";
+                    param["limit_switch2_ai_port"] = "3";
                     // add new standard values here if needed:
                     // ..
                     saveConfig();

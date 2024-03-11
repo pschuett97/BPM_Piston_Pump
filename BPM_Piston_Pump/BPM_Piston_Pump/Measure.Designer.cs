@@ -39,6 +39,9 @@
             txtLogName = new TextBox();
             btnSaveLog = new Button();
             panel2 = new Panel();
+            label6 = new Label();
+            numWaitTime = new NumericUpDown();
+            label5 = new Label();
             label2 = new Label();
             numStartPressure = new NumericUpDown();
             label4 = new Label();
@@ -47,7 +50,6 @@
             btnStop = new Button();
             btnStart = new Button();
             panelResult = new Panel();
-            txtDebug = new TextBox();
             lblHR = new Label();
             lblMABP = new Label();
             lblDiastolic = new Label();
@@ -56,6 +58,7 @@
             tblLayoutMeasure.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numWaitTime).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numStartPressure).BeginInit();
             panel3.SuspendLayout();
             panelResult.SuspendLayout();
@@ -188,6 +191,9 @@
             // 
             // panel2
             // 
+            panel2.Controls.Add(label6);
+            panel2.Controls.Add(numWaitTime);
+            panel2.Controls.Add(label5);
             panel2.Controls.Add(label2);
             panel2.Controls.Add(numStartPressure);
             panel2.Controls.Add(label4);
@@ -196,6 +202,43 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(368, 253);
             panel2.TabIndex = 7;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.ForeColor = SystemColors.ControlLightLight;
+            label6.Location = new Point(93, 61);
+            label6.Name = "label6";
+            label6.Padding = new Padding(0, 7, 0, 0);
+            label6.Size = new Size(12, 22);
+            label6.TabIndex = 5;
+            label6.Text = "s";
+            // 
+            // numWaitTime
+            // 
+            numWaitTime.BackColor = Color.FromArgb(23, 21, 32);
+            numWaitTime.BorderStyle = BorderStyle.None;
+            numWaitTime.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            numWaitTime.ForeColor = SystemColors.ControlLightLight;
+            numWaitTime.Location = new Point(9, 64);
+            numWaitTime.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
+            numWaitTime.Name = "numWaitTime";
+            numWaitTime.Size = new Size(78, 25);
+            numWaitTime.TabIndex = 4;
+            numWaitTime.TextAlign = HorizontalAlignment.Right;
+            numWaitTime.UpDownAlign = LeftRightAlignment.Left;
+            numWaitTime.Value = new decimal(new int[] { 13, 0, 0, 0 });
+            numWaitTime.ValueChanged += numWaitTime_ValueChanged;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.ForeColor = SystemColors.ControlLightLight;
+            label5.Location = new Point(5, 46);
+            label5.Name = "label5";
+            label5.Size = new Size(150, 15);
+            label5.TabIndex = 3;
+            label5.Text = "Start Position Waiting Time";
             // 
             // label2
             // 
@@ -286,7 +329,6 @@
             // 
             // panelResult
             // 
-            panelResult.Controls.Add(txtDebug);
             panelResult.Controls.Add(lblHR);
             panelResult.Controls.Add(lblMABP);
             panelResult.Controls.Add(lblDiastolic);
@@ -297,20 +339,11 @@
             panelResult.Size = new Size(368, 253);
             panelResult.TabIndex = 9;
             // 
-            // txtDebug
-            // 
-            txtDebug.Location = new Point(3, 70);
-            txtDebug.Multiline = true;
-            txtDebug.Name = "txtDebug";
-            txtDebug.ScrollBars = ScrollBars.Vertical;
-            txtDebug.Size = new Size(356, 180);
-            txtDebug.TabIndex = 4;
-            // 
             // lblHR
             // 
             lblHR.AutoSize = true;
             lblHR.ForeColor = SystemColors.ControlLightLight;
-            lblHR.Location = new Point(0, 52);
+            lblHR.Location = new Point(0, 49);
             lblHR.Name = "lblHR";
             lblHR.Size = new Size(26, 15);
             lblHR.TabIndex = 3;
@@ -320,7 +353,7 @@
             // 
             lblMABP.AutoSize = true;
             lblMABP.ForeColor = SystemColors.ControlLightLight;
-            lblMABP.Location = new Point(0, 37);
+            lblMABP.Location = new Point(0, 3);
             lblMABP.Name = "lblMABP";
             lblMABP.Size = new Size(43, 15);
             lblMABP.TabIndex = 2;
@@ -330,7 +363,7 @@
             // 
             lblDiastolic.AutoSize = true;
             lblDiastolic.ForeColor = SystemColors.ControlLightLight;
-            lblDiastolic.Location = new Point(0, 22);
+            lblDiastolic.Location = new Point(0, 18);
             lblDiastolic.Name = "lblDiastolic";
             lblDiastolic.Size = new Size(58, 15);
             lblDiastolic.TabIndex = 1;
@@ -340,7 +373,7 @@
             // 
             lblSystolic.AutoSize = true;
             lblSystolic.ForeColor = SystemColors.ControlLightLight;
-            lblSystolic.Location = new Point(0, 7);
+            lblSystolic.Location = new Point(0, 34);
             lblSystolic.Name = "lblSystolic";
             lblSystolic.Size = new Size(53, 15);
             lblSystolic.TabIndex = 0;
@@ -363,6 +396,7 @@
             flowLayoutPanel1.PerformLayout();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numWaitTime).EndInit();
             ((System.ComponentModel.ISupportInitialize)numStartPressure).EndInit();
             panel3.ResumeLayout(false);
             panelResult.ResumeLayout(false);
@@ -395,6 +429,8 @@
         private Label lblMABP;
         private Button btnTrigger;
         private CheckBox checkSimulation;
-        private TextBox txtDebug;
+        private Label label6;
+        private NumericUpDown numWaitTime;
+        private Label label5;
     }
 }

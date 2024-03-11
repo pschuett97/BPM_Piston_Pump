@@ -23,11 +23,14 @@ namespace BPM_Piston_Pump
         List<double> envelop;
         List<double> env_avg;
         List<double> MABPs;
+        List<double> HR;
         ScottPlot.Plottable.SignalPlot plt_data;
         ScottPlot.Plottable.SignalPlot plt_filtered;
         ScottPlot.Plottable.SignalPlot plt_peaks;
         ScottPlot.Plottable.SignalPlot plt_envelop;
         ScottPlot.Plottable.SignalPlot plt_lowpass;
+
+        public BmcmInterface.BmcmInterface inter; // connection to the bmcm interface
 
         public Analysis(AppConfig config)
         {
@@ -41,19 +44,26 @@ namespace BPM_Piston_Pump
             envelop = new List<double>();
             env_avg = new List<double>();
             MABPs = new List<double>();
-            HighPass = new FilterButterworth((float)0.5, 500, FilterButterworth.PassType.Highpass, 1);
-            LowPass = new FilterButterworth((float)0.05, 500, FilterButterworth.PassType.Lowpass, 1);
+            HR = new List<double>();
+            HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
+            LowPass = new FilterButterworth((float)0.05, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
 
             plotData.Plot.XAxis.Label("Time (seconds)");
             plotData.Plot.YAxis.Label("Pressure (mmHg)");
             plotData.Plot.XAxis.Color(Color.White);
             plotData.Plot.YAxis.Color(Color.White);
             plotData.Refresh();
+
+            inter = new BmcmInterface.BmcmInterface("usbad14f");
+            inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+            inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
+            inter.stop_scan();
         }
 
         private void btnGo_Click(object sender, EventArgs e)
         {
             data.Clear();
+            datax.Clear();
             filtered.Clear();
             peaks.Clear();
             envelop.Clear();
@@ -64,7 +74,8 @@ namespace BPM_Piston_Pump
             checkPeaks.Checked = false;
             checkEnvelop.Checked = false;
             checkLowpass.Checked = false;
-            txtBP.Text = "";
+            lblMABP.Text = "MABP: ";
+            lblBP.Text = "BP: ";
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = config.param["log_file_path"];
@@ -73,11 +84,13 @@ namespace BPM_Piston_Pump
 
             List<double> hist = new List<double>();
             int cnt = 0;
+            int hr_cnt = 0;
             int max_cnt = 0;
             int min_cnt = 0;
             bool ascending = false;
             List<double> maximas = new List<double>();
             MovingAverage avg = new MovingAverage();
+            bool txt = false;
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -90,6 +103,7 @@ namespace BPM_Piston_Pump
                         {
                             datax.Add(float.Parse(ln));
                         }
+                        txt = true;
                     }
                     else if (ofd.FileName.Split(".").Last() == "csv")
                     {
@@ -108,7 +122,16 @@ namespace BPM_Piston_Pump
                 }
             }
 
-            float[] data_ = config.VoltageToMmHg(datax.ToArray()); // CHANGE HERE!!!
+            float[] data_ = null;
+            if (txt)
+            {
+                data_ = this.VoltageToMmHg(datax.ToArray()); // CHANGE HERE!!!
+            }
+            else
+            {
+                data_ = datax.ToArray(); // CHANGE HERE!!!
+            }
+
             foreach (double el in data_)
             {
                 data.Add(el);
@@ -155,6 +178,8 @@ namespace BPM_Piston_Pump
                             //peaks.Add(1);                                
                             ascending = false;
                             max_cnt = 0;
+                            HR.Add(cnt - hr_cnt);
+                            hr_cnt = cnt;
                         }
                         else if (min_cnt > 99)
                         {
@@ -265,7 +290,7 @@ namespace BPM_Piston_Pump
                 //avg2.ComputeAverage(env); 
                 //env_avg.Add(avg2.Average);
             }
-            env_avg.RemoveRange(0, (int)4.5 * 500); // Zeitkorrektur, empirisch erhoben
+            env_avg.RemoveRange(0, (int)4.5 * int.Parse(config.param["sample_rate"])); // Zeitkorrektur, empirisch erhoben
 
 
             // Another peak detection:
@@ -345,6 +370,11 @@ namespace BPM_Piston_Pump
             }
             */
 
+            // calculate HR
+            HR.RemoveAt(0);
+            double av = 60 / HR.Average() * int.Parse(config.param["sample_rate"]);
+            lblHR.Text = "HR: " + string.Format("{0:N1}", av);
+
             checkSignal.Checked = false;
             checkHighpass.Checked = false;
             checkPeaks.Checked = false;
@@ -379,13 +409,25 @@ namespace BPM_Piston_Pump
             else return j;
         }
 
+        private float[] VoltageToMmHg(float[] voltage)
+        {
+            float k = (float)((numHg2.Value - numHg1.Value) / (numV2.Value - numV1.Value));
+            float d = (float)numHg2.Value - k * (float)numV2.Value;
+            float[] mmHg = new float[voltage.Length];
+            for (int i = 0; i < voltage.Length; i++)
+            {
+                mmHg[i] = k * voltage[i] + d;
+            }
+            return mmHg;
+        }
+
         #region Checkboxes
 
         private void checkSignal_CheckedChanged(object sender, EventArgs e)
         {
             if (checkSignal.Checked)
             {
-                plt_data = plotData.Plot.AddSignal(data.ToArray(), sampleRate: 500);
+                plt_data = plotData.Plot.AddSignal(data.ToArray(), sampleRate: int.Parse(config.param["sample_rate"]));
             }
             else
             {
@@ -398,7 +440,7 @@ namespace BPM_Piston_Pump
         {
             if (checkHighpass.Checked)
             {
-                plt_filtered = plotData.Plot.AddSignal(filtered.ToArray(), sampleRate: 500);
+                plt_filtered = plotData.Plot.AddSignal(filtered.ToArray(), sampleRate: int.Parse(config.param["sample_rate"]));
             }
             else
             {
@@ -411,7 +453,7 @@ namespace BPM_Piston_Pump
         {
             if (checkPeaks.Checked)
             {
-                plt_peaks = plotData.Plot.AddSignal(peaks.ToArray(), sampleRate: 500);
+                plt_peaks = plotData.Plot.AddSignal(peaks.ToArray(), sampleRate: int.Parse(config.param["sample_rate"]));
             }
             else
             {
@@ -424,7 +466,7 @@ namespace BPM_Piston_Pump
         {
             if (checkEnvelop.Checked)
             {
-                plt_envelop = plotData.Plot.AddSignal(envelop.ToArray(), sampleRate: 500);
+                plt_envelop = plotData.Plot.AddSignal(envelop.ToArray(), sampleRate: int.Parse(config.param["sample_rate"]));
             }
             else
             {
@@ -437,7 +479,7 @@ namespace BPM_Piston_Pump
         {
             if (checkLowpass.Checked)
             {
-                plt_lowpass = plotData.Plot.AddSignal(env_avg.ToArray(), sampleRate: 500);
+                plt_lowpass = plotData.Plot.AddSignal(env_avg.ToArray(), sampleRate: int.Parse(config.param["sample_rate"]));
             }
             else
             {
@@ -501,6 +543,5 @@ namespace BPM_Piston_Pump
         }
 
         #endregion
-
     }
 }
