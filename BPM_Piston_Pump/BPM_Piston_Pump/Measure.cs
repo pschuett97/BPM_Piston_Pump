@@ -137,8 +137,6 @@ namespace BPM_Piston_Pump
             btnStop.Visible = true;
             btnTrigger.Visible = true;
 
-            // Start Membrane Pump
-            inter.set_digital_output_high(int.Parse(config.param["membrane_pump_do_port"]));
             start_timer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
             StartTimer();    
             // Watch until numStartPressure.Value is reached            
@@ -146,8 +144,33 @@ namespace BPM_Piston_Pump
 
         async void StartTimer()
         {
+            // bring piston to correct position
+            // maybe open valves?
+            /*
+            inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
+            inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"])); // maybe change direction?
+            inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
+            */
+
             while (await start_timer.WaitForNextTickAsync())
             {
+                if (inter.get_digital_input(int.Parse(config.param["limit_switch1_di_port"])))
+                {
+                    // reaktiviere piston wieder
+
+                    // fahre in die andere richtung, bis es reicht
+                    // 20 ticks oder so?
+
+
+                }
+
+                /*
+                if ( tickts == 20 )
+                stop piston
+                start membrane
+                inter.set_digital_output_high(int.Parse(config.param["membrane_pump_do_port"]));
+                */
+
                 if (config.VoltageToMmHg(inter.get_analog_input(int.Parse(config.param["pressure_sensor_ai_port"]))) > (float)numStartPressure.Value || checkSimulation.Checked)
                 {
                     // stop timer

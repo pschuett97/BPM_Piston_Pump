@@ -108,8 +108,8 @@ namespace BPM_Piston_Pump
                 }
             }
 
-            float[] data_ = config.VoltageToMmHg(datax.ToArray());
-            foreach(double el in data_)
+            float[] data_ = config.VoltageToMmHg(datax.ToArray()); // CHANGE HERE!!!
+            foreach (double el in data_)
             {
                 data.Add(el);
             }
@@ -297,13 +297,16 @@ namespace BPM_Piston_Pump
                         if (max > threshold)
                         {
                             //MABPs.Add(data[cnt - 1000]);
-                            MABPs.Add(data[closestPeak(cnt - 1000)]);
+                            //MABPs.Add(data[closestPeak(cnt - 1000)]);
+                            lblMABP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000)]) + "  ";
+
 
                             for (int i = 1; i < cnt; i++)
                             {
                                 if (env_avg[cnt - 1000 - i] < 0.601 * max)
                                 {
-                                    MABPs.Add(data[closestPeak(cnt - 1000 - i)]); // Wert finden, der zum Peak gehört
+                                    //MABPs.Add(data[closestPeak(cnt - 1000 - i)]); // Wert finden, der zum Peak gehört
+                                    lblBP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000 - i)]) + " ";
                                     break;
                                 }
                             }
@@ -311,7 +314,8 @@ namespace BPM_Piston_Pump
                             {
                                 if (env_avg[cnt - 1000 + i] < 0.601 * max)
                                 {
-                                    MABPs.Add(data[closestPeak(cnt - 1000 + i)]);
+                                    //MABPs.Add(data[closestPeak(cnt - 1000 + i)]);
+                                    lblBP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000 + i)]) + " | ";
                                     break;
                                 }
                             }
@@ -330,6 +334,7 @@ namespace BPM_Piston_Pump
                 cnt++;
             }
 
+            /*
             cnt = 1;
             foreach (double d in MABPs)
             {
@@ -338,6 +343,7 @@ namespace BPM_Piston_Pump
                 else txtBP.Text += " - ";
                 cnt++;
             }
+            */
 
             checkSignal.Checked = false;
             checkHighpass.Checked = false;
@@ -347,14 +353,14 @@ namespace BPM_Piston_Pump
             checkSignal.Checked = true;
         }
 
-        public int closestPeak (int index)
+        public int closestPeak(int index)
         {
             int i = index;
             int j = index;
 
-            while (i<peaks.Count)
+            while (i < peaks.Count)
             {
-                if (peaks[i]>0)
+                if (peaks[i] > 0)
                 {
                     break;
                 }
@@ -493,6 +499,8 @@ namespace BPM_Piston_Pump
             plotData.Plot.SetAxisLimits(xMin - xSpan / 4, xMax + xSpan / 4, yMin, yMax);
             plotData.Refresh();
         }
+
         #endregion
+
     }
 }

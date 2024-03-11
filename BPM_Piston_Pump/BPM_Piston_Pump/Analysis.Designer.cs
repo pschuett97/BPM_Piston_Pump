@@ -45,9 +45,27 @@
             butXSmall = new Button();
             butYLarge = new Button();
             butYSmall = new Button();
+            panel1 = new Panel();
+            label6 = new Label();
+            label5 = new Label();
+            label4 = new Label();
+            label3 = new Label();
+            numHg2 = new NumericUpDown();
+            numV2 = new NumericUpDown();
+            numHg1 = new NumericUpDown();
+            numV1 = new NumericUpDown();
+            panel2 = new Panel();
+            lblMABP = new Label();
+            lblBP = new Label();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numHg2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numV2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numHg1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numV1).BeginInit();
+            panel2.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -60,13 +78,17 @@
             tableLayoutPanel1.Controls.Add(flowLayoutPanel2, 1, 1);
             tableLayoutPanel1.Controls.Add(txtBP, 1, 0);
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 1);
+            tableLayoutPanel1.Controls.Add(panel1, 0, 3);
+            tableLayoutPanel1.Controls.Add(panel2, 1, 3);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 3;
+            tableLayoutPanel1.RowCount = 4;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Size = new Size(748, 583);
             tableLayoutPanel1.TabIndex = 0;
             // 
@@ -90,7 +112,7 @@
             plotData.Location = new Point(5, 114);
             plotData.Margin = new Padding(5, 4, 5, 4);
             plotData.Name = "plotData";
-            plotData.Size = new Size(738, 465);
+            plotData.Size = new Size(738, 405);
             plotData.TabIndex = 0;
             // 
             // flowLayoutPanel2
@@ -263,6 +285,152 @@
             butYSmall.UseVisualStyleBackColor = true;
             butYSmall.Click += butYSmall_Click;
             // 
+            // panel1
+            // 
+            panel1.Controls.Add(label6);
+            panel1.Controls.Add(label5);
+            panel1.Controls.Add(label4);
+            panel1.Controls.Add(label3);
+            panel1.Controls.Add(numHg2);
+            panel1.Controls.Add(numV2);
+            panel1.Controls.Add(numHg1);
+            panel1.Controls.Add(numV1);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(3, 526);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(368, 54);
+            panel1.TabIndex = 9;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.ForeColor = SystemColors.ControlLightLight;
+            label6.Location = new Point(266, 27);
+            label6.Name = "label6";
+            label6.Size = new Size(45, 15);
+            label6.TabIndex = 7;
+            label6.Text = "mmHg";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.ForeColor = SystemColors.ControlLightLight;
+            label5.Location = new Point(266, 2);
+            label5.Name = "label5";
+            label5.Size = new Size(45, 15);
+            label5.TabIndex = 6;
+            label5.Text = "mmHg";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.ForeColor = SystemColors.ControlLightLight;
+            label4.Location = new Point(89, 27);
+            label4.Name = "label4";
+            label4.Size = new Size(109, 15);
+            label4.TabIndex = 5;
+            label4.Text = "volt corresponds to";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.ForeColor = SystemColors.ControlLightLight;
+            label3.Location = new Point(89, 2);
+            label3.Name = "label3";
+            label3.Size = new Size(109, 15);
+            label3.TabIndex = 4;
+            label3.Text = "volt corresponds to";
+            // 
+            // numHg2
+            // 
+            numHg2.BackColor = Color.FromArgb(23, 21, 32);
+            numHg2.BorderStyle = BorderStyle.None;
+            numHg2.ForeColor = SystemColors.ControlLightLight;
+            numHg2.Location = new Point(204, 28);
+            numHg2.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
+            numHg2.Name = "numHg2";
+            numHg2.Size = new Size(56, 19);
+            numHg2.TabIndex = 3;
+            numHg2.TextAlign = HorizontalAlignment.Right;
+            numHg2.UpDownAlign = LeftRightAlignment.Left;
+            numHg2.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            // 
+            // numV2
+            // 
+            numV2.BackColor = Color.FromArgb(23, 21, 32);
+            numV2.BorderStyle = BorderStyle.None;
+            numV2.DecimalPlaces = 5;
+            numV2.ForeColor = SystemColors.ControlLightLight;
+            numV2.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
+            numV2.Location = new Point(3, 28);
+            numV2.Maximum = new decimal(new int[] { 12, 0, 0, 0 });
+            numV2.Name = "numV2";
+            numV2.Size = new Size(80, 19);
+            numV2.TabIndex = 2;
+            numV2.TextAlign = HorizontalAlignment.Right;
+            numV2.UpDownAlign = LeftRightAlignment.Left;
+            numV2.Value = new decimal(new int[] { 227, 0, 0, 131072 });
+            // 
+            // numHg1
+            // 
+            numHg1.BackColor = Color.FromArgb(23, 21, 32);
+            numHg1.BorderStyle = BorderStyle.None;
+            numHg1.ForeColor = SystemColors.ControlLightLight;
+            numHg1.Location = new Point(204, 0);
+            numHg1.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
+            numHg1.Name = "numHg1";
+            numHg1.Size = new Size(56, 19);
+            numHg1.TabIndex = 1;
+            numHg1.TextAlign = HorizontalAlignment.Right;
+            numHg1.UpDownAlign = LeftRightAlignment.Left;
+            numHg1.Value = new decimal(new int[] { 40, 0, 0, 0 });
+            // 
+            // numV1
+            // 
+            numV1.BackColor = Color.FromArgb(23, 21, 32);
+            numV1.BorderStyle = BorderStyle.None;
+            numV1.DecimalPlaces = 5;
+            numV1.ForeColor = SystemColors.ControlLightLight;
+            numV1.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
+            numV1.Location = new Point(3, 0);
+            numV1.Maximum = new decimal(new int[] { 12, 0, 0, 0 });
+            numV1.Name = "numV1";
+            numV1.Size = new Size(80, 19);
+            numV1.TabIndex = 0;
+            numV1.TextAlign = HorizontalAlignment.Right;
+            numV1.UpDownAlign = LeftRightAlignment.Left;
+            numV1.Value = new decimal(new int[] { 92, 0, 0, 131072 });
+            // 
+            // panel2
+            // 
+            panel2.Controls.Add(lblBP);
+            panel2.Controls.Add(lblMABP);
+            panel2.Dock = DockStyle.Fill;
+            panel2.Location = new Point(377, 526);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(368, 54);
+            panel2.TabIndex = 10;
+            // 
+            // lblMABP
+            // 
+            lblMABP.AutoSize = true;
+            lblMABP.ForeColor = SystemColors.ControlLightLight;
+            lblMABP.Location = new Point(3, 2);
+            lblMABP.Name = "lblMABP";
+            lblMABP.Size = new Size(46, 15);
+            lblMABP.TabIndex = 0;
+            lblMABP.Text = "MABP: ";
+            // 
+            // lblBP
+            // 
+            lblBP.AutoSize = true;
+            lblBP.ForeColor = SystemColors.ControlLightLight;
+            lblBP.Location = new Point(3, 27);
+            lblBP.Name = "lblBP";
+            lblBP.Size = new Size(27, 15);
+            lblBP.TabIndex = 1;
+            lblBP.Text = "BP: ";
+            // 
             // Analysis
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -278,6 +446,14 @@
             flowLayoutPanel2.PerformLayout();
             flowLayoutPanel1.ResumeLayout(false);
             flowLayoutPanel1.PerformLayout();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numHg2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numV2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numHg1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numV1).EndInit();
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -300,5 +476,17 @@
         private Button butYSmall;
         private Button butYLarge;
         private Button butXLarge;
+        private Panel panel1;
+        private NumericUpDown numHg2;
+        private NumericUpDown numV2;
+        private NumericUpDown numHg1;
+        private NumericUpDown numV1;
+        private Label label3;
+        private Label label4;
+        private Label label6;
+        private Label label5;
+        private Panel panel2;
+        private Label lblBP;
+        private Label lblMABP;
     }
 }

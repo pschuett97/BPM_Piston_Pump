@@ -54,7 +54,7 @@ namespace BPM_Piston_Pump
                     param["how_many_runs"] = "2000";
                     param["log_file_name"] = "log.csv";
                     param["log_file_path"] = ""; // @"C:\"
-                    param["start_pressure"] = "100";
+                    param["start_pressure"] = "150";
                     // Port Config
                     // do = digital out
                     param["limit_switch1_do_port"] = "1";                    
