@@ -340,6 +340,12 @@ namespace BPM_Piston_Pump
             }
         }
 
+        /// <summary>
+        /// When a peak got found:
+        /// Calculation of the heart rate.
+        /// Interpolation beteen the peaks and simultanously calculation of the envelop.
+        /// Peak detection of the envelop and calculation of the BP parameter.
+        /// </summary>
         private void linearPeakInterpolation() // with low pass filtering to build envelop
         {
             if (!first)
@@ -358,19 +364,20 @@ namespace BPM_Piston_Pump
 
                 for (int i = (int)x0; i < x1; i++)
                 {
+                    // Interpolation and lowpass filtering to get the envelop
                     LowPass.Update(y0 + (i - x0) * (y1 - y0) / (x1 - x0));
                     envelop.Add(LowPass.Value);
                     float d = LowPass.Value;
 
                     // peak detection of envelop
-                    if (hist_env.Count < 1000)
+                    if (hist_env.Count < 1000) // gather 1000 values
                     {
                         hist_env.Add(d);
                     }
                     else
                     {
                         float max = hist_env.Max();
-                        if (max < d && !ascending_env)
+                        if (max < d && !ascending_env) // no minimum detection hence this
                         {
                             ascending_env = true;
                         }
@@ -378,21 +385,23 @@ namespace BPM_Piston_Pump
                         {
                             max_cnt_env = 0;
                         }
-                        if (max_cnt_env > 999)
+                        if (max_cnt_env > 999) // maximum found
                         {
-                            if (max > threshold)
+                            if (max > threshold) // maximum needs to be higher than the threshold to be the correct maximum
                             {
-                                threshold = max * 0.60f;
-                                //lblMABP.Text += " " + string.Format("{0:N1}", data_work[cnt_env - 1000]); // obsolete
+                                threshold = max * 0.70f; // adjust threshold
 
                                 int nearest_pos = nearestPeak(cnt_env);
                                 lblMABP.Text += " " + string.Format("{0:N1}", data_work[nearest_pos]) + " ";
 
+                                // when in normal mode, systole and diastole are calcualted
                                 if (rdoNormalMode.Checked)
                                 {
                                     foundMABP = true;
                                     localMax = max;
 
+                                    // depending on the direction only one parameter can be calculated by now
+                                    // more data necessary for the other parameter
                                     if (dir)
                                     {
                                         for (int n = 1; n < cnt_env; n++)
@@ -435,7 +444,7 @@ namespace BPM_Piston_Pump
                     }
                     cnt_env++;
                 }
-                if (foundMABP)
+                if (foundMABP) // calculate the other parameter if possible
                 {
                     findBP();
                 }
@@ -447,10 +456,10 @@ namespace BPM_Piston_Pump
                 first = false;
                 x0 = maximas.Last().Pos;
                 y0 = maximas.Last().Volt;
-                float[] arr = new float[(int)(cnt - 4.5 * int.Parse(config.param["sample_rate"]))]; // Zeitkorrektur, empirisch erhoben
+                float[] arr = new float[(int)(cnt - 4.5 * int.Parse(config.param["sample_rate"]))]; // time correction, got value erpirically
                 Array.Clear(arr, 0, arr.Length);
                 envelop.AddRange(arr);
-                cnt_env = (int)(cnt - 4.5 * int.Parse(config.param["sample_rate"])); // Zeitkorrektur, empirisch erhoben
+                cnt_env = (int)(cnt - 4.5 * int.Parse(config.param["sample_rate"])); // time correction, got value erpirically
             }
         }
 
@@ -525,6 +534,11 @@ namespace BPM_Piston_Pump
             config.param["start_pressure"] = numStartPressure.Value.ToString();
         }
 
+        /// <summary>
+        /// Trigger means, that the data gets a timestamp, when for instance the MRI measurement started.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnTrigger_Click(object sender, EventArgs e)
         {
             btnTrigger.Visible = false;

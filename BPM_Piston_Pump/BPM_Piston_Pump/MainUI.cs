@@ -6,10 +6,14 @@ namespace BPM_Piston_Pump
     public partial class MainUI : Form
     {
         AppConfig config;
+        private Form activeForm = null;
+
         public MainUI()
         {
             InitializeComponent();
             config = new AppConfig();
+
+            // show the developer button if developer is enabled
             if (int.Parse(config.param["developer"]) == 1)
                 checkDeveloper.Checked = true;
             else
@@ -20,7 +24,10 @@ namespace BPM_Piston_Pump
             //btnHelp.Text = config.param["log_file_name"].ToString();
         }
 
-        private Form activeForm = null;
+        /// <summary>
+        /// Closes the old form and opens a new one.
+        /// </summary>
+        /// <param name="childForm"></param>
         private void openChildForm(Form childForm)
         {
             if (activeForm != null)
@@ -115,6 +122,11 @@ namespace BPM_Piston_Pump
             Process.Start(new ProcessStartInfo("mailto:p.schuettengruber@outlook.com") { UseShellExecute = true });
         }
 
+        /// <summary>
+        /// Activate or deactivate the developer button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checkDeveloper_CheckedChanged(object sender, EventArgs e)
         {
             if (checkDeveloper.Checked)

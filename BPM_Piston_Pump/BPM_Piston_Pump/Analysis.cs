@@ -14,17 +14,16 @@ namespace BPM_Piston_Pump
     public partial class Analysis : Form
     {
         AppConfig config; // configuration
-        FilterButterworth HighPass;
+        FilterButterworth HighPass; // filters
         FilterButterworth LowPass;
-        List<float> datax;
+        List<float> datax; // data at different stages of the analysis
         List<double> data;
         List<double> filtered;
         List<double> peaks;
         List<double> envelop;
         List<double> env_avg;
-        List<double> MABPs;
-        List<double> HR;
-        ScottPlot.Plottable.SignalPlot plt_data;
+        List<double> HR; // to calculate the mean heart rate
+        ScottPlot.Plottable.SignalPlot plt_data; // plot of the different stages
         ScottPlot.Plottable.SignalPlot plt_filtered;
         ScottPlot.Plottable.SignalPlot plt_peaks;
         ScottPlot.Plottable.SignalPlot plt_envelop;
@@ -43,32 +42,40 @@ namespace BPM_Piston_Pump
             peaks = new List<double>();
             envelop = new List<double>();
             env_avg = new List<double>();
-            MABPs = new List<double>();
             HR = new List<double>();
+
+            // init filters
             HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
             LowPass = new FilterButterworth((float)0.05, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
 
+            // init plot
             plotData.Plot.XAxis.Label("Time (seconds)");
             plotData.Plot.YAxis.Label("Pressure (mmHg)");
             plotData.Plot.XAxis.Color(Color.White);
             plotData.Plot.YAxis.Color(Color.White);
             plotData.Refresh();
 
+            // safety feature 
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
             inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
             inter.stop_scan();
         }
 
+        /// <summary>
+        /// Starts the data analysis procedure.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnGo_Click(object sender, EventArgs e)
         {
+            // reset all data
             data.Clear();
             datax.Clear();
             filtered.Clear();
             peaks.Clear();
             envelop.Clear();
             env_avg.Clear();
-            MABPs.Clear();
             checkSignal.Checked = false;
             checkHighpass.Checked = false;
             checkPeaks.Checked = false;
@@ -77,20 +84,20 @@ namespace BPM_Piston_Pump
             lblMABP.Text = "MABP: ";
             lblBP.Text = "BP: ";
 
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = config.param["log_file_path"];
-            ofd.RestoreDirectory = true;
-            ofd.Filter = "txt files (*.txt)|*.txt|csv files (*.csv)|*.csv|All files (*.*)|*.*";
-
             List<double> hist = new List<double>();
             int cnt = 0;
             int hr_cnt = 0;
             int max_cnt = 0;
             int min_cnt = 0;
             bool ascending = false;
-            List<double> maximas = new List<double>();
             MovingAverage avg = new MovingAverage();
             bool txt = false;
+
+            // choose a file that contains data to be analysed
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = config.param["log_file_path"];
+            ofd.RestoreDirectory = true;
+            ofd.Filter = "txt files (*.txt)|*.txt|csv files (*.csv)|*.csv|All files (*.*)|*.*";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -122,14 +129,15 @@ namespace BPM_Piston_Pump
                 }
             }
 
-            float[] data_ = null;
+            // if the data needs to be converted from volt to mmHg
+            float[] data_ = null;  
             if (txt)
             {
-                data_ = this.VoltageToMmHg(datax.ToArray()); // CHANGE HERE!!!
+                data_ = this.VoltageToMmHg(datax.ToArray()); 
             }
             else
             {
-                data_ = datax.ToArray(); // CHANGE HERE!!!
+                data_ = datax.ToArray();
             }
 
             foreach (double el in data_)
@@ -150,68 +158,63 @@ namespace BPM_Piston_Pump
             // peak detection
             foreach (double d in filtered)
             {
-                if (cnt > 3000)
+                if (cnt > 3000) // wait for the transient response of the highpass filter
                 {
-                    if (hist.Count < 100)
+                    if (hist.Count < 100) // always looks at 100 samples at a time
                     {
                         hist.Add(d);
                     }
                     else
                     {
-                        /*
-                        if (hist.Max() < d && !ascending) // obsolete - nur bei maximum only detection
-                        {
-                            ascending = true;
-                        }
-                        */
-                        if (d > hist.Max())
+                        if (d > hist.Max()) // new max found
                         {
                             max_cnt = 0;
                         }
-                        if (d < hist.Min())
+                        if (d < hist.Min()) // new min found
                         {
                             min_cnt = 0;
                         }
-                        if (max_cnt > 99)
+                        if (max_cnt > 99) // last 100 values no change in maximum
                         {
-                            peaks.Add(hist.First());
-                            //peaks.Add(1);                                
-                            ascending = false;
+                            peaks.Add(hist.First()); // declare peak                  
+                            ascending = false; // now look for minimum
                             max_cnt = 0;
-                            HR.Add(cnt - hr_cnt);
+                            HR.Add(cnt - hr_cnt); // for Heart Rate calculation (drop the first value)
                             hr_cnt = cnt;
                         }
-                        else if (min_cnt > 99)
+                        else if (min_cnt > 99) // last 100 value no change in minimum
                         {
-                            peaks.Add(hist.First());
+                            peaks.Add(hist.First()); // declare minumum
                             min_cnt = 0;
-                            ascending = true;
+                            ascending = true; // now look for maximum
                         }
                         else
                         {
-                            peaks.Add(0);
+                            peaks.Add(0); // not a peak --> set to zero
                         }
 
-                        if (ascending)
+                        if (ascending) // if one looks for a maximum
                         {
                             max_cnt++;
                         }
-                        else
+                        else // if one looks for a minimum
                         {
                             min_cnt++;
                         }
-                        hist.RemoveAt(0);
+                        hist.RemoveAt(0); // keep hist at a length of 100
                         hist.Add(d);
                     }
                 }
                 else
                 {
-                    peaks.Add(0);
+                    peaks.Add(0); // set first 3000 to zero (transient response)
                 }
                 cnt++;
             }
 
             // calculate envelop
+            // add minimum to maximum
+            // also eliminiation of artefacts when changing directions
             double save = 0;
             bool artefact = false;
 
@@ -221,29 +224,29 @@ namespace BPM_Piston_Pump
                 {
                     if (artefact)
                     {
-                        envelop.Add(peaks[i] * (-1)); // hier kein save addiert weil der Peak sonst überproportional groß ist
+                        envelop.Add(peaks[i] * (-1)); // save not added here because peak would a overproportionally high
                         save = 0;
                         artefact = false;
                     }
                     else
                     {
-                        save = peaks[i];
-                        envelop.Add(0);
+                        save = peaks[i]; // artefact detected
+                        envelop.Add(0); // set minimum to zero
                         artefact = true;
                     }
 
                 }
                 else if (peaks[i] > 0)
                 {
-                    if (!artefact) // ist auch Artefakt
+                    if (!artefact) // sematic wrong here, is also artefact!
                     {
-                        save = -peaks[i];
-                        envelop.Add(0);
+                        save = -peaks[i]; // artefact detected
+                        envelop.Add(0); // set minimum to zero
                         artefact = true;
                     }
                     else
                     {
-                        envelop.Add(peaks[i] - save);
+                        envelop.Add(peaks[i] - save); 
                         save = 0;
                         artefact = false;
                     }
@@ -253,6 +256,8 @@ namespace BPM_Piston_Pump
                     envelop.Add(0);
                 }
             }
+
+            // calculate envelop by linear interpolation of each peak to peak maximum
 
             double x0 = 0, x1 = 0, y0 = 0, y1 = 0;
             bool rdy = false;
@@ -271,7 +276,7 @@ namespace BPM_Piston_Pump
                     x0 = x1;
                     y0 = y1;
                 }
-                else if (envelop[i] > 0 && !rdy)
+                else if (envelop[i] > 0 && !rdy) 
                 {
                     x0 = i;
                     y0 = envelop[i];
@@ -279,10 +284,10 @@ namespace BPM_Piston_Pump
                 }
             }
 
+            // lowpass filtering the envelop to get good local maxima
 
             //MovingAverage avg2 = new MovingAverage();
             //avg2.windowSize = 1000;
-
             foreach (float env in envelop)
             {
                 LowPass.Update(env);
@@ -290,47 +295,47 @@ namespace BPM_Piston_Pump
                 //avg2.ComputeAverage(env); 
                 //env_avg.Add(avg2.Average);
             }
-            env_avg.RemoveRange(0, (int)4.5 * int.Parse(config.param["sample_rate"])); // Zeitkorrektur, empirisch erhoben
+            env_avg.RemoveRange(0, (int)4.5 * int.Parse(config.param["sample_rate"])); // time correction, got value erpirically
 
 
-            // Another peak detection:
-
+            // Another peak detection over the smooth envelop:
             hist.Clear();
             cnt = 0;
             ascending = false;
-            double threshold = env_avg.Max() * 0.60;
+            double threshold = env_avg.Max() * 0.60; // detected peak needs to be over certain threshold to be a maximum
 
             foreach (double d in env_avg)
             {
-                if (hist.Count < 1000)
+                if (hist.Count < 1000) // gather 1000 values
                 {
                     hist.Add(d);
                 }
                 else
                 {
                     double max = hist.Max();
-                    if (max < d && !ascending)
+                    if (max < d && !ascending) // no minimum detection hence this
                     {
                         ascending = true;
                     }
-                    if (d > max)
+                    if (d > max) // new highest value found
                     {
                         max_cnt = 0;
                     }
                     if (max_cnt > 999)
                     {
-                        if (max > threshold)
+                        if (max > threshold) // detected peak needs to be over certain threshold to be a maximum
                         {
-                            //MABPs.Add(data[cnt - 1000]);
-                            //MABPs.Add(data[closestPeak(cnt - 1000)]);
                             lblMABP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000)]) + "  ";
 
-
+                            // ONE CANNOT DISTINGUISH SYSTOLE OR DIASTOLY BY NOW!!!
+                            // ONE DOES NOT KNOW IF THE ORIGINAL DATA WAS ACCENDING OR DECENDING IN THIS CYCLE!
+                            // HENCE DISCRIMINATION NOT POSSILBE
+                            // !!!VALUES ARE WRONG!!!
+                            // SYSTOLE WOULD BE 0.5*max and DIASTOLE 0.7*max
                             for (int i = 1; i < cnt; i++)
                             {
                                 if (env_avg[cnt - 1000 - i] < 0.601 * max)
                                 {
-                                    //MABPs.Add(data[closestPeak(cnt - 1000 - i)]); // Wert finden, der zum Peak gehört
                                     lblBP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000 - i)]) + " ";
                                     break;
                                 }
@@ -339,7 +344,6 @@ namespace BPM_Piston_Pump
                             {
                                 if (env_avg[cnt - 1000 + i] < 0.601 * max)
                                 {
-                                    //MABPs.Add(data[closestPeak(cnt - 1000 + i)]);
                                     lblBP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000 + i)]) + " | ";
                                     break;
                                 }
@@ -359,22 +363,12 @@ namespace BPM_Piston_Pump
                 cnt++;
             }
 
-            /*
-            cnt = 1;
-            foreach (double d in MABPs)
-            {
-                txtBP.Text += string.Format("{0:N1}", d);
-                if (cnt % 3 == 0) txtBP.Text += "\r\n";
-                else txtBP.Text += " - ";
-                cnt++;
-            }
-            */
-
             // calculate HR
             HR.RemoveAt(0);
             double av = 60 / HR.Average() * int.Parse(config.param["sample_rate"]);
             lblHR.Text = "HR: " + string.Format("{0:N1}", av);
 
+            // to display the signal properly
             checkSignal.Checked = false;
             checkHighpass.Checked = false;
             checkPeaks.Checked = false;
@@ -383,6 +377,11 @@ namespace BPM_Piston_Pump
             checkSignal.Checked = true;
         }
 
+        /// <summary>
+        /// Finds the peak that is closest to the given index.
+        /// </summary>
+        /// <param name="index">Index of a point of interest.</param>
+        /// <returns>Index of the closest peak.</returns>
         public int closestPeak(int index)
         {
             int i = index;
@@ -409,6 +408,11 @@ namespace BPM_Piston_Pump
             else return j;
         }
 
+        /// <summary>
+        /// Calculates the mmHg value of a given range of voltages.
+        /// </summary>
+        /// <param name="voltage">Voltages from the pressure sensor</param>
+        /// <returns>Corresponding mmHg values.</returns>
         private float[] VoltageToMmHg(float[] voltage)
         {
             float k = (float)((numHg2.Value - numHg1.Value) / (numV2.Value - numV1.Value));
@@ -421,6 +425,7 @@ namespace BPM_Piston_Pump
             return mmHg;
         }
 
+        // plotting the selected data in the graph
         #region Checkboxes
 
         private void checkSignal_CheckedChanged(object sender, EventArgs e)
@@ -489,6 +494,7 @@ namespace BPM_Piston_Pump
         }
         #endregion
 
+        // make the graph scaleable in x and y direction
         #region x and y buttons
         private void butXSmall_Click(object sender, EventArgs e)
         {
