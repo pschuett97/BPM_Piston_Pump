@@ -46,7 +46,7 @@ namespace BPM_Piston_Pump
 
             // init filters
             HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
-            LowPass = new FilterButterworth((float)0.05, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
+            LowPass = new FilterButterworth((float)0.04, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
 
             // init plot
             plotData.Plot.XAxis.Label("Time (seconds)");
@@ -92,12 +92,13 @@ namespace BPM_Piston_Pump
             bool ascending = false;
             MovingAverage avg = new MovingAverage();
             bool txt = false;
+            bool dir = false;
 
             // choose a file that contains data to be analysed
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = config.param["log_file_path"];
             ofd.RestoreDirectory = true;
-            ofd.Filter = "txt files (*.txt)|*.txt|csv files (*.csv)|*.csv|All files (*.*)|*.*";
+            ofd.Filter = "csv files (*.csv)|*.csv|txt files (*.txt)|*.txt|All files (*.*)|*.*";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -160,7 +161,7 @@ namespace BPM_Piston_Pump
             {
                 if (cnt > 3000) // wait for the transient response of the highpass filter
                 {
-                    if (hist.Count < 100) // always looks at 100 samples at a time
+                    if (hist.Count < (int.Parse(config.param["sample_rate"]) / 6.25)) // always looks at 100 samples at a time
                     {
                         hist.Add(d);
                     }
@@ -174,7 +175,7 @@ namespace BPM_Piston_Pump
                         {
                             min_cnt = 0;
                         }
-                        if (max_cnt > 99) // last 100 values no change in maximum
+                        if (max_cnt > (int.Parse(config.param["sample_rate"]) / 6.25 - 1)) // last 100 values no change in maximum
                         {
                             peaks.Add(hist.First()); // declare peak                  
                             ascending = false; // now look for minimum
@@ -182,7 +183,7 @@ namespace BPM_Piston_Pump
                             HR.Add(cnt - hr_cnt); // for Heart Rate calculation (drop the first value)
                             hr_cnt = cnt;
                         }
-                        else if (min_cnt > 99) // last 100 value no change in minimum
+                        else if (min_cnt > (int.Parse(config.param["sample_rate"]) / 6.25 - 1)) // last 100 value no change in minimum
                         {
                             peaks.Add(hist.First()); // declare minumum
                             min_cnt = 0;
@@ -295,7 +296,7 @@ namespace BPM_Piston_Pump
                 //avg2.ComputeAverage(env); 
                 //env_avg.Add(avg2.Average);
             }
-            env_avg.RemoveRange(0, (int)4.5 * int.Parse(config.param["sample_rate"])); // time correction, got value erpirically
+            env_avg.RemoveRange(0, (int)(5.4 * int.Parse(config.param["sample_rate"]))); // time correction, got value erpirically
 
 
             // Another peak detection over the smooth envelop:
@@ -325,29 +326,49 @@ namespace BPM_Piston_Pump
                     {
                         if (max > threshold) // detected peak needs to be over certain threshold to be a maximum
                         {
-                            lblMABP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000)]) + "  ";
+                            lblMABP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000)]) - 4) + "  ";
 
-                            // ONE CANNOT DISTINGUISH SYSTOLE OR DIASTOLY BY NOW!!!
-                            // ONE DOES NOT KNOW IF THE ORIGINAL DATA WAS ACCENDING OR DECENDING IN THIS CYCLE!
-                            // HENCE DISCRIMINATION NOT POSSILBE
-                            // !!!VALUES ARE WRONG!!!
-                            // SYSTOLE WOULD BE 0.5*max and DIASTOLE 0.7*max
-                            for (int i = 1; i < cnt; i++)
+                            // Systole and Diastole only correct when starting with reducing pressure
+                            if (!dir)
                             {
-                                if (env_avg[cnt - 1000 - i] < 0.601 * max)
+                                for (int i = 1; i < cnt; i++)
                                 {
-                                    lblBP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000 - i)]) + " ";
-                                    break;
+                                    if (env_avg[cnt - 1000 - i] < 0.501 * max)
+                                    {
+                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000 - i)] + 2)) + " ";
+                                        break;
+                                    }
+                                }
+                                for (int i = 1; i < cnt; i++)
+                                {
+                                    if (env_avg[cnt - 1000 + i] < 0.701 * max)
+                                    {
+                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000 + i)] - 4)) + " | ";
+                                        break;
+                                    }
                                 }
                             }
-                            for (int i = 1; i < cnt; i++)
+                            else
                             {
-                                if (env_avg[cnt - 1000 + i] < 0.601 * max)
+                                for (int i = 1; i < cnt; i++)
                                 {
-                                    lblBP.Text += string.Format("{0:N1}", data[closestPeak(cnt - 1000 + i)]) + " | ";
-                                    break;
+                                    if (env_avg[cnt - 1000 + i] < 0.501 * max)
+                                    {
+                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000 + i)] + 2)) + " ";
+                                        break;
+                                    }
                                 }
+                                for (int i = 1; i < cnt; i++)
+                                {
+                                    if (env_avg[cnt - 1000 - i] < 0.701 * max)
+                                    {
+                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000 - i)] - 4)) + " | ";
+                                        break;
+                                    }
+                                }
+
                             }
+                            dir = !dir;
                         }
                         ascending = false;
                         max_cnt = 0;

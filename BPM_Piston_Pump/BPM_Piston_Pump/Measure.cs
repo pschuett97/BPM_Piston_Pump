@@ -105,7 +105,7 @@ namespace BPM_Piston_Pump
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             config.InitPressureSensor();
             HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
-            LowPass = new FilterButterworth((float)0.05, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
+            LowPass = new FilterButterworth((float)0.04, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
             avg = new MovingAverage();
         }
 
@@ -208,12 +208,23 @@ namespace BPM_Piston_Pump
 
         async void RepeatForEver()
         {
+            /*
             using (StreamReader file = new StreamReader("data_2.txt"))
             {
                 string ln;
                 while ((ln = file.ReadLine()) != null)
                 {
                     simulation_data.Add(float.Parse(ln));
+                }
+                file.Close();
+            }
+            */
+            using (StreamReader file = new StreamReader("probant1.csv"))
+            {
+                string ln;
+                while ((ln = file.ReadLine()) != null)
+                {
+                    simulation_data.Add(float.Parse(ln.Split(";")[0]));
                 }
                 file.Close();
             }
@@ -248,7 +259,7 @@ namespace BPM_Piston_Pump
                     triggerTime = time;
                     triggered = false;
                 }
-                values = config.VoltageToMmHg(values);
+                if (!checkSimulation.Checked) values = config.VoltageToMmHg(values);
                 data.Add(new Measurement(values, time, this.dir));
                 data_period.Clear();
                 data_period.AddRange(values);
@@ -304,7 +315,7 @@ namespace BPM_Piston_Pump
                             }
                             else
                             {
-                                maximas.Add(new Peaks(hist.First() - save, cnt - 90, dir));  // 101 = timeshift of the filter, empirisch ermittelt
+                                maximas.Add(new Peaks(hist.First() - save, cnt - 96, dir));  // 96 = timeshift of the filter, empirisch ermittelt
                                 linearPeakInterpolation();
                                 save = 0;
                                 artefact = false;
@@ -316,7 +327,7 @@ namespace BPM_Piston_Pump
                         {
                             if (artefact)
                             {
-                                maximas.Add(new Peaks(hist.First() * (-1), cnt - 90, dir));
+                                maximas.Add(new Peaks(hist.First() * (-1), cnt - 96, dir));
                                 linearPeakInterpolation();
                                 save = 0;
                                 artefact = false;
@@ -392,7 +403,7 @@ namespace BPM_Piston_Pump
                                 threshold = max * 0.70f; // adjust threshold
 
                                 int nearest_pos = nearestPeak(cnt_env);
-                                lblMABP.Text += " " + string.Format("{0:N1}", data_work[nearest_pos]) + " ";
+                                lblMABP.Text += " " + string.Format("{0:N0}", (data_work[nearest_pos]) - 4) + " ";
 
                                 // when in normal mode, systole and diastole are calcualted
                                 if (rdoNormalMode.Checked)
@@ -408,7 +419,7 @@ namespace BPM_Piston_Pump
                                         {
                                             if (envelop[cnt_env - 1000 - n] < 0.501 * localMax)
                                             {
-                                                lblSystolic.Text += " " + string.Format("{0:N1}", data_work[nearestPeak(cnt_env - n)]) + " ";
+                                                lblSystolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env - n)])+2) + " ";
                                                 break;
                                             }
                                         }
@@ -419,7 +430,7 @@ namespace BPM_Piston_Pump
                                         {
                                             if (envelop[cnt_env - 1000 - n] < 0.701 * localMax)
                                             {
-                                                lblDiastolic.Text += " " + string.Format("{0:N1}", data_work[nearestPeak(cnt_env - n)]) + " ";
+                                                lblDiastolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env - n)])-4) + " ";
                                                 break;
                                             }
                                         }
@@ -456,10 +467,10 @@ namespace BPM_Piston_Pump
                 first = false;
                 x0 = maximas.Last().Pos;
                 y0 = maximas.Last().Volt;
-                float[] arr = new float[(int)(cnt - 4.5 * int.Parse(config.param["sample_rate"]))]; // time correction, got value erpirically
+                float[] arr = new float[(int)(cnt - 5.4 * int.Parse(config.param["sample_rate"]))]; // time correction, got value erpirically
                 Array.Clear(arr, 0, arr.Length);
                 envelop.AddRange(arr);
-                cnt_env = (int)(cnt - 4.5 * int.Parse(config.param["sample_rate"])); // time correction, got value erpirically
+                cnt_env = (int)(cnt - 5.4 * int.Parse(config.param["sample_rate"])); // time correction, got value erpirically
             }
         }
 
@@ -497,7 +508,7 @@ namespace BPM_Piston_Pump
                 {
                     if (envelop[cnt_env - 1000 + n] < 0.701 * localMax)
                     {
-                        lblDiastolic.Text += " " + string.Format("{0:N1}", data_work[nearestPeak(cnt_env + n)]) + " ";
+                        lblDiastolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env + n)])-4) + " ";
                         foundMABP = false;
                         changeDir();
                         start_interator = 1;
@@ -508,7 +519,7 @@ namespace BPM_Piston_Pump
                 {
                     if (envelop[cnt_env - 1000 + n] < 0.501 * localMax)
                     {
-                        lblSystolic.Text += " " + string.Format("{0:N1}", data_work[nearestPeak(cnt_env + n)]) + " ";
+                        lblSystolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env + n)])+2) + " ";
                         foundMABP = false;
                         changeDir();
                         start_interator = 1;
