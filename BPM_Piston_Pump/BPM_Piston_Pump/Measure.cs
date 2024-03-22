@@ -276,7 +276,7 @@ namespace BPM_Piston_Pump
             inter.stop_scan();
             timer.Dispose();
             inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
-            using (var outf = new StreamWriter(config.param["log_file_path"] + config.param["log_file_name"]))
+            using (var outf = new StreamWriter(config.param["log_file_path"]))
             {
                 outf.WriteLine(triggerTime.ToString());
                 for (int i = 0; i < data.Count; i++)
@@ -419,7 +419,7 @@ namespace BPM_Piston_Pump
                                         {
                                             if (envelop[cnt_env - 1000 - n] < 0.501 * localMax)
                                             {
-                                                lblSystolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env - n)])+2) + " ";
+                                                lblSystolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env - n)]) + 2) + " ";
                                                 break;
                                             }
                                         }
@@ -430,7 +430,7 @@ namespace BPM_Piston_Pump
                                         {
                                             if (envelop[cnt_env - 1000 - n] < 0.701 * localMax)
                                             {
-                                                lblDiastolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env - n)])-4) + " ";
+                                                lblDiastolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env - n)]) - 4) + " ";
                                                 break;
                                             }
                                         }
@@ -508,7 +508,7 @@ namespace BPM_Piston_Pump
                 {
                     if (envelop[cnt_env - 1000 + n] < 0.701 * localMax)
                     {
-                        lblDiastolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env + n)])-4) + " ";
+                        lblDiastolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env + n)]) - 4) + " ";
                         foundMABP = false;
                         changeDir();
                         start_interator = 1;
@@ -519,7 +519,7 @@ namespace BPM_Piston_Pump
                 {
                     if (envelop[cnt_env - 1000 + n] < 0.501 * localMax)
                     {
-                        lblSystolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env + n)])+2) + " ";
+                        lblSystolic.Text += " " + string.Format("{0:N0}", (data_work[nearestPeak(cnt_env + n)]) + 2) + " ";
                         foundMABP = false;
                         changeDir();
                         start_interator = 1;

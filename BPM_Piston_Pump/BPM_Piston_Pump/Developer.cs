@@ -294,7 +294,7 @@ namespace BPM_Piston_Pump
             timer.Dispose();
             inter.stop_scan();
             inter.set_digital_output_low(1); // ToDo CHANGE!!!
-            
+
             using (var outf = new StreamWriter("data.txt"))
                 for (int i = 0; i < data.Count; i++)
                     outf.WriteLine(data[i].ToString());

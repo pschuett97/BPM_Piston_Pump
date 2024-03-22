@@ -32,7 +32,8 @@ namespace BmcmInterface
                 Console.WriteLine("failed to open {0}: err = {1}", "usb-ad14f", errno);
                 return;
             }
-            // sets all outputs low preemptively
+            // sets all outputs low preemptively,
+            // because the initial state of the variable digitalOutputs is low
             this.set_digital_output_low(1);
         }
 

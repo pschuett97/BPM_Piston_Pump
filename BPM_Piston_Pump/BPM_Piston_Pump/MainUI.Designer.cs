@@ -39,18 +39,19 @@
             btnDeveloper = new Button();
             btnAnalysis = new Button();
             panelChildForm = new Panel();
+            panel2 = new Panel();
+            richTextBox1 = new RichTextBox();
+            panel1 = new Panel();
             checkDeveloper = new CheckBox();
             linkLabel1 = new LinkLabel();
-            label5 = new Label();
-            label4 = new Label();
-            label3 = new Label();
             label2 = new Label();
-            label1 = new Label();
             tableLayoutPanel1.SuspendLayout();
             panelSideMenu.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panelChildForm.SuspendLayout();
+            panel2.SuspendLayout();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -221,26 +222,56 @@
             // 
             // panelChildForm
             // 
-            panelChildForm.Controls.Add(checkDeveloper);
-            panelChildForm.Controls.Add(linkLabel1);
-            panelChildForm.Controls.Add(label5);
-            panelChildForm.Controls.Add(label4);
-            panelChildForm.Controls.Add(label3);
+            panelChildForm.Controls.Add(panel2);
+            panelChildForm.Controls.Add(panel1);
             panelChildForm.Controls.Add(label2);
-            panelChildForm.Controls.Add(label1);
             panelChildForm.Dock = DockStyle.Fill;
             panelChildForm.Location = new Point(162, 3);
             panelChildForm.Name = "panelChildForm";
             panelChildForm.Size = new Size(635, 444);
             panelChildForm.TabIndex = 1;
             // 
+            // panel2
+            // 
+            panel2.Controls.Add(richTextBox1);
+            panel2.Dock = DockStyle.Fill;
+            panel2.Location = new Point(0, 0);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(635, 386);
+            panel2.TabIndex = 10;
+            // 
+            // richTextBox1
+            // 
+            richTextBox1.BackColor = Color.FromArgb(23, 21, 32);
+            richTextBox1.BorderStyle = BorderStyle.None;
+            richTextBox1.Dock = DockStyle.Fill;
+            richTextBox1.ForeColor = SystemColors.ControlLightLight;
+            richTextBox1.Location = new Point(0, 0);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.ReadOnly = true;
+            richTextBox1.ScrollBars = RichTextBoxScrollBars.Vertical;
+            richTextBox1.Size = new Size(635, 386);
+            richTextBox1.TabIndex = 8;
+            richTextBox1.Text = "\n";
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(checkDeveloper);
+            panel1.Controls.Add(linkLabel1);
+            panel1.Dock = DockStyle.Bottom;
+            panel1.Location = new Point(0, 386);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(635, 58);
+            panel1.TabIndex = 9;
+            // 
             // checkDeveloper
             // 
+            checkDeveloper.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             checkDeveloper.AutoSize = true;
             checkDeveloper.Checked = true;
             checkDeveloper.CheckState = CheckState.Checked;
             checkDeveloper.ForeColor = SystemColors.ControlLightLight;
-            checkDeveloper.Location = new Point(3, 89);
+            checkDeveloper.Location = new Point(522, 24);
             checkDeveloper.Name = "checkDeveloper";
             checkDeveloper.Size = new Size(79, 19);
             checkDeveloper.TabIndex = 6;
@@ -251,71 +282,24 @@
             // linkLabel1
             // 
             linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(79, 147);
+            linkLabel1.Location = new Point(9, 25);
             linkLabel1.Margin = new Padding(2, 0, 2, 0);
             linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(30, 15);
+            linkLabel1.Size = new Size(49, 15);
             linkLabel1.TabIndex = 5;
             linkLabel1.TabStop = true;
-            linkLabel1.Text = "here";
+            linkLabel1.Text = "Contact";
             linkLabel1.LinkClicked += linkLabel1_LinkClicked;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.ForeColor = SystemColors.ControlLightLight;
-            label5.Location = new Point(2, 147);
-            label5.Margin = new Padding(2, 0, 2, 0);
-            label5.Name = "label5";
-            label5.Size = new Size(73, 15);
-            label5.TabIndex = 4;
-            label5.Text = "Contact him";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.ForeColor = SystemColors.ControlLightLight;
-            label4.Location = new Point(2, 132);
-            label4.Margin = new Padding(2, 0, 2, 0);
-            label4.Name = "label4";
-            label4.Size = new Size(345, 15);
-            label4.TabIndex = 3;
-            label4.Text = "This was the master project of Pascal Schüttengruber in 2023/24.";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 12F, FontStyle.Bold | FontStyle.Underline, GraphicsUnit.Point);
-            label3.ForeColor = SystemColors.ControlLightLight;
-            label3.Location = new Point(2, 111);
-            label3.Margin = new Padding(2, 0, 2, 0);
-            label3.Name = "label3";
-            label3.Size = new Size(57, 21);
-            label3.TabIndex = 2;
-            label3.Text = "About";
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.ForeColor = SystemColors.ControlLightLight;
-            label2.Location = new Point(2, 29);
+            label2.Location = new Point(2, 113);
             label2.Margin = new Padding(2, 0, 2, 0);
             label2.Name = "label2";
-            label2.Size = new Size(122, 15);
+            label2.Size = new Size(0, 15);
             label2.TabIndex = 1;
-            label2.Text = "ToDo - Write help text";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold | FontStyle.Underline, GraphicsUnit.Point);
-            label1.ForeColor = SystemColors.ControlLightLight;
-            label1.Location = new Point(2, 4);
-            label1.Margin = new Padding(2, 0, 2, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(54, 25);
-            label1.TabIndex = 0;
-            label1.Text = "Help";
             // 
             // MainUI
             // 
@@ -335,6 +319,9 @@
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             panelChildForm.ResumeLayout(false);
             panelChildForm.PerformLayout();
+            panel2.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -347,15 +334,14 @@
         private Button btnHelp;
         private Button btnDeveloper;
         private Button btnCalibration;
-        private Label label1;
         private Label label2;
         private TableLayoutPanel tableLayoutPanel2;
         private PictureBox pictureBox1;
         private LinkLabel linkLabel1;
-        private Label label5;
-        private Label label4;
-        private Label label3;
         private CheckBox checkDeveloper;
         private Button btnAnalysis;
+        private RichTextBox richTextBox1;
+        private Panel panel1;
+        private Panel panel2;
     }
 }

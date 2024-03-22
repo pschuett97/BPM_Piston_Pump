@@ -342,40 +342,44 @@
             // lblHR
             // 
             lblHR.AutoSize = true;
+            lblHR.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             lblHR.ForeColor = SystemColors.ControlLightLight;
-            lblHR.Location = new Point(0, 49);
+            lblHR.Location = new Point(0, 78);
             lblHR.Name = "lblHR";
-            lblHR.Size = new Size(26, 15);
+            lblHR.Size = new Size(40, 25);
             lblHR.TabIndex = 3;
             lblHR.Text = "HR:";
             // 
             // lblMABP
             // 
             lblMABP.AutoSize = true;
+            lblMABP.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             lblMABP.ForeColor = SystemColors.ControlLightLight;
             lblMABP.Location = new Point(0, 3);
             lblMABP.Name = "lblMABP";
-            lblMABP.Size = new Size(43, 15);
+            lblMABP.Size = new Size(67, 25);
             lblMABP.TabIndex = 2;
             lblMABP.Text = "MABP:";
             // 
             // lblDiastolic
             // 
             lblDiastolic.AutoSize = true;
+            lblDiastolic.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             lblDiastolic.ForeColor = SystemColors.ControlLightLight;
-            lblDiastolic.Location = new Point(0, 18);
+            lblDiastolic.Location = new Point(0, 53);
             lblDiastolic.Name = "lblDiastolic";
-            lblDiastolic.Size = new Size(58, 15);
+            lblDiastolic.Size = new Size(93, 25);
             lblDiastolic.TabIndex = 1;
             lblDiastolic.Text = "Diastolic: ";
             // 
             // lblSystolic
             // 
             lblSystolic.AutoSize = true;
+            lblSystolic.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             lblSystolic.ForeColor = SystemColors.ControlLightLight;
-            lblSystolic.Location = new Point(0, 34);
+            lblSystolic.Location = new Point(0, 28);
             lblSystolic.Name = "lblSystolic";
-            lblSystolic.Size = new Size(53, 15);
+            lblSystolic.Size = new Size(83, 25);
             lblSystolic.TabIndex = 0;
             lblSystolic.Text = "Systolic: ";
             // 

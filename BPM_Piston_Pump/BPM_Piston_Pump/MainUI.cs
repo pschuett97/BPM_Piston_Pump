@@ -1,5 +1,6 @@
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 
 namespace BPM_Piston_Pump
 {
@@ -19,6 +20,21 @@ namespace BPM_Piston_Pump
             else
                 checkDeveloper.Checked = false;
 
+            if (File.Exists("help.rtf"))
+            {
+                try
+                {
+                    richTextBox1.LoadFile("help.rtf");
+                }
+                catch (IOException)
+                {
+                    richTextBox1.Text = "Please close help.rtf file";
+                }
+            }
+            else
+            {
+                richTextBox1.Text = "Cannot find help.rtf file!";
+            }
 
             //config.loadConfig();
             //btnHelp.Text = config.param["log_file_name"].ToString();
@@ -139,7 +155,5 @@ namespace BPM_Piston_Pump
         {
             openChildForm(new Analysis(config));
         }
-
-
     }
 }

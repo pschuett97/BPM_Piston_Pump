@@ -308,7 +308,6 @@
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 65F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel3.Controls.Add(label12, 3, 1);
             tableLayoutPanel3.Controls.Add(label10, 3, 0);
             tableLayoutPanel3.Controls.Add(numStepSize, 2, 1);
             tableLayoutPanel3.Controls.Add(numTolerance, 2, 0);
@@ -317,6 +316,7 @@
             tableLayoutPanel3.Controls.Add(numSpeedInflation, 0, 0);
             tableLayoutPanel3.Controls.Add(label6, 1, 0);
             tableLayoutPanel3.Controls.Add(label9, 1, 1);
+            tableLayoutPanel3.Controls.Add(label12, 3, 1);
             tableLayoutPanel3.Dock = DockStyle.Fill;
             tableLayoutPanel3.Location = new Point(3, 23);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
