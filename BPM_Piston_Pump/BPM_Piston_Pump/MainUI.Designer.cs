@@ -40,10 +40,11 @@
             btnAnalysis = new Button();
             panelChildForm = new Panel();
             panel2 = new Panel();
-            richTextBox1 = new RichTextBox();
+            panel3 = new Panel();
             panel1 = new Panel();
             checkDeveloper = new CheckBox();
             linkLabel1 = new LinkLabel();
+            richTextBox1 = new RichTextBox();
             label2 = new Label();
             tableLayoutPanel1.SuspendLayout();
             panelSideMenu.SuspendLayout();
@@ -51,6 +52,7 @@
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panelChildForm.SuspendLayout();
             panel2.SuspendLayout();
+            panel3.SuspendLayout();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -223,45 +225,40 @@
             // panelChildForm
             // 
             panelChildForm.Controls.Add(panel2);
-            panelChildForm.Controls.Add(panel1);
             panelChildForm.Controls.Add(label2);
             panelChildForm.Dock = DockStyle.Fill;
             panelChildForm.Location = new Point(162, 3);
             panelChildForm.Name = "panelChildForm";
             panelChildForm.Size = new Size(635, 444);
-            panelChildForm.TabIndex = 1;
+            panelChildForm.TabIndex = 11;
             // 
             // panel2
             // 
+            panel2.Controls.Add(panel3);
             panel2.Controls.Add(richTextBox1);
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(0, 0);
             panel2.Name = "panel2";
-            panel2.Size = new Size(635, 386);
+            panel2.Size = new Size(635, 444);
             panel2.TabIndex = 10;
             // 
-            // richTextBox1
+            // panel3
             // 
-            richTextBox1.BackColor = Color.FromArgb(23, 21, 32);
-            richTextBox1.BorderStyle = BorderStyle.None;
-            richTextBox1.Dock = DockStyle.Fill;
-            richTextBox1.ForeColor = SystemColors.ControlLightLight;
-            richTextBox1.Location = new Point(0, 0);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.ReadOnly = true;
-            richTextBox1.ScrollBars = RichTextBoxScrollBars.Vertical;
-            richTextBox1.Size = new Size(635, 386);
-            richTextBox1.TabIndex = 8;
-            richTextBox1.Text = "\n";
+            panel3.Controls.Add(panel1);
+            panel3.Dock = DockStyle.Bottom;
+            panel3.Location = new Point(0, 371);
+            panel3.Name = "panel3";
+            panel3.Size = new Size(635, 73);
+            panel3.TabIndex = 10;
             // 
             // panel1
             // 
             panel1.Controls.Add(checkDeveloper);
             panel1.Controls.Add(linkLabel1);
-            panel1.Dock = DockStyle.Bottom;
-            panel1.Location = new Point(0, 386);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(635, 58);
+            panel1.Size = new Size(635, 73);
             panel1.TabIndex = 9;
             // 
             // checkDeveloper
@@ -290,6 +287,20 @@
             linkLabel1.TabStop = true;
             linkLabel1.Text = "Contact";
             linkLabel1.LinkClicked += linkLabel1_LinkClicked;
+            // 
+            // richTextBox1
+            // 
+            richTextBox1.BackColor = Color.FromArgb(23, 21, 32);
+            richTextBox1.BorderStyle = BorderStyle.None;
+            richTextBox1.Dock = DockStyle.Fill;
+            richTextBox1.ForeColor = SystemColors.ControlLightLight;
+            richTextBox1.Location = new Point(0, 0);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.ReadOnly = true;
+            richTextBox1.ScrollBars = RichTextBoxScrollBars.Vertical;
+            richTextBox1.Size = new Size(635, 444);
+            richTextBox1.TabIndex = 8;
+            richTextBox1.Text = "\n";
             // 
             // label2
             // 
@@ -320,6 +331,7 @@
             panelChildForm.ResumeLayout(false);
             panelChildForm.PerformLayout();
             panel2.ResumeLayout(false);
+            panel3.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ResumeLayout(false);
@@ -343,5 +355,6 @@
         private RichTextBox richTextBox1;
         private Panel panel1;
         private Panel panel2;
+        private Panel panel3;
     }
 }

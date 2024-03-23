@@ -41,6 +41,11 @@ namespace BPM_Piston_Pump
             inter.stop_scan();
         }
 
+        /// <summary>
+        /// Start a leak proof test in a new thread and tracks the progress.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnLeakproofTestStart_Click(object sender, EventArgs e)
         {
             progressBar1.Visible = true;
@@ -64,33 +69,32 @@ namespace BPM_Piston_Pump
             workerLeakProofTest.RunWorkerAsync();
         }
 
-
+        /// <summary>
+        /// Pumps initial air in the system with the membrane pump, stops it after a while and snapshots one voltage value.
+        /// It then waits 5s and collects a second value and compares it.
+        /// </summary>
+        /// <returns></returns>
         private string leakProofTest()
         {
             float voltage = 0;
             bool proof = true;
             int cnt = 0;
 
-            // ToDo 
+            inter.set_digital_output_high(int.Parse(this.config.param["membrane_pump_do_port"]));
+            while (voltage < 3)
+            {
+                cnt++;
+                if (cnt > 10)
+                {
+                    inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
+                    MessageBox.Show("Error: Pump cannot reach required pressure at all! This could mean that there is a big leak or the air volume is simply too high");
+                    break;
+                }
+                Thread.Sleep(100);   // wait(500);
+                voltage = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
+            }
+            inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
 
-            /* Set under pressure !!  AND ADJUST VALUES!
-             * activates port 5 = the port of the membrane pump
-             * 
-             *  inter.set_digital_output_high(int.Parse(this.config.param["membrane_pump_do_port"]));
-             *  while (voltage < 3)
-             *  {
-             *      cnt++;
-             *      if (cnt > 10)
-             *      {
-             *          inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
-             *          MessageBox.Show("Error: Pump cannot reach required pressure at all! This could mean that there is a big leak or the air volume is simply too high");
-             *          break;
-             *      }
-             *      wait(500);
-             *      voltage = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
-             *  }
-             *  inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
-             */
 
             voltage = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
 
@@ -104,11 +108,15 @@ namespace BPM_Piston_Pump
             }
 
 
-
             if (proof) return "Result: Good!";
             else return "Result: NOT LEAKPROOF!";
         }
 
+        /// <summary>
+        /// Starts the speed calibration and tracks its progress.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnCalibrateSpeed_Click(object sender, EventArgs e)
         {
             progressBar1.Visible = true;
@@ -131,12 +139,15 @@ namespace BPM_Piston_Pump
 
         }
 
+        /// <summary>
+        /// Another initialization step that handels the timer
+        /// </summary>
         private void calibrateSpeed()
         {
             running = true;
-            inter.set_analog_output(3);  // start analog output voltage = 3
-            inter.set_digital_output_high(1); // ToDo change ports
-            inter.set_digital_output_high(2);
+            inter.set_analog_output(3);  // start analog output voltage = 3V
+            inter.set_digital_output_high(int.Parse(this.config.param["piston_pump_dir_do_port"])); // ToDo change ports
+            inter.set_digital_output_high(int.Parse(this.config.param["piston_pump_ena_do_port"]));
             inter.start_scan(500, 10000, 1000, 10000);
             timer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000));
             RepeatForEver();
@@ -146,6 +157,10 @@ namespace BPM_Piston_Pump
             }
         }
 
+        /// <summary>
+        /// It pumps up, gathers values every one second and builds the mean. Then the last two values get substracted and compared.
+        /// The have to land in an interval of the desired speed with some tolerance.
+        /// </summary>
         async void RepeatForEver()
         {
             List<float> data = new List<float>(); // list to store the data
@@ -198,8 +213,7 @@ namespace BPM_Piston_Pump
                     break;
                 }
             }
-            inter.set_digital_output_low(1); // ToDo change ports
-            inter.set_digital_output_low(2);
+            inter.set_digital_output_low(int.Parse(this.config.param["piston_pump_ena_do_port"]));
             inter.stop_scan();
             timer.Dispose();
             running = false;
@@ -255,6 +269,11 @@ namespace BPM_Piston_Pump
 
         #endregion
 
+        /// <summary>
+        /// Saves all configurations that habe been made.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSaveSettings_Click(object sender, EventArgs e)
         {
             config.saveConfig();

@@ -59,6 +59,7 @@ namespace BPM_Piston_Pump
 
         public readonly struct Measurement
         {
+            // is used to store the values of each run with the corresponding time and direction
             public Measurement(float[] values, float time, bool direction)
             {
                 Value = values;
@@ -71,6 +72,7 @@ namespace BPM_Piston_Pump
             public bool Direction { get; init; }
         }
 
+        // is used to store the peaks such that one can interpolate afterwards.
         public struct Peaks
         {
             public Peaks(float volt, int pos, bool dir)
@@ -119,6 +121,11 @@ namespace BPM_Piston_Pump
             //tblLayoutMeasure.Visible = false;
         }
 
+        /// <summary>
+        /// Declares the directory where the data should be saved.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSaveLog_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
@@ -137,16 +144,23 @@ namespace BPM_Piston_Pump
             }
         }
 
+        /// <summary>
+        /// Starts the measurement procedure.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnStart_Click(object sender, EventArgs e)
         {
             btnStop.Visible = true;
             btnTrigger.Visible = true;
 
             start_timer = new PeriodicTimer(TimeSpan.FromMilliseconds(50));
-            StartTimer();
-            // Watch until numStartPressure.Value is reached            
+            StartTimer();     
         }
 
+        /// <summary>
+        /// Brings the piston in the right start position and then activates the membrane pump.
+        /// </summary>
         async void StartTimer()
         {
             // bring piston to correct position
@@ -157,14 +171,16 @@ namespace BPM_Piston_Pump
                 inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
                 inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
                 inter.set_analog_output(4);
-                inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"])); // maybe change direction?
+                inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"]));
                 inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
             }
 
 
             while (await start_timer.WaitForNextTickAsync())
             {
-                if (inter.get_analog_input(3) > 1)
+                // here it should actually state analog input but the input resistance is too high
+                // hence an analog input is used too detect if Q is high
+                if (inter.get_analog_input(3) > 1) 
                 {
                     // reaktiviere piston wieder
                     inter.set_digital_output_low(int.Parse(config.param["emergency_valve_do_port"]));
@@ -206,6 +222,9 @@ namespace BPM_Piston_Pump
             }
         }
 
+        /// <summary>
+        /// Main measurement method, where the data is collected.
+        /// </summary>
         async void RepeatForEver()
         {
             /*
@@ -219,15 +238,21 @@ namespace BPM_Piston_Pump
                 file.Close();
             }
             */
-            using (StreamReader file = new StreamReader("probant1.csv"))
+            if (checkSimulation.Checked)
             {
-                string ln;
-                while ((ln = file.ReadLine()) != null)
+                if (File.Exists("probant1.csv"))
                 {
-                    simulation_data.Add(float.Parse(ln.Split(";")[0]));
-                }
-                file.Close();
-            }
+                    using (StreamReader file = new StreamReader("probant1.csv"))
+                    {
+                        string ln;
+                        while ((ln = file.ReadLine()) != null)
+                        {
+                            simulation_data.Add(float.Parse(ln.Split(";")[0]));
+                        }
+                        file.Close();
+                    }
+                }                
+            }            
             while (await timer.WaitForNextTickAsync())
             {
                 float[] values;
@@ -268,14 +293,19 @@ namespace BPM_Piston_Pump
             }
         }
 
+        /// <summary>
+        /// Stops the ongoing measurement and saves the data.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnStop_Click(object sender, EventArgs e)
         {
-            btnStop.Visible = false;
-            btnTrigger.Visible = false;
             inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
-            inter.stop_scan();
-            timer.Dispose();
             inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
+            btnStop.Visible = false;
+            btnTrigger.Visible = false;            
+            inter.stop_scan();
+            timer.Dispose();            
             using (var outf = new StreamWriter(config.param["log_file_path"]))
             {
                 outf.WriteLine(triggerTime.ToString());
@@ -289,10 +319,36 @@ namespace BPM_Piston_Pump
             }
         }
 
+        /// <summary>
+        /// Peak detection part.
+        /// </summary>
         private void DataAnalysis()
         {
             foreach (float f in data_period)
             {
+                if (f < 50) // Stop everything when the pressure gets too low
+                {
+                    inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+                    inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
+                    btnStop.Visible = false;
+                    btnTrigger.Visible = false;
+                    inter.stop_scan();
+                    timer.Dispose();
+                    using (var outf = new StreamWriter(config.param["log_file_path"]))
+                    {
+                        outf.WriteLine(triggerTime.ToString());
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            for (int j = 0; j < data[i].Value.Length; j++)
+                            {
+                                outf.WriteLine(data[i].Value[j].ToString() + ";" + data[i].Time + ";" + data[i].Direction);
+                            }
+                        }
+                    }
+                    MessageBox.Show("Pressure dropped too low! Have a look at the recoreded signal in the analysis tab. Possible reasons: " +
+                        "\r\n The start pressure was too low\r\n No Signal was found\r\n The BP is really low");
+                    break;
+                }
                 HighPass.Update(f);
                 //float d = HighPass.Value;
                 avg.ComputeAverage(HighPass.Value);

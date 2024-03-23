@@ -44,7 +44,6 @@
             label8 = new Label();
             groupBox2 = new GroupBox();
             tableLayoutPanel3 = new TableLayoutPanel();
-            label12 = new Label();
             label10 = new Label();
             numStepSize = new NumericUpDown();
             numTolerance = new NumericUpDown();
@@ -53,6 +52,7 @@
             numSpeedInflation = new NumericUpDown();
             label6 = new Label();
             label9 = new Label();
+            label12 = new Label();
             panel2 = new Panel();
             btnSaveSettings = new Button();
             lblLeakprooftestResult = new Label();
@@ -326,16 +326,6 @@
             tableLayoutPanel3.Size = new Size(736, 160);
             tableLayoutPanel3.TabIndex = 0;
             // 
-            // label12
-            // 
-            label12.AutoSize = true;
-            label12.Location = new Point(298, 82);
-            label12.Margin = new Padding(3, 2, 3, 0);
-            label12.Name = "label12";
-            label12.Size = new Size(89, 20);
-            label12.TabIndex = 13;
-            label12.Text = "[V] step size";
-            // 
             // label10
             // 
             label10.AutoSize = true;
@@ -449,6 +439,16 @@
             label9.Size = new Size(124, 40);
             label9.TabIndex = 6;
             label9.Text = "[mmHg/s] deflation velocity";
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(298, 82);
+            label12.Margin = new Padding(3, 2, 3, 0);
+            label12.Name = "label12";
+            label12.Size = new Size(89, 20);
+            label12.TabIndex = 13;
+            label12.Text = "[V] step size";
             // 
             // panel2
             // 
