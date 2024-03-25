@@ -29,7 +29,6 @@ namespace BPM_Piston_Pump
             numHgLowEnd.Value = decimal.Parse(this.config.param["hg_low_end"]);
             numHgHighEnd.Value = decimal.Parse(this.config.param["hg_high_end"]);
             numSpeedInflation.Value = decimal.Parse(this.config.param["v_inflate"]);
-            numSpeedDeflation.Value = decimal.Parse(this.config.param["v_deflate"]);
             numTolerance.Value = decimal.Parse(this.config.param["tolerance"]);
             numStepSize.Value = decimal.Parse(this.config.param["step_size"]);
             inter = new BmcmInterface.BmcmInterface("usbad14f");
@@ -248,11 +247,6 @@ namespace BPM_Piston_Pump
             config.param["hg_high_end"] = numHgHighEnd.Value.ToString();
         }
 
-        private void numSpeedDeflation_ValueChanged(object sender, EventArgs e)
-        {
-            config.param["v_deflation"] = numSpeedDeflation.Value.ToString();
-        }
-
         private void numSpeedInflation_ValueChanged(object sender, EventArgs e)
         {
             config.param["v_inflation"] = numSpeedInflation.Value.ToString();
@@ -280,6 +274,9 @@ namespace BPM_Piston_Pump
             MessageBox.Show("Settings Saved!");
         }
 
-
+        private void btnADC_Click(object sender, EventArgs e)
+        {
+            lblADC.Text = "Value: " + inter.get_analog_input(1).ToString() + " V";
+        }
     }
 }

@@ -146,9 +146,17 @@ namespace BPM_Piston_Pump
         private void checkDeveloper_CheckedChanged(object sender, EventArgs e)
         {
             if (checkDeveloper.Checked)
+            {
                 btnDeveloper.Visible = true;
+                config.param["developer"] = "1";
+            }
+                
             else
+            {
                 btnDeveloper.Visible = false;
+                config.param["developer"] = "0";
+            }
+                
         }
 
         private void btnAnalysis_Click(object sender, EventArgs e)

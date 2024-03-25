@@ -50,7 +50,7 @@ namespace BPM_Piston_Pump
         public BmcmInterface.BmcmInterface inter; // connection to the bmcm interface
         public uint run_id = 0; // counts how many runs there were
         public bool dir = true;
-        public float triggerTime = -1;
+        public string triggerTime = "-1";
         public bool triggered = false;
 
         FilterButterworth HighPass;
@@ -60,7 +60,7 @@ namespace BPM_Piston_Pump
         public readonly struct Measurement
         {
             // is used to store the values of each run with the corresponding time and direction
-            public Measurement(float[] values, float time, bool direction)
+            public Measurement(float[] values, string time, bool direction)
             {
                 Value = values;
                 Time = time;
@@ -68,7 +68,7 @@ namespace BPM_Piston_Pump
             }
 
             public float[] Value { get; init; }
-            public float Time { get; init; }
+            public string Time { get; init; }
             public bool Direction { get; init; }
         }
 
@@ -109,6 +109,11 @@ namespace BPM_Piston_Pump
             HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
             LowPass = new FilterButterworth((float)0.04, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
             avg = new MovingAverage();
+
+            if (int.Parse(config.param["developer"]) == 0)
+            {
+                checkSimulation.Visible = false;
+            }
         }
 
         private void rdoNormalMode_CheckedChanged(object sender, EventArgs e)
@@ -277,7 +282,8 @@ namespace BPM_Piston_Pump
                     values = inter.get_values(run_id);
                 }
 
-                float time = run_id * int.Parse(config.param["values_per_run"]) / int.Parse(config.param["sample_rate"]);
+                //float time = run_id * int.Parse(config.param["values_per_run"]) / int.Parse(config.param["sample_rate"]);
+                string time = DateTime.Now.ToLongTimeString();
                 run_id++;
                 if (triggered)
                 {
@@ -308,7 +314,7 @@ namespace BPM_Piston_Pump
             timer.Dispose();            
             using (var outf = new StreamWriter(config.param["log_file_path"]))
             {
-                outf.WriteLine(triggerTime.ToString());
+                outf.WriteLine(triggerTime);
                 for (int i = 0; i < data.Count; i++)
                 {
                     for (int j = 0; j < data[i].Value.Length; j++)

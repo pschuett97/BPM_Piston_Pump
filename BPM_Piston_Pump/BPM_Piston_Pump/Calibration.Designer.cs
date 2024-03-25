@@ -32,6 +32,7 @@
             tableLayoutPanel1 = new TableLayoutPanel();
             groupBox1 = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
+            lblADC = new Label();
             numSampleRate = new NumericUpDown();
             numVoltLowEnd = new NumericUpDown();
             numVoltHighEnd = new NumericUpDown();
@@ -42,17 +43,16 @@
             label5 = new Label();
             label7 = new Label();
             label8 = new Label();
+            btnADC = new Button();
             groupBox2 = new GroupBox();
             tableLayoutPanel3 = new TableLayoutPanel();
-            label10 = new Label();
             numStepSize = new NumericUpDown();
+            label10 = new Label();
             numTolerance = new NumericUpDown();
-            btnCalibrateSpeed = new Button();
-            numSpeedDeflation = new NumericUpDown();
             numSpeedInflation = new NumericUpDown();
             label6 = new Label();
-            label9 = new Label();
             label12 = new Label();
+            btnCalibrateSpeed = new Button();
             panel2 = new Panel();
             btnSaveSettings = new Button();
             lblLeakprooftestResult = new Label();
@@ -71,7 +71,6 @@
             tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numStepSize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numTolerance).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numSpeedDeflation).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSpeedInflation).BeginInit();
             panel2.SuspendLayout();
             SuspendLayout();
@@ -125,8 +124,9 @@
             tableLayoutPanel2.ColumnCount = 4;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 65F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.Controls.Add(lblADC, 3, 0);
             tableLayoutPanel2.Controls.Add(numSampleRate, 0, 0);
             tableLayoutPanel2.Controls.Add(numVoltLowEnd, 0, 1);
             tableLayoutPanel2.Controls.Add(numVoltHighEnd, 0, 2);
@@ -137,6 +137,7 @@
             tableLayoutPanel2.Controls.Add(label5, 1, 2);
             tableLayoutPanel2.Controls.Add(label7, 3, 1);
             tableLayoutPanel2.Controls.Add(label8, 3, 2);
+            tableLayoutPanel2.Controls.Add(btnADC, 2, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(3, 23);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -146,6 +147,16 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel2.Size = new Size(736, 183);
             tableLayoutPanel2.TabIndex = 0;
+            // 
+            // lblADC
+            // 
+            lblADC.AutoSize = true;
+            lblADC.Location = new Point(303, 2);
+            lblADC.Margin = new Padding(3, 2, 3, 0);
+            lblADC.Name = "lblADC";
+            lblADC.Size = new Size(52, 20);
+            lblADC.TabIndex = 14;
+            lblADC.Text = "Value: ";
             // 
             // numSampleRate
             // 
@@ -205,10 +216,10 @@
             numHgLowEnd.Anchor = AnchorStyles.Top;
             numHgLowEnd.BackColor = Color.FromArgb(23, 21, 32);
             numHgLowEnd.BorderStyle = BorderStyle.None;
-            numHgLowEnd.DecimalPlaces = 3;
+            numHgLowEnd.DecimalPlaces = 2;
             numHgLowEnd.ForeColor = SystemColors.ControlLightLight;
             numHgLowEnd.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            numHgLowEnd.Location = new Point(233, 64);
+            numHgLowEnd.Location = new Point(235, 64);
             numHgLowEnd.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
             numHgLowEnd.Name = "numHgLowEnd";
             numHgLowEnd.Size = new Size(59, 23);
@@ -224,7 +235,7 @@
             numHgHighEnd.BorderStyle = BorderStyle.None;
             numHgHighEnd.DecimalPlaces = 1;
             numHgHighEnd.ForeColor = SystemColors.ControlLightLight;
-            numHgHighEnd.Location = new Point(233, 125);
+            numHgHighEnd.Location = new Point(235, 125);
             numHgHighEnd.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
             numHgHighEnd.Name = "numHgHighEnd";
             numHgHighEnd.Size = new Size(59, 23);
@@ -270,7 +281,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(298, 63);
+            label7.Location = new Point(303, 63);
             label7.Margin = new Padding(3, 2, 3, 0);
             label7.Name = "label7";
             label7.Size = new Size(55, 20);
@@ -280,12 +291,24 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(298, 124);
+            label8.Location = new Point(303, 124);
             label8.Margin = new Padding(3, 2, 3, 0);
             label8.Name = "label8";
             label8.Size = new Size(55, 20);
             label8.TabIndex = 11;
             label8.Text = "mmHg";
+            // 
+            // btnADC
+            // 
+            btnADC.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
+            btnADC.FlatStyle = FlatStyle.Flat;
+            btnADC.Location = new Point(233, 3);
+            btnADC.Name = "btnADC";
+            btnADC.Size = new Size(59, 31);
+            btnADC.TabIndex = 13;
+            btnADC.Text = "ADC";
+            btnADC.UseVisualStyleBackColor = true;
+            btnADC.Click += btnADC_Click;
             // 
             // groupBox2
             // 
@@ -305,36 +328,25 @@
             tableLayoutPanel3.ColumnCount = 5;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 65F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel3.Controls.Add(numStepSize, 0, 1);
             tableLayoutPanel3.Controls.Add(label10, 3, 0);
-            tableLayoutPanel3.Controls.Add(numStepSize, 2, 1);
             tableLayoutPanel3.Controls.Add(numTolerance, 2, 0);
-            tableLayoutPanel3.Controls.Add(btnCalibrateSpeed, 4, 1);
-            tableLayoutPanel3.Controls.Add(numSpeedDeflation, 0, 1);
             tableLayoutPanel3.Controls.Add(numSpeedInflation, 0, 0);
             tableLayoutPanel3.Controls.Add(label6, 1, 0);
-            tableLayoutPanel3.Controls.Add(label9, 1, 1);
-            tableLayoutPanel3.Controls.Add(label12, 3, 1);
+            tableLayoutPanel3.Controls.Add(label12, 1, 1);
+            tableLayoutPanel3.Controls.Add(btnCalibrateSpeed, 2, 1);
             tableLayoutPanel3.Dock = DockStyle.Fill;
             tableLayoutPanel3.Location = new Point(3, 23);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 2;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel3.Size = new Size(736, 160);
             tableLayoutPanel3.TabIndex = 0;
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Location = new Point(298, 2);
-            label10.Margin = new Padding(3, 2, 3, 0);
-            label10.Name = "label10";
-            label10.Size = new Size(81, 40);
-            label10.TabIndex = 11;
-            label10.Text = "[mmHg/s] tolerance";
             // 
             // numStepSize
             // 
@@ -344,16 +356,25 @@
             numStepSize.Dock = DockStyle.Right;
             numStepSize.ForeColor = SystemColors.ControlLightLight;
             numStepSize.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
-            numStepSize.Location = new Point(233, 83);
+            numStepSize.Location = new Point(4, 83);
             numStepSize.Maximum = new decimal(new int[] { 5, 0, 0, 65536 });
             numStepSize.Minimum = new decimal(new int[] { 1, 0, 0, 131072 });
             numStepSize.Name = "numStepSize";
-            numStepSize.Size = new Size(59, 23);
-            numStepSize.TabIndex = 10;
+            numStepSize.Size = new Size(83, 23);
+            numStepSize.TabIndex = 14;
             numStepSize.TextAlign = HorizontalAlignment.Right;
             numStepSize.UpDownAlign = LeftRightAlignment.Left;
             numStepSize.Value = new decimal(new int[] { 2, 0, 0, 65536 });
-            numStepSize.ValueChanged += numStepSize_ValueChanged;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new Point(303, 2);
+            label10.Margin = new Padding(3, 2, 3, 0);
+            label10.Name = "label10";
+            label10.Size = new Size(81, 40);
+            label10.TabIndex = 11;
+            label10.Text = "[mmHg/s] tolerance";
             // 
             // numTolerance
             // 
@@ -363,7 +384,7 @@
             numTolerance.Dock = DockStyle.Right;
             numTolerance.ForeColor = SystemColors.ControlLightLight;
             numTolerance.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
-            numTolerance.Location = new Point(233, 3);
+            numTolerance.Location = new Point(238, 3);
             numTolerance.Maximum = new decimal(new int[] { 1, 0, 0, 0 });
             numTolerance.Minimum = new decimal(new int[] { 1, 0, 0, 262144 });
             numTolerance.Name = "numTolerance";
@@ -373,35 +394,6 @@
             numTolerance.UpDownAlign = LeftRightAlignment.Left;
             numTolerance.Value = new decimal(new int[] { 5, 0, 0, 65536 });
             numTolerance.ValueChanged += numTolerance_ValueChanged;
-            // 
-            // btnCalibrateSpeed
-            // 
-            btnCalibrateSpeed.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
-            btnCalibrateSpeed.FlatStyle = FlatStyle.Flat;
-            btnCalibrateSpeed.Location = new Point(398, 83);
-            btnCalibrateSpeed.Name = "btnCalibrateSpeed";
-            btnCalibrateSpeed.Size = new Size(156, 41);
-            btnCalibrateSpeed.TabIndex = 0;
-            btnCalibrateSpeed.Text = "Calibrate";
-            btnCalibrateSpeed.UseVisualStyleBackColor = true;
-            btnCalibrateSpeed.Click += btnCalibrateSpeed_Click;
-            // 
-            // numSpeedDeflation
-            // 
-            numSpeedDeflation.BackColor = Color.FromArgb(23, 21, 32);
-            numSpeedDeflation.BorderStyle = BorderStyle.None;
-            numSpeedDeflation.DecimalPlaces = 1;
-            numSpeedDeflation.Dock = DockStyle.Right;
-            numSpeedDeflation.ForeColor = SystemColors.ControlLightLight;
-            numSpeedDeflation.Location = new Point(4, 83);
-            numSpeedDeflation.Maximum = new decimal(new int[] { 20, 0, 0, 0 });
-            numSpeedDeflation.Name = "numSpeedDeflation";
-            numSpeedDeflation.Size = new Size(83, 23);
-            numSpeedDeflation.TabIndex = 4;
-            numSpeedDeflation.TextAlign = HorizontalAlignment.Right;
-            numSpeedDeflation.UpDownAlign = LeftRightAlignment.Left;
-            numSpeedDeflation.Value = new decimal(new int[] { 3, 0, 0, 0 });
-            numSpeedDeflation.ValueChanged += numSpeedDeflation_ValueChanged;
             // 
             // numSpeedInflation
             // 
@@ -426,29 +418,32 @@
             label6.Location = new Point(93, 2);
             label6.Margin = new Padding(3, 2, 3, 0);
             label6.Name = "label6";
-            label6.Size = new Size(119, 40);
+            label6.Size = new Size(125, 40);
             label6.TabIndex = 5;
-            label6.Text = "[mmHg/s] inflation velocity";
-            // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.Location = new Point(93, 82);
-            label9.Margin = new Padding(3, 2, 3, 0);
-            label9.Name = "label9";
-            label9.Size = new Size(124, 40);
-            label9.TabIndex = 6;
-            label9.Text = "[mmHg/s] deflation velocity";
+            label6.Text = "[mmHg/s] target velocity";
             // 
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new Point(298, 82);
+            label12.Location = new Point(93, 82);
             label12.Margin = new Padding(3, 2, 3, 0);
             label12.Name = "label12";
             label12.Size = new Size(89, 20);
             label12.TabIndex = 13;
             label12.Text = "[V] step size";
+            // 
+            // btnCalibrateSpeed
+            // 
+            tableLayoutPanel3.SetColumnSpan(btnCalibrateSpeed, 2);
+            btnCalibrateSpeed.FlatAppearance.BorderColor = Color.FromArgb(63, 61, 72);
+            btnCalibrateSpeed.FlatStyle = FlatStyle.Flat;
+            btnCalibrateSpeed.Location = new Point(233, 83);
+            btnCalibrateSpeed.Name = "btnCalibrateSpeed";
+            btnCalibrateSpeed.Size = new Size(151, 41);
+            btnCalibrateSpeed.TabIndex = 0;
+            btnCalibrateSpeed.Text = "Calibrate";
+            btnCalibrateSpeed.UseVisualStyleBackColor = true;
+            btnCalibrateSpeed.Click += btnCalibrateSpeed_Click;
             // 
             // panel2
             // 
@@ -546,7 +541,6 @@
             tableLayoutPanel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numStepSize).EndInit();
             ((System.ComponentModel.ISupportInitialize)numTolerance).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numSpeedDeflation).EndInit();
             ((System.ComponentModel.ISupportInitialize)numSpeedInflation).EndInit();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
@@ -575,16 +569,16 @@
         private Label label7;
         private Label label8;
         private TableLayoutPanel tableLayoutPanel3;
-        private NumericUpDown numSpeedDeflation;
         private NumericUpDown numSpeedInflation;
         private Label label6;
-        private Label label9;
         private Button btnCalibrateSpeed;
         private Label lblLeakprooftestResult;
         private Button btnSaveSettings;
         private Label label12;
         private Label label10;
-        private NumericUpDown numStepSize;
         private NumericUpDown numTolerance;
+        private Label lblADC;
+        private Button btnADC;
+        private NumericUpDown numStepSize;
     }
 }
