@@ -102,6 +102,7 @@ namespace BPM_Piston_Pump
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
+                lblFileName.Text = "Filename: " + ofd.FileName.Split("\\").Last();
                 using (StreamReader file = new StreamReader(ofd.FileName))
                 {
                     if (ofd.FileName.Split(".").Last() == "txt")
@@ -131,10 +132,10 @@ namespace BPM_Piston_Pump
             }
 
             // if the data needs to be converted from volt to mmHg
-            float[] data_ = null;  
+            float[] data_ = null;
             if (txt)
             {
-                data_ = this.VoltageToMmHg(datax.ToArray()); 
+                data_ = this.VoltageToMmHg(datax.ToArray());
             }
             else
             {
@@ -247,7 +248,7 @@ namespace BPM_Piston_Pump
                     }
                     else
                     {
-                        envelop.Add(peaks[i] - save); 
+                        envelop.Add(peaks[i] - save);
                         save = 0;
                         artefact = false;
                     }
@@ -277,7 +278,7 @@ namespace BPM_Piston_Pump
                     x0 = x1;
                     y0 = y1;
                 }
-                else if (envelop[i] > 0 && !rdy) 
+                else if (envelop[i] > 0 && !rdy)
                 {
                     x0 = i;
                     y0 = envelop[i];
@@ -296,7 +297,7 @@ namespace BPM_Piston_Pump
                 //avg2.ComputeAverage(env); 
                 //env_avg.Add(avg2.Average);
             }
-            env_avg.RemoveRange(0, (int)(5.4 * int.Parse(config.param["sample_rate"]))); // time correction, got value erpirically
+            env_avg.RemoveRange(0, (int)(5.3 * int.Parse(config.param["sample_rate"]))); // time correction, got value erpirically
 
 
             // Another peak detection over the smooth envelop:
@@ -307,7 +308,7 @@ namespace BPM_Piston_Pump
 
             foreach (double d in env_avg)
             {
-                if (hist.Count < 1000) // gather 1000 values
+                if (hist.Count < 3000) // gather 3000 values
                 {
                     hist.Add(d);
                 }
@@ -322,47 +323,47 @@ namespace BPM_Piston_Pump
                     {
                         max_cnt = 0;
                     }
-                    if (max_cnt > 999)
+                    if (max_cnt > 2999)
                     {
                         if (max > threshold) // detected peak needs to be over certain threshold to be a maximum
                         {
-                            lblMABP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000)]) - 4) + "  ";
+                            lblMABP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000)]) - 4) + "  ";
 
                             // Systole and Diastole only correct when starting with reducing pressure
                             if (!dir)
                             {
-                                for (int i = 1; i < cnt; i++)
+                                for (int i = 1; i < cnt - 3000; i++)
                                 {
-                                    if (env_avg[cnt - 1000 - i] < 0.501 * max)
+                                    if (env_avg[cnt - 3000 - i] < 0.501 * max)
                                     {
-                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000 - i)] + 2)) + " ";
+                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 - i)] + 2)) + " ";
                                         break;
                                     }
                                 }
-                                for (int i = 1; i < cnt; i++)
+                                for (int i = 1; i < env_avg.Count - cnt - 3000; i++)
                                 {
-                                    if (env_avg[cnt - 1000 + i] < 0.701 * max)
+                                    if (env_avg[cnt - 3000 + i] < 0.701 * max)
                                     {
-                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000 + i)] - 4)) + " | ";
+                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 + i)] - 4)) + " | ";
                                         break;
                                     }
                                 }
                             }
                             else
                             {
-                                for (int i = 1; i < cnt; i++)
+                                for (int i = 1; i < env_avg.Count - cnt - 3000; i++)
                                 {
-                                    if (env_avg[cnt - 1000 + i] < 0.501 * max)
+                                    if (env_avg[cnt - 3000 + i] < 0.501 * max)
                                     {
-                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000 + i)] + 2)) + " ";
+                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 + i)] + 2)) + " ";
                                         break;
                                     }
                                 }
-                                for (int i = 1; i < cnt; i++)
+                                for (int i = 1; i < cnt - 3000; i++)
                                 {
-                                    if (env_avg[cnt - 1000 - i] < 0.701 * max)
+                                    if (env_avg[cnt - 3000 - i] < 0.701 * max)
                                     {
-                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 1000 - i)] - 4)) + " | ";
+                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 - i)] - 4)) + " | ";
                                         break;
                                     }
                                 }

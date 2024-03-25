@@ -57,6 +57,7 @@
             panel2 = new Panel();
             lblBP = new Label();
             lblMABP = new Label();
+            lblFileName = new Label();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -79,6 +80,7 @@
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 1);
             tableLayoutPanel1.Controls.Add(panel1, 0, 3);
             tableLayoutPanel1.Controls.Add(panel2, 1, 3);
+            tableLayoutPanel1.Controls.Add(lblFileName, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -431,6 +433,16 @@
             lblMABP.TabIndex = 0;
             lblMABP.Text = "MABP: ";
             // 
+            // lblFileName
+            // 
+            lblFileName.AutoSize = true;
+            lblFileName.ForeColor = SystemColors.ControlLightLight;
+            lblFileName.Location = new Point(377, 0);
+            lblFileName.Name = "lblFileName";
+            lblFileName.Size = new Size(61, 15);
+            lblFileName.TabIndex = 11;
+            lblFileName.Text = "Filename: ";
+            // 
             // Analysis
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -488,5 +500,6 @@
         private Label lblBP;
         private Label lblMABP;
         private Label lblHR;
+        private Label lblFileName;
     }
 }
