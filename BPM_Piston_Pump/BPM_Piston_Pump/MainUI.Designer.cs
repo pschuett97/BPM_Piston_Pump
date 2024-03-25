@@ -46,6 +46,7 @@
             linkLabel1 = new LinkLabel();
             richTextBox1 = new RichTextBox();
             label2 = new Label();
+            panel4 = new Panel();
             tableLayoutPanel1.SuspendLayout();
             panelSideMenu.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
@@ -54,6 +55,7 @@
             panel2.SuspendLayout();
             panel3.SuspendLayout();
             panel1.SuspendLayout();
+            panel4.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -234,8 +236,8 @@
             // 
             // panel2
             // 
+            panel2.Controls.Add(panel4);
             panel2.Controls.Add(panel3);
-            panel2.Controls.Add(richTextBox1);
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(0, 0);
             panel2.Name = "panel2";
@@ -298,7 +300,7 @@
             richTextBox1.Name = "richTextBox1";
             richTextBox1.ReadOnly = true;
             richTextBox1.ScrollBars = RichTextBoxScrollBars.Vertical;
-            richTextBox1.Size = new Size(635, 444);
+            richTextBox1.Size = new Size(635, 371);
             richTextBox1.TabIndex = 8;
             richTextBox1.Text = "\n";
             // 
@@ -311,6 +313,15 @@
             label2.Name = "label2";
             label2.Size = new Size(0, 15);
             label2.TabIndex = 1;
+            // 
+            // panel4
+            // 
+            panel4.Controls.Add(richTextBox1);
+            panel4.Dock = DockStyle.Fill;
+            panel4.Location = new Point(0, 0);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(635, 371);
+            panel4.TabIndex = 11;
             // 
             // MainUI
             // 
@@ -334,6 +345,7 @@
             panel3.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            panel4.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -356,5 +368,6 @@
         private Panel panel1;
         private Panel panel2;
         private Panel panel3;
+        private Panel panel4;
     }
 }
