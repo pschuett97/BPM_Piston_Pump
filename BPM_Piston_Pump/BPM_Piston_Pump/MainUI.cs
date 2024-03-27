@@ -20,6 +20,7 @@ namespace BPM_Piston_Pump
             else
                 checkDeveloper.Checked = false;
 
+            // load the help.rtf file in the richTextBox container
             if (File.Exists("help.rtf"))
             {
                 try

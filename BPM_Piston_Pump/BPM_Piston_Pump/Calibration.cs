@@ -70,7 +70,7 @@ namespace BPM_Piston_Pump
 
         /// <summary>
         /// Pumps initial air in the system with the membrane pump, stops it after a while and snapshots one voltage value.
-        /// It then waits 5s and collects a second value and compares it.
+        /// It then waits 5s, collects a second value and compares it.
         /// </summary>
         /// <returns></returns>
         private string leakProofTest()
@@ -266,14 +266,15 @@ namespace BPM_Piston_Pump
         /// <summary>
         /// Saves all configurations that habe been made.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btnSaveSettings_Click(object sender, EventArgs e)
         {
             config.saveConfig();
             MessageBox.Show("Settings Saved!");
         }
 
+        /// <summary>
+        /// Reads the value of the analog input pin 1 and displays its value in the UI.
+        /// </summary>
         private void btnADC_Click(object sender, EventArgs e)
         {
             lblADC.Text = "Value: " + inter.get_analog_input(1).ToString() + " V";

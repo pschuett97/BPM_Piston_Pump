@@ -221,7 +221,7 @@
             numWaitTime.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             numWaitTime.ForeColor = SystemColors.ControlLightLight;
             numWaitTime.Location = new Point(9, 64);
-            numWaitTime.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
+            numWaitTime.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numWaitTime.Name = "numWaitTime";
             numWaitTime.Size = new Size(78, 25);
             numWaitTime.TabIndex = 4;
@@ -258,13 +258,13 @@
             numStartPressure.ForeColor = SystemColors.ControlLightLight;
             numStartPressure.Increment = new decimal(new int[] { 5, 0, 0, 0 });
             numStartPressure.Location = new Point(9, 18);
-            numStartPressure.Maximum = new decimal(new int[] { 220, 0, 0, 0 });
+            numStartPressure.Maximum = new decimal(new int[] { 240, 0, 0, 0 });
             numStartPressure.Name = "numStartPressure";
             numStartPressure.Size = new Size(78, 25);
             numStartPressure.TabIndex = 1;
             numStartPressure.TextAlign = HorizontalAlignment.Right;
             numStartPressure.UpDownAlign = LeftRightAlignment.Left;
-            numStartPressure.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            numStartPressure.Value = new decimal(new int[] { 180, 0, 0, 0 });
             numStartPressure.ValueChanged += numStartPressure_ValueChanged;
             // 
             // label4
@@ -344,7 +344,7 @@
             lblHR.AutoSize = true;
             lblHR.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             lblHR.ForeColor = SystemColors.ControlLightLight;
-            lblHR.Location = new Point(0, 78);
+            lblHR.Location = new Point(0, 3);
             lblHR.Name = "lblHR";
             lblHR.Size = new Size(40, 25);
             lblHR.TabIndex = 3;
@@ -355,7 +355,7 @@
             lblMABP.AutoSize = true;
             lblMABP.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             lblMABP.ForeColor = SystemColors.ControlLightLight;
-            lblMABP.Location = new Point(0, 3);
+            lblMABP.Location = new Point(0, 28);
             lblMABP.Name = "lblMABP";
             lblMABP.Size = new Size(67, 25);
             lblMABP.TabIndex = 2;
@@ -366,7 +366,7 @@
             lblDiastolic.AutoSize = true;
             lblDiastolic.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             lblDiastolic.ForeColor = SystemColors.ControlLightLight;
-            lblDiastolic.Location = new Point(0, 53);
+            lblDiastolic.Location = new Point(0, 78);
             lblDiastolic.Name = "lblDiastolic";
             lblDiastolic.Size = new Size(93, 25);
             lblDiastolic.TabIndex = 1;
@@ -377,7 +377,7 @@
             lblSystolic.AutoSize = true;
             lblSystolic.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             lblSystolic.ForeColor = SystemColors.ControlLightLight;
-            lblSystolic.Location = new Point(0, 28);
+            lblSystolic.Location = new Point(0, 53);
             lblSystolic.Name = "lblSystolic";
             lblSystolic.Size = new Size(83, 25);
             lblSystolic.TabIndex = 0;

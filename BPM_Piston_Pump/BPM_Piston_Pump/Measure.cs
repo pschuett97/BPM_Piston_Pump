@@ -116,14 +116,29 @@ namespace BPM_Piston_Pump
             }
         }
 
+        /// <summary>
+        /// Not used.
+        /// </summary>
         private void rdoNormalMode_CheckedChanged(object sender, EventArgs e)
         {
             //tblLayoutMeasure.Visible = true;
         }
 
+        /// <summary>
+        /// Changes the visibility of the labels that are not used when this mode is active.
+        /// </summary>
         private void rdoDynamicMode_CheckedChanged(object sender, EventArgs e)
         {
-            //tblLayoutMeasure.Visible = false;
+            if (rdoDynamicMode.Checked)
+            {
+                lblDiastolic.Visible = false;
+                lblSystolic.Visible = false;
+            }
+            else
+            {
+                lblDiastolic.Visible = true;
+                lblSystolic.Visible = true;
+            }
         }
 
         /// <summary>
@@ -160,7 +175,7 @@ namespace BPM_Piston_Pump
             btnTrigger.Visible = true;
 
             start_timer = new PeriodicTimer(TimeSpan.FromMilliseconds(50));
-            StartTimer();     
+            StartTimer();
         }
 
         /// <summary>
@@ -172,10 +187,12 @@ namespace BPM_Piston_Pump
             // open/close valves            
             if (!checkSimulation.Checked)
             {
+                // valevs in neutral position
                 inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
                 inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
-                inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
-                inter.set_analog_output(4);
+                // max speed
+                inter.set_analog_output(4); 
+                // move in inflation direction 
                 inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"]));
                 inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
             }
@@ -185,11 +202,9 @@ namespace BPM_Piston_Pump
             {
                 // here it should actually state analog input but the input resistance is too high
                 // hence an analog input is used too detect if Q is high
-                if (inter.get_analog_input(3) > 1) 
+                if (inter.get_analog_input(3) > 1)
                 {
-                    // reaktiviere piston wieder
-                    inter.set_digital_output_low(int.Parse(config.param["emergency_valve_do_port"]));
-
+                    // reaktiviere piston wieder                 
                     inter.set_digital_output_low(int.Parse(config.param["piston_pump_dir_do_port"]));
                     inter.set_digital_output_high(int.Parse(config.param["limit_switch2_do_port"]));
                     tick_go = true;
@@ -198,8 +213,14 @@ namespace BPM_Piston_Pump
 
                 if (ticks > numWaitTime.Value * 20) // 13s / 50ms = 260 ticks
                 {
+                    // limit switch
+                    inter.set_digital_output_low(int.Parse(config.param["limit_switch2_do_port"]));
+                    // Stop motor
                     inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
+                    // Set valves for measurement
+                    inter.set_digital_output_low(int.Parse(config.param["emergency_valve_do_port"]));
                     inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
+                    // Start membrane pump
                     inter.set_digital_output_high(int.Parse(config.param["membrane_pump_do_port"]));
                 }
                 else if (tick_go)
@@ -212,9 +233,7 @@ namespace BPM_Piston_Pump
                     // stop timer
                     start_timer.Dispose();
                     // Stop Membrane Pump
-                    inter.set_digital_output_low(int.Parse(config.param["membrane_pump_do_port"]));
-                    // limit switch
-                    inter.set_digital_output_low(int.Parse(config.param["limit_switch2_do_port"]));
+                    inter.set_digital_output_low(int.Parse(config.param["membrane_pump_do_port"]));                    
                     // Start Piston Pump
                     inter.set_analog_output(float.Parse(config.param["v_inflate_ao"]));
                     inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
@@ -256,8 +275,8 @@ namespace BPM_Piston_Pump
                         }
                         file.Close();
                     }
-                }                
-            }            
+                }
+            }
             while (await timer.WaitForNextTickAsync())
             {
                 float[] values;
@@ -309,9 +328,9 @@ namespace BPM_Piston_Pump
             inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
             inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
             btnStop.Visible = false;
-            btnTrigger.Visible = false;            
+            btnTrigger.Visible = false;
             inter.stop_scan();
-            timer.Dispose();            
+            timer.Dispose();
             using (var outf = new StreamWriter(config.param["log_file_path"]))
             {
                 outf.WriteLine(triggerTime);
@@ -560,7 +579,7 @@ namespace BPM_Piston_Pump
 
         /// <summary>
         /// In normal mode, when MABP is detected, one BP parameter cannot be detected yet, depending on
-        /// inflation or deflation cycle. It has to be tryed every time, if the parameter can be found.
+        /// inflation or deflation cycle. It has to be tried every time, if the parameter can be found.
         /// </summary>
         private void findBP()
         {

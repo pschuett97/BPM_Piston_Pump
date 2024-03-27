@@ -217,7 +217,6 @@ namespace BmcmInterface
 
             number_runs = Convert.ToUInt32(how_many_runs) / sd.ticks_per_run -1;
 
-
             rc = ad_start_scan(adh, ref sd, 1, chav);
             if (rc != 0)
             {
