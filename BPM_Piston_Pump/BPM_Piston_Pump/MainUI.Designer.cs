@@ -40,22 +40,22 @@
             btnAnalysis = new Button();
             panelChildForm = new Panel();
             panel2 = new Panel();
+            panel4 = new Panel();
+            richTextBox1 = new RichTextBox();
             panel3 = new Panel();
             panel1 = new Panel();
             checkDeveloper = new CheckBox();
             linkLabel1 = new LinkLabel();
-            richTextBox1 = new RichTextBox();
             label2 = new Label();
-            panel4 = new Panel();
             tableLayoutPanel1.SuspendLayout();
             panelSideMenu.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panelChildForm.SuspendLayout();
             panel2.SuspendLayout();
+            panel4.SuspendLayout();
             panel3.SuspendLayout();
             panel1.SuspendLayout();
-            panel4.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -244,6 +244,29 @@
             panel2.Size = new Size(635, 444);
             panel2.TabIndex = 10;
             // 
+            // panel4
+            // 
+            panel4.Controls.Add(richTextBox1);
+            panel4.Dock = DockStyle.Fill;
+            panel4.Location = new Point(0, 0);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(635, 371);
+            panel4.TabIndex = 11;
+            // 
+            // richTextBox1
+            // 
+            richTextBox1.BackColor = Color.FromArgb(23, 21, 32);
+            richTextBox1.BorderStyle = BorderStyle.None;
+            richTextBox1.Dock = DockStyle.Fill;
+            richTextBox1.ForeColor = SystemColors.ControlLightLight;
+            richTextBox1.Location = new Point(0, 0);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.ReadOnly = true;
+            richTextBox1.ScrollBars = RichTextBoxScrollBars.Vertical;
+            richTextBox1.Size = new Size(635, 371);
+            richTextBox1.TabIndex = 8;
+            richTextBox1.Text = "\n";
+            // 
             // panel3
             // 
             panel3.Controls.Add(panel1);
@@ -290,20 +313,6 @@
             linkLabel1.Text = "Contact";
             linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
-            // richTextBox1
-            // 
-            richTextBox1.BackColor = Color.FromArgb(23, 21, 32);
-            richTextBox1.BorderStyle = BorderStyle.None;
-            richTextBox1.Dock = DockStyle.Fill;
-            richTextBox1.ForeColor = SystemColors.ControlLightLight;
-            richTextBox1.Location = new Point(0, 0);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.ReadOnly = true;
-            richTextBox1.ScrollBars = RichTextBoxScrollBars.Vertical;
-            richTextBox1.Size = new Size(635, 371);
-            richTextBox1.TabIndex = 8;
-            richTextBox1.Text = "\n";
-            // 
             // label2
             // 
             label2.AutoSize = true;
@@ -313,15 +322,6 @@
             label2.Name = "label2";
             label2.Size = new Size(0, 15);
             label2.TabIndex = 1;
-            // 
-            // panel4
-            // 
-            panel4.Controls.Add(richTextBox1);
-            panel4.Dock = DockStyle.Fill;
-            panel4.Location = new Point(0, 0);
-            panel4.Name = "panel4";
-            panel4.Size = new Size(635, 371);
-            panel4.TabIndex = 11;
             // 
             // MainUI
             // 
@@ -342,10 +342,10 @@
             panelChildForm.ResumeLayout(false);
             panelChildForm.PerformLayout();
             panel2.ResumeLayout(false);
+            panel4.ResumeLayout(false);
             panel3.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
-            panel4.ResumeLayout(false);
             ResumeLayout(false);
         }
 

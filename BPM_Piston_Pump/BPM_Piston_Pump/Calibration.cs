@@ -87,6 +87,7 @@ namespace BPM_Piston_Pump
                 {
                     inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
                     MessageBox.Show("Error: Pump cannot reach required pressure at all! This could mean that there is a big leak or the air volume is simply too high");
+                    proof = false;
                     break;
                 }
                 Thread.Sleep(100);   // wait(500);
@@ -94,18 +95,18 @@ namespace BPM_Piston_Pump
             }
             inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
 
-
-            voltage = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
-
-            for (int i = 1; i < 11; i++)
+            if (proof)
             {
-                workerLeakProofTest.ReportProgress(10 * i);
-                //wait(500); // timer damit sich UI nicht ganz vertschüsst
-                Thread.Sleep(500);
-                float voltage2 = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
-                if ((voltage - voltage2) > 0.9) proof = false; // ADJUST VALUE HERE!
+                voltage = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
+                for (int i = 1; i < 11; i++)
+                {
+                    workerLeakProofTest.ReportProgress(10 * i);
+                    //wait(500); // timer damit sich UI nicht ganz vertschüsst
+                    Thread.Sleep(500);
+                    float voltage2 = inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]));
+                    if ((voltage - voltage2) > 0.9) proof = false; // ADJUST VALUE HERE!
+                }
             }
-
 
             if (proof) return "Result: Good!";
             else return "Result: NOT LEAKPROOF!";
@@ -230,21 +231,25 @@ namespace BPM_Piston_Pump
         private void numVoltLowEnd_ValueChanged(object sender, EventArgs e)
         {
             config.param["volt_low_end"] = numVoltLowEnd.Value.ToString();
+            config.InitPressureSensor();
         }
 
         private void numVoltHighEnd_ValueChanged(object sender, EventArgs e)
         {
             config.param["volt_high_end"] = numVoltHighEnd.Value.ToString();
+            config.InitPressureSensor();
         }
 
         private void numHgLowEnd_ValueChanged(object sender, EventArgs e)
         {
             config.param["hg_low_end"] = numHgLowEnd.Value.ToString();
+            config.InitPressureSensor();
         }
 
         private void numHgHighEnd_ValueChanged(object sender, EventArgs e)
         {
             config.param["hg_high_end"] = numHgHighEnd.Value.ToString();
+            config.InitPressureSensor();
         }
 
         private void numSpeedInflation_ValueChanged(object sender, EventArgs e)

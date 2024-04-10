@@ -1,0 +1,7 @@
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Release\net6.0-windows\app.publish\BPM_Piston_Pump.exe
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Release\net6.0-windows\app.publish\BPM_Piston_Pump.dll
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Release\net6.0-windows\app.publish\BPM_Piston_Pump.deps.json
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Release\net6.0-windows\app.publish\BPM_Piston_Pump.runtimeconfig.json
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Release\net6.0-windows\app.publish\BPM_Piston_Pump.pdb
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Release\net6.0-windows\app.publish\ScottPlot.dll
+C:\Data\BioMed\Msc\Masterarbeit\Code\BPM_Piston_Pump\BPM_Piston_Pump\bin\Release\net6.0-windows\app.publish\ScottPlot.WinForms.dll

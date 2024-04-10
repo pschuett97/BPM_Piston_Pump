@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace BPM_Piston_Pump
 {
     internal static class Program
@@ -9,7 +11,7 @@ namespace BPM_Piston_Pump
         static void Main()
         {
             // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+            // see https://aka.ms/applicationconfiguration.            
             ApplicationConfiguration.Initialize();
             Application.Run(new MainUI());
         }

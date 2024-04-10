@@ -57,7 +57,6 @@ namespace BPM_Piston_Pump
             panelChildForm.Tag = childForm;
             childForm.BringToFront();
             childForm.Show();
-
         }
 
         private void btnMeasure_Click(object sender, EventArgs e)
@@ -151,13 +150,13 @@ namespace BPM_Piston_Pump
                 btnDeveloper.Visible = true;
                 config.param["developer"] = "1";
             }
-                
+
             else
             {
                 btnDeveloper.Visible = false;
                 config.param["developer"] = "0";
             }
-                
+
         }
 
         private void btnAnalysis_Click(object sender, EventArgs e)

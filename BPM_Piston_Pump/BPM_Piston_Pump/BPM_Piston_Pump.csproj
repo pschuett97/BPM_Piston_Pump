@@ -9,7 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="libad4.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ScottPlot.WinForms" Version="4.1.70" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="libad4.dll" />
   </ItemGroup>
 
   <ItemGroup>
