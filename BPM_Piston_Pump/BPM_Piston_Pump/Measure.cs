@@ -351,7 +351,7 @@ namespace BPM_Piston_Pump
         {
             foreach (float f in data_period)
             {
-                if (f < 50) // Stop everything when the pressure gets too low
+                if (f < 50 && !checkSimulation.Checked) // Stop everything when the pressure gets too low
                 {
                     inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
                     inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));

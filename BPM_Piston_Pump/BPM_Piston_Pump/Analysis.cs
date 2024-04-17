@@ -129,274 +129,275 @@ namespace BPM_Piston_Pump
                     }
                     file.Close();
                 }
-            }
-
-            // if the data needs to be converted from volt to mmHg
-            float[] data_ = null;
-            if (txt)
-            {
-                data_ = this.VoltageToMmHg(datax.ToArray());
-            }
-            else
-            {
-                data_ = datax.ToArray();
-            }
-
-            foreach (double el in data_)
-            {
-                data.Add(el);
-            }
-
-            // highpass and moving average
-            foreach (float f in data)
-            {
-                HighPass.Update(f);
-                avg.ComputeAverage(HighPass.Value); //
-                filtered.Add(avg.Average);  //
-                //filtered.Add(HighPass.Value);
-            }
-
-
-            // peak detection
-            foreach (double d in filtered)
-            {
-                if (cnt > 3000) // wait for the transient response of the highpass filter
+                // if the data needs to be converted from volt to mmHg
+                float[] data_ = null;
+                if (txt)
                 {
-                    if (hist.Count < (int.Parse(config.param["sample_rate"]) / 6.25)) // always looks at 100 samples at a time
+                    data_ = this.VoltageToMmHg(datax.ToArray());
+                }
+                else
+                {
+                    data_ = datax.ToArray();
+                }
+
+                foreach (double el in data_)
+                {
+                    data.Add(el);
+                }
+
+                // highpass and moving average
+                foreach (float f in data)
+                {
+                    HighPass.Update(f);
+                    avg.ComputeAverage(HighPass.Value); //
+                    filtered.Add(avg.Average);  //
+                                                //filtered.Add(HighPass.Value);
+                }
+
+
+                // peak detection
+                foreach (double d in filtered)
+                {
+                    if (cnt > 3000) // wait for the transient response of the highpass filter
                     {
-                        hist.Add(d);
-                    }
-                    else
-                    {
-                        if (d > hist.Max()) // new max found
+                        if (hist.Count < (int.Parse(config.param["sample_rate"]) / 6.25)) // always looks at 100 samples at a time
                         {
-                            max_cnt = 0;
-                        }
-                        if (d < hist.Min()) // new min found
-                        {
-                            min_cnt = 0;
-                        }
-                        if (max_cnt > (int.Parse(config.param["sample_rate"]) / 6.25 - 1)) // last 100 values no change in maximum
-                        {
-                            peaks.Add(hist.First()); // declare peak                  
-                            ascending = false; // now look for minimum
-                            max_cnt = 0;
-                            HR.Add(cnt - hr_cnt); // for Heart Rate calculation (drop the first value)
-                            hr_cnt = cnt;
-                        }
-                        else if (min_cnt > (int.Parse(config.param["sample_rate"]) / 6.25 - 1)) // last 100 value no change in minimum
-                        {
-                            peaks.Add(hist.First()); // declare minumum
-                            min_cnt = 0;
-                            ascending = true; // now look for maximum
+                            hist.Add(d);
                         }
                         else
                         {
-                            peaks.Add(0); // not a peak --> set to zero
-                        }
-
-                        if (ascending) // if one looks for a maximum
-                        {
-                            max_cnt++;
-                        }
-                        else // if one looks for a minimum
-                        {
-                            min_cnt++;
-                        }
-                        hist.RemoveAt(0); // keep hist at a length of 100
-                        hist.Add(d);
-                    }
-                }
-                else
-                {
-                    peaks.Add(0); // set first 3000 to zero (transient response)
-                }
-                cnt++;
-            }
-
-            // calculate envelop
-            // add minimum to maximum
-            // also eliminiation of artefacts when changing directions
-            double save = 0;
-            bool artefact = false;
-
-            for (int i = 0; i < peaks.Count; i++)
-            {
-                if (peaks[i] < 0)
-                {
-                    if (artefact)
-                    {
-                        envelop.Add(peaks[i] * (-1)); // save not added here because peak would a overproportionally high
-                        save = 0;
-                        artefact = false;
-                    }
-                    else
-                    {
-                        save = peaks[i]; // artefact detected
-                        envelop.Add(0); // set minimum to zero
-                        artefact = true;
-                    }
-
-                }
-                else if (peaks[i] > 0)
-                {
-                    if (!artefact) // sematic wrong here, is also artefact!
-                    {
-                        save = -peaks[i]; // artefact detected
-                        envelop.Add(0); // set minimum to zero
-                        artefact = true;
-                    }
-                    else
-                    {
-                        envelop.Add(peaks[i] - save);
-                        save = 0;
-                        artefact = false;
-                    }
-                }
-                else
-                {
-                    envelop.Add(0);
-                }
-            }
-
-            // calculate envelop by linear interpolation of each peak to peak maximum
-
-            double x0 = 0, x1 = 0, y0 = 0, y1 = 0;
-            bool rdy = false;
-
-            for (int i = 0; i < envelop.Count; i++)
-            {
-                if (envelop[i] > 0 && rdy)
-                {
-                    x1 = i;
-                    y1 = envelop[i];
-
-                    for (int j = 1; j < (x1 - x0); j++)
-                    {
-                        envelop[i - j] = y0 + (i - j - x0) * (y1 - y0) / (x1 - x0);
-                    }
-                    x0 = x1;
-                    y0 = y1;
-                }
-                else if (envelop[i] > 0 && !rdy)
-                {
-                    x0 = i;
-                    y0 = envelop[i];
-                    rdy = true;
-                }
-            }
-
-            // lowpass filtering the envelop to get good local maxima
-
-            //MovingAverage avg2 = new MovingAverage();
-            //avg2.windowSize = 1000;
-            foreach (float env in envelop)
-            {
-                LowPass.Update(env);
-                env_avg.Add(LowPass.Value);
-                //avg2.ComputeAverage(env); 
-                //env_avg.Add(avg2.Average);
-            }
-            env_avg.RemoveRange(0, (int)(5.3 * int.Parse(config.param["sample_rate"]))); // time correction, got value erpirically
-
-
-            // Another peak detection over the smooth envelop:
-            hist.Clear();
-            cnt = 0;
-            ascending = false;
-            double threshold = env_avg.Max() * 0.60; // detected peak needs to be over certain threshold to be a maximum
-
-            foreach (double d in env_avg)
-            {
-                if (hist.Count < 3000) // gather 3000 values
-                {
-                    hist.Add(d);
-                }
-                else
-                {
-                    double max = hist.Max();
-                    if (max < d && !ascending) // no minimum detection hence this
-                    {
-                        ascending = true;
-                    }
-                    if (d > max) // new highest value found
-                    {
-                        max_cnt = 0;
-                    }
-                    if (max_cnt > 2999)
-                    {
-                        if (max > threshold) // detected peak needs to be over certain threshold to be a maximum
-                        {
-                            lblMABP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000)]) - 4) + "  ";
-
-                            // Systole and Diastole only correct when starting with reducing pressure
-                            if (!dir)
+                            if (d > hist.Max()) // new max found
                             {
-                                for (int i = 1; i < cnt - 3000; i++)
-                                {
-                                    if (env_avg[cnt - 3000 - i] < 0.501 * max)
-                                    {
-                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 - i)] + 2)) + " ";
-                                        break;
-                                    }
-                                }
-                                for (int i = 1; i < env_avg.Count - cnt - 3000; i++)
-                                {
-                                    if (env_avg[cnt - 3000 + i] < 0.701 * max)
-                                    {
-                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 + i)] - 4)) + " | ";
-                                        break;
-                                    }
-                                }
+                                max_cnt = 0;
+                            }
+                            if (d < hist.Min()) // new min found
+                            {
+                                min_cnt = 0;
+                            }
+                            if (max_cnt > (int.Parse(config.param["sample_rate"]) / 6.25 - 1)) // last 100 values no change in maximum
+                            {
+                                peaks.Add(hist.First()); // declare peak                  
+                                ascending = false; // now look for minimum
+                                max_cnt = 0;
+                                HR.Add(cnt - hr_cnt); // for Heart Rate calculation (drop the first value)
+                                hr_cnt = cnt;
+                            }
+                            else if (min_cnt > (int.Parse(config.param["sample_rate"]) / 6.25 - 1)) // last 100 value no change in minimum
+                            {
+                                peaks.Add(hist.First()); // declare minumum
+                                min_cnt = 0;
+                                ascending = true; // now look for maximum
                             }
                             else
                             {
-                                for (int i = 1; i < env_avg.Count - cnt - 3000; i++)
-                                {
-                                    if (env_avg[cnt - 3000 + i] < 0.501 * max)
-                                    {
-                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 + i)] + 2)) + " ";
-                                        break;
-                                    }
-                                }
-                                for (int i = 1; i < cnt - 3000; i++)
-                                {
-                                    if (env_avg[cnt - 3000 - i] < 0.701 * max)
-                                    {
-                                        lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 - i)] - 4)) + " | ";
-                                        break;
-                                    }
-                                }
-
+                                peaks.Add(0); // not a peak --> set to zero
                             }
-                            dir = !dir;
+
+                            if (ascending) // if one looks for a maximum
+                            {
+                                max_cnt++;
+                            }
+                            else // if one looks for a minimum
+                            {
+                                min_cnt++;
+                            }
+                            hist.RemoveAt(0); // keep hist at a length of 100
+                            hist.Add(d);
                         }
-                        ascending = false;
-                        max_cnt = 0;
                     }
-                    if (ascending)
+                    else
                     {
-                        max_cnt++;
+                        peaks.Add(0); // set first 3000 to zero (transient response)
                     }
-                    hist.RemoveAt(0);
-                    hist.Add(d);
-
+                    cnt++;
                 }
-                cnt++;
-            }
 
-            // calculate HR
-            HR.RemoveAt(0);
-            double av = 60 / HR.Average() * int.Parse(config.param["sample_rate"]);
-            lblHR.Text = "HR: " + string.Format("{0:N1}", av);
+                // calculate envelop
+                // add minimum to maximum
+                // also eliminiation of artefacts when changing directions
+                double save = 0;
+                bool artefact = false;
 
-            // to display the signal properly
-            checkSignal.Checked = false;
-            checkHighpass.Checked = false;
-            checkPeaks.Checked = false;
-            checkEnvelop.Checked = false;
-            checkLowpass.Checked = false;
-            checkSignal.Checked = true;
+                for (int i = 0; i < peaks.Count; i++)
+                {
+                    if (peaks[i] < 0)
+                    {
+                        if (artefact)
+                        {
+                            envelop.Add(peaks[i] * (-1)); // save not added here because peak would a overproportionally high
+                            save = 0;
+                            artefact = false;
+                        }
+                        else
+                        {
+                            save = peaks[i]; // artefact detected
+                            envelop.Add(0); // set minimum to zero
+                            artefact = true;
+                        }
+
+                    }
+                    else if (peaks[i] > 0)
+                    {
+                        if (!artefact) // sematic wrong here, is also artefact!
+                        {
+                            save = -peaks[i]; // artefact detected
+                            envelop.Add(0); // set minimum to zero
+                            artefact = true;
+                        }
+                        else
+                        {
+                            envelop.Add(peaks[i] - save);
+                            save = 0;
+                            artefact = false;
+                        }
+                    }
+                    else
+                    {
+                        envelop.Add(0);
+                    }
+                }
+
+                // calculate envelop by linear interpolation of each peak to peak maximum
+
+                double x0 = 0, x1 = 0, y0 = 0, y1 = 0;
+                bool rdy = false;
+
+                for (int i = 0; i < envelop.Count; i++)
+                {
+                    if (envelop[i] > 0 && rdy)
+                    {
+                        x1 = i;
+                        y1 = envelop[i];
+
+                        for (int j = 1; j < (x1 - x0); j++)
+                        {
+                            envelop[i - j] = y0 + (i - j - x0) * (y1 - y0) / (x1 - x0);
+                        }
+                        x0 = x1;
+                        y0 = y1;
+                    }
+                    else if (envelop[i] > 0 && !rdy)
+                    {
+                        x0 = i;
+                        y0 = envelop[i];
+                        rdy = true;
+                    }
+                }
+
+                // lowpass filtering the envelop to get good local maxima
+
+                //MovingAverage avg2 = new MovingAverage();
+                //avg2.windowSize = 1000;
+                foreach (float env in envelop)
+                {
+                    LowPass.Update(env);
+                    env_avg.Add(LowPass.Value);
+                    //avg2.ComputeAverage(env); 
+                    //env_avg.Add(avg2.Average);
+                }
+                env_avg.RemoveRange(0, (int)(5.3 * int.Parse(config.param["sample_rate"]))); // time correction, got value erpirically
+
+
+                // Another peak detection over the smooth envelop:
+                hist.Clear();
+                // additional values are necessary such that the algorithm can detect the peak
+                for (int i = 0; i < 5000; i++) env_avg.Add(env_avg.Last() - env_avg.Last() / 5000);
+                cnt = 0;
+                ascending = false;
+                double threshold = env_avg.Max() * 0.60; // detected peak needs to be over certain threshold to be a maximum
+
+                foreach (double d in env_avg)
+                {
+                    if (hist.Count < 3000) // gather 3000 values
+                    {
+                        hist.Add(d);
+                    }
+                    else
+                    {
+                        double max = hist.Max();
+                        if (max < d && !ascending) // no minimum detection hence this
+                        {
+                            ascending = true;
+                        }
+                        if (d > max) // new highest value found
+                        {
+                            max_cnt = 0;
+                        }
+                        if (max_cnt > 2999)
+                        {
+                            if (max > threshold) // detected peak needs to be over certain threshold to be a maximum
+                            {
+                                lblMABP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000)]) - 4) + "  ";
+
+                                // Systole and Diastole only correct when starting with reducing pressure
+                                if (!dir)
+                                {
+                                    for (int i = 1; i < cnt - 3000; i++)
+                                    {
+                                        if (env_avg[cnt - 3000 - i] < 0.501 * max)
+                                        {
+                                            lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 - i)] + 2)) + " ";
+                                            break;
+                                        }
+                                    }
+                                    for (int i = 1; i < env_avg.Count - cnt; i++)
+                                    {
+                                        if (env_avg[cnt - 3000 + i] < 0.701 * max)
+                                        {
+                                            lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 + i)] - 4)) + " | ";
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = 1; i < env_avg.Count - cnt - 3000; i++)
+                                    {
+                                        if (env_avg[cnt - 3000 + i] < 0.501 * max)
+                                        {
+                                            lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 + i)] + 2)) + " ";
+                                            break;
+                                        }
+                                    }
+                                    for (int i = 1; i < cnt - 3000; i++)
+                                    {
+                                        if (env_avg[cnt - 3000 - i] < 0.701 * max)
+                                        {
+                                            lblBP.Text += string.Format("{0:N0}", (data[closestPeak(cnt - 3000 - i)] - 4)) + " | ";
+                                            break;
+                                        }
+                                    }
+
+                                }
+                                dir = !dir;
+                            }
+                            ascending = false;
+                            max_cnt = 0;
+                        }
+                        if (ascending)
+                        {
+                            max_cnt++;
+                        }
+                        hist.RemoveAt(0);
+                        hist.Add(d);
+
+                    }
+                    cnt++;
+                }
+
+                // calculate HR
+                HR.RemoveAt(0);
+                double av = 60 / HR.Average() * int.Parse(config.param["sample_rate"]);
+                lblHR.Text = "HR: " + string.Format("{0:N1}", av);
+
+                // to display the signal properly
+                checkSignal.Checked = false;
+                checkHighpass.Checked = false;
+                checkPeaks.Checked = false;
+                checkEnvelop.Checked = false;
+                checkLowpass.Checked = false;
+                checkSignal.Checked = true;
+            }           
         }
 
         /// <summary>
