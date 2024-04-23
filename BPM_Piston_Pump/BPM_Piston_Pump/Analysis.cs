@@ -57,8 +57,11 @@ namespace BPM_Piston_Pump
 
             // safety feature 
             inter = new BmcmInterface.BmcmInterface("usbad14f");
+
             inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
             inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
+            inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
             inter.stop_scan();
         }
 

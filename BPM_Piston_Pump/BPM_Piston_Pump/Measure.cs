@@ -114,6 +114,10 @@ namespace BPM_Piston_Pump
             {
                 checkSimulation.Visible = false;
             }
+            inter.set_digital_output_low(int.Parse(config.param["membrane_pump_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+            inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
         }
 
         /// <summary>
@@ -183,6 +187,9 @@ namespace BPM_Piston_Pump
         /// </summary>
         async void StartTimer()
         {
+            bool memb_pump_active = false;
+            float mmHg_before = 0;
+            float mmHg_after = 0;
             // bring piston to correct position
             // open/close valves            
             if (!checkSimulation.Checked)
@@ -191,7 +198,7 @@ namespace BPM_Piston_Pump
                 inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
                 inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
                 // max speed
-                inter.set_analog_output(4); 
+                inter.set_analog_output((float)4.7); 
                 // move in inflation direction 
                 inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"]));
                 inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
@@ -200,6 +207,23 @@ namespace BPM_Piston_Pump
 
             while (await start_timer.WaitForNextTickAsync())
             {
+                // safety mechanism if pressure sensor is not connected
+                if (memb_pump_active)
+                {
+                    mmHg_after = config.VoltageToMmHg(inter.get_analog_input(int.Parse(config.param["pressure_sensor_ai_port"])));
+                    if (mmHg_before >= mmHg_after && ticks > 10)
+                    {
+                        inter.set_digital_output_low(int.Parse(config.param["membrane_pump_do_port"]));
+                        inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+                        inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
+                        btnStop.Visible = false;
+                        btnTrigger.Visible = false;
+                        start_timer.Dispose();
+                        MessageBox.Show("System is leaky or pressure sensor is not connected");
+                        break;
+                    }
+                }
+
                 // here it should actually state analog input but the input resistance is too high
                 // hence an analog input is used too detect if Q is high
                 if (inter.get_analog_input(3) > 1)
@@ -211,7 +235,7 @@ namespace BPM_Piston_Pump
                     ticks = 0;
                 }
 
-                if (ticks > numWaitTime.Value * 20) // 13s / 50ms = 260 ticks
+                if (ticks > numWaitTime.Value * 20 && !memb_pump_active) // 13s / 50ms = 260 ticks
                 {
                     // limit switch
                     inter.set_digital_output_low(int.Parse(config.param["limit_switch2_do_port"]));
@@ -221,12 +245,16 @@ namespace BPM_Piston_Pump
                     inter.set_digital_output_low(int.Parse(config.param["emergency_valve_do_port"]));
                     inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
                     // Start membrane pump
+                    memb_pump_active = true;
+                    ticks = 0;
                     inter.set_digital_output_high(int.Parse(config.param["membrane_pump_do_port"]));
+                    mmHg_before = config.VoltageToMmHg(inter.get_analog_input(int.Parse(config.param["pressure_sensor_ai_port"])));
                 }
                 else if (tick_go)
                 {
                     ticks++;
                 }
+                
 
                 if (config.VoltageToMmHg(inter.get_analog_input(int.Parse(config.param["pressure_sensor_ai_port"]))) > (float)numStartPressure.Value || checkSimulation.Checked)
                 {
@@ -242,6 +270,7 @@ namespace BPM_Piston_Pump
                     timer = new PeriodicTimer(TimeSpan.FromMilliseconds(500));
                     // Start new Thread maybe?
                     RepeatForEver();
+                    break;
                 }
             }
         }

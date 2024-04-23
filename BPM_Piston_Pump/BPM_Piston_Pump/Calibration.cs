@@ -35,7 +35,9 @@ namespace BPM_Piston_Pump
             workerLeakProofTest = new BackgroundWorker();
             workerCalibrateSpeed = new BackgroundWorker();
 
+            inter.set_digital_output_low(int.Parse(config.param["membrane_pump_do_port"]));
             inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
             inter.set_digital_output_low(int.Parse(config.param["piston_pump_ena_do_port"]));
             inter.stop_scan();
         }
@@ -47,6 +49,8 @@ namespace BPM_Piston_Pump
         /// <param name="e"></param>
         private void btnLeakproofTestStart_Click(object sender, EventArgs e)
         {
+            inter.set_digital_output_low(int.Parse(config.param["emergency_valve_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
             progressBar1.Visible = true;
             workerLeakProofTest.WorkerReportsProgress = true;
 
@@ -83,7 +87,7 @@ namespace BPM_Piston_Pump
             while (voltage < 3)
             {
                 cnt++;
-                if (cnt > 10)
+                if (cnt > 50)
                 {
                     inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
                     MessageBox.Show("Error: Pump cannot reach required pressure at all! This could mean that there is a big leak or the air volume is simply too high");
@@ -107,7 +111,8 @@ namespace BPM_Piston_Pump
                     if ((voltage - voltage2) > 0.9) proof = false; // ADJUST VALUE HERE!
                 }
             }
-
+            inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
             if (proof) return "Result: Good!";
             else return "Result: NOT LEAKPROOF!";
         }
@@ -119,6 +124,8 @@ namespace BPM_Piston_Pump
         /// <param name="e"></param>
         private void btnCalibrateSpeed_Click(object sender, EventArgs e)
         {
+            inter.set_digital_output_low(int.Parse(config.param["emergency_valve_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
             progressBar1.Visible = true;
             workerCalibrateSpeed.WorkerReportsProgress = true;
 
@@ -168,6 +175,8 @@ namespace BPM_Piston_Pump
             float analogOutVoltage = float.Parse(config.param["v_inflate_ao"]);
             bool success = false;
             int increment = (int)(100 * numStepSize.Value / 3 - 1);
+            bool start = true;
+            int cnt = 0;
 
             workerCalibrateSpeed.ReportProgress((int)run_id);
 
@@ -176,49 +185,76 @@ namespace BPM_Piston_Pump
 
             while (await timer.WaitForNextTickAsync())
             {
-                // get new data
-                float[] values;
-                values = inter.get_values(run_id);
-                run_id++;
-                data.Add(values.Average());
-
-                // explore data and control pump
-                if (run_id > 1)
+                if (start)
                 {
-                    float last = config.VoltageToMmHg(data.Last());
-                    float last2 = config.VoltageToMmHg(data[^2]);
-
-                    if (last - last2 < (float)numSpeedInflation.Value + (float)numTolerance.Value && last - last2 > (float)numSpeedInflation.Value - (float)numTolerance.Value)
+                    inter.set_digital_output_high(int.Parse(this.config.param["membrane_pump_do_port"]));
+                    if (config.VoltageToMmHg(inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]))) > 50)
                     {
-                        config.param["v_inflate_ao"] = analogOutVoltage.ToString();
-                        config.param["v_deflate_ao"] = analogOutVoltage.ToString(); // ToDo adjust deflate
-                        success = true;
+                        start = false;
+                        inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
+                    }
+                    cnt++;
+                    if (cnt > 4)
+                    {
+                        inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
+                        inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+                        inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
+                        inter.stop_scan();
+                        timer.Dispose();
+                        running = false;
+                        MessageBox.Show("Error: Pump cannot reach required pressure at all! This could mean that there is a big leak or the air volume is simply too high");
                         break;
                     }
-                    else if (last - last2 < (float)numSpeedInflation.Value)
-                    {
-                        analogOutVoltage += (float)numStepSize.Value;
-                    }
-                    else
-                    {
-                        analogOutVoltage -= (float)numStepSize.Value;
-                    }
-                    inter.set_analog_output(analogOutVoltage);
                 }
-                workerCalibrateSpeed.ReportProgress((int)run_id * increment);
-
-                if (run_id > 3 / numStepSize.Value)
+                else
                 {
-                    success = false;
-                    break;
+                    // get new data
+                    float[] values;
+                    values = inter.get_values(run_id);
+                    run_id++;
+                    data.Add(values.Average());
+
+                    // explore data and control pump
+                    if (run_id > 1)
+                    {
+                        float last = config.VoltageToMmHg(data.Last());
+                        float last2 = config.VoltageToMmHg(data[^2]);
+
+                        if (last - last2 < (float)numSpeedInflation.Value + (float)numTolerance.Value && last - last2 > (float)numSpeedInflation.Value - (float)numTolerance.Value)
+                        {
+                            config.param["v_inflate_ao"] = analogOutVoltage.ToString();
+                            config.param["v_deflate_ao"] = analogOutVoltage.ToString(); // ToDo adjust deflate
+                            success = true;
+                            break;
+                        }
+                        else if (last - last2 < (float)numSpeedInflation.Value)
+                        {
+                            analogOutVoltage += (float)numStepSize.Value;
+                        }
+                        else
+                        {
+                            analogOutVoltage -= (float)numStepSize.Value;
+                        }
+                        inter.set_analog_output(analogOutVoltage);
+                    }
+                    workerCalibrateSpeed.ReportProgress((int)run_id * increment);
+
+                    if (run_id > 3 / numStepSize.Value)
+                    {
+                        success = false;
+                        break;
+                    }
                 }
             }
             inter.set_digital_output_low(int.Parse(this.config.param["piston_pump_ena_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
+            inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
             inter.stop_scan();
             timer.Dispose();
             running = false;
             if (success) MessageBox.Show("SUCCESS: Piston speed is calibrated!");
-            else MessageBox.Show("ERROR: Could not calibrate the piston speed! Change settings or adjust setup!");
+            else MessageBox.Show("ERROR: Could not calibrate the piston speed! Change settings or adjust setup! Test Valve is open!");
+
         }
 
         #region Value Changed of num selectors

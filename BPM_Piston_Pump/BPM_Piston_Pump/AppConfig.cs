@@ -39,23 +39,23 @@ namespace BPM_Piston_Pump
                     param["developer"] = "0";
                     // standard values, hard coded
                     param["v_inflate"] = "3";
-                    param["v_inflate_ao"] = "2";
+                    param["v_inflate_ao"] = "2,8";
                     param["v_deflate"] = "3";
-                    param["v_deflate_ao"] = "2";
+                    param["v_deflate_ao"] = "2,8";
                     param["tolerance"] = "0,5";
                     param["step_size"] = "0,2";
                     param["sample_rate"] = "500"; // max 20000Hz
-                    param["volt_low_end"] = "0,92";
-                    param["volt_high_end"] = "2,27";
-                    param["hg_low_end"] = "40";
-                    param["hg_high_end"] = "100";
+                    param["volt_low_end"] = "3,0775";
+                    param["volt_high_end"] = "7,3675";
+                    param["hg_low_end"] = "60";
+                    param["hg_high_end"] = "160";
                     param["values_per_scan"] = "2000";
                     param["values_per_run"] = "250";
                     param["how_many_runs"] = "2000";
                     param["log_file_name"] = "log.csv";
                     param["log_file_path"] = ""; // @"C:\"
-                    param["start_pressure"] = "150";
-                    param["start_wait_time"] = "8";
+                    param["start_pressure"] = "180";
+                    param["start_wait_time"] = "10";
                     // Port Config
                     // do = digital out
                     param["limit_switch1_do_port"] = "1";                    
