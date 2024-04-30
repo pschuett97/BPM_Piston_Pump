@@ -18,6 +18,7 @@ namespace BPM_Piston_Pump
         BackgroundWorker workerCalibrateSpeed;
         private PeriodicTimer timer = null; // timer that runs on a different thread
         private bool running = false;
+        FilterButterworth LowPass;
 
         public Calibration(AppConfig config)
         {
@@ -34,6 +35,11 @@ namespace BPM_Piston_Pump
             inter = new BmcmInterface.BmcmInterface("usbad14f");
             workerLeakProofTest = new BackgroundWorker();
             workerCalibrateSpeed = new BackgroundWorker();
+            LowPass = new FilterButterworth((float)0.4, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
+            for (int i = 0; i < 5000; i++)
+            {
+                LowPass.Update(35 + i / 5000);
+            }
 
             inter.set_digital_output_low(int.Parse(config.param["membrane_pump_do_port"]));
             inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
@@ -209,10 +215,17 @@ namespace BPM_Piston_Pump
                 else
                 {
                     // get new data
-                    float[] values;
+                    float[] values;                   
                     values = inter.get_values(run_id);
                     run_id++;
-                    data.Add(values.Average());
+                    float [] lp_values = new float[values.Length];
+
+                    for (int i=0; i<values.Length; i++)
+                    {
+                        LowPass.Update(values[i]);
+                        lp_values[i] = LowPass.Value;
+                    }
+                    data.Add(lp_values.Average());
 
                     // explore data and control pump
                     if (run_id > 1)
