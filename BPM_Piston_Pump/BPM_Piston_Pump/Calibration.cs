@@ -19,6 +19,7 @@ namespace BPM_Piston_Pump
         private PeriodicTimer timer = null; // timer that runs on a different thread
         private bool running = false;
         FilterButterworth LowPass;
+        bool dir = true;
 
         public Calibration(AppConfig config)
         {
@@ -90,7 +91,7 @@ namespace BPM_Piston_Pump
             int cnt = 0;
 
             inter.set_digital_output_high(int.Parse(this.config.param["membrane_pump_do_port"]));
-            while (voltage < 3)
+            while (config.VoltageToMmHg(voltage) < 100)
             {
                 cnt++;
                 if (cnt > 50)
@@ -133,23 +134,7 @@ namespace BPM_Piston_Pump
             inter.set_digital_output_low(int.Parse(config.param["emergency_valve_do_port"]));
             inter.set_digital_output_high(int.Parse(config.param["test_valve_do_port"]));
             progressBar1.Visible = true;
-            workerCalibrateSpeed.WorkerReportsProgress = true;
-
-            workerCalibrateSpeed.DoWork += (s, e) =>
-            {
-                calibrateSpeed();
-            };
-            workerCalibrateSpeed.ProgressChanged += (s, e) =>
-            {
-                progressBar1.Value = e.ProgressPercentage;
-            };
-            workerCalibrateSpeed.RunWorkerCompleted += (s, e) =>
-            {
-                progressBar1.Visible = false;
-                progressBar1.Value = 0;
-            };
-            workerCalibrateSpeed.RunWorkerAsync();
-
+            calibrateSpeed();
         }
 
         /// <summary>
@@ -159,15 +144,10 @@ namespace BPM_Piston_Pump
         {
             running = true;
             inter.set_analog_output(3);  // start analog output voltage = 3V
-            inter.set_digital_output_high(int.Parse(this.config.param["piston_pump_dir_do_port"])); // ToDo change ports
-            inter.set_digital_output_high(int.Parse(this.config.param["piston_pump_ena_do_port"]));
-            inter.start_scan(500, 10000, 1000, 10000);
+            inter.set_digital_output_high(int.Parse(this.config.param["piston_pump_dir_do_port"])); // ToDo change ports            
+            inter.start_scan(500, 10000, 500, 10000);
             timer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000));
             RepeatForEver();
-            while (running)
-            {
-                Thread.Sleep(1000);
-            }
         }
 
         /// <summary>
@@ -178,14 +158,15 @@ namespace BPM_Piston_Pump
         {
             List<float> data = new List<float>(); // list to store the data
             uint run_id = 0; // counts how many runs there were
-            float analogOutVoltage = float.Parse(config.param["v_inflate_ao"]);
+            float analogOutVoltage = 3;
             bool success = false;
-            int increment = (int)(100 * numStepSize.Value / 3 - 1);
+            int increment = (int)(100 / 5 * (double)numStepSize.Value - 1);
             bool start = true;
             int cnt = 0;
+            bool last_dir = true;
 
-            workerCalibrateSpeed.ReportProgress((int)run_id);
-
+            //workerCalibrateSpeed.ReportProgress((int)run_id);
+            progressBar1.Value = (int)run_id;
             //inter.set_digital_output_high(int.Parse(config.param["piston_pump_ena_do_port"]));
 
 
@@ -194,13 +175,14 @@ namespace BPM_Piston_Pump
                 if (start)
                 {
                     inter.set_digital_output_high(int.Parse(this.config.param["membrane_pump_do_port"]));
-                    if (config.VoltageToMmHg(inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]))) > 50)
+                    if (config.VoltageToMmHg(inter.get_analog_input(int.Parse(this.config.param["pressure_sensor_ai_port"]))) > 90)
                     {
+                        inter.set_digital_output_high(int.Parse(this.config.param["piston_pump_ena_do_port"]));
                         start = false;
                         inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
                     }
                     cnt++;
-                    if (cnt > 4)
+                    if (cnt > 7)
                     {
                         inter.set_digital_output_low(int.Parse(this.config.param["membrane_pump_do_port"]));
                         inter.set_digital_output_high(int.Parse(config.param["emergency_valve_do_port"]));
@@ -215,12 +197,12 @@ namespace BPM_Piston_Pump
                 else
                 {
                     // get new data
-                    float[] values;                   
+                    float[] values;
                     values = inter.get_values(run_id);
                     run_id++;
-                    float [] lp_values = new float[values.Length];
+                    float[] lp_values = new float[values.Length];
 
-                    for (int i=0; i<values.Length; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
                         LowPass.Update(values[i]);
                         lp_values[i] = LowPass.Value;
@@ -228,19 +210,20 @@ namespace BPM_Piston_Pump
                     data.Add(lp_values.Average());
 
                     // explore data and control pump
-                    if (run_id > 1)
+                    if (run_id % 2 == 0)
                     {
+
                         float last = config.VoltageToMmHg(data.Last());
                         float last2 = config.VoltageToMmHg(data[^2]);
 
-                        if (last - last2 < (float)numSpeedInflation.Value + (float)numTolerance.Value && last - last2 > (float)numSpeedInflation.Value - (float)numTolerance.Value)
+                        if (Math.Abs(last - last2) < (float)numSpeedInflation.Value + (float)numTolerance.Value && Math.Abs(last - last2) > (float)numSpeedInflation.Value - (float)numTolerance.Value)
                         {
                             config.param["v_inflate_ao"] = analogOutVoltage.ToString();
                             config.param["v_deflate_ao"] = analogOutVoltage.ToString(); // ToDo adjust deflate
                             success = true;
                             break;
                         }
-                        else if (last - last2 < (float)numSpeedInflation.Value)
+                        else if (Math.Abs(last - last2) < (float)numSpeedInflation.Value)
                         {
                             analogOutVoltage += (float)numStepSize.Value;
                         }
@@ -250,9 +233,10 @@ namespace BPM_Piston_Pump
                         }
                         inter.set_analog_output(analogOutVoltage);
                     }
-                    workerCalibrateSpeed.ReportProgress((int)run_id * increment);
+                    if (run_id % 6 == 0) changeDir();
+                    progressBar1.Value += increment;
 
-                    if (run_id > 3 / numStepSize.Value)
+                    if (run_id > 4 / numStepSize.Value)
                     {
                         success = false;
                         break;
@@ -265,6 +249,8 @@ namespace BPM_Piston_Pump
             inter.stop_scan();
             timer.Dispose();
             running = false;
+            progressBar1.Visible = false;
+            progressBar1.Value = 0;
             if (success) MessageBox.Show("SUCCESS: Piston speed is calibrated!");
             else MessageBox.Show("ERROR: Could not calibrate the piston speed! Change settings or adjust setup! Test Valve is open!");
 
@@ -315,6 +301,11 @@ namespace BPM_Piston_Pump
             config.param["step_size"] = numStepSize.Value.ToString();
         }
 
+        private void numStepSize_ValueChanged_1(object sender, EventArgs e)
+        {
+            config.param["step_size"] = numStepSize.Value.ToString();
+        }
+
         #endregion
 
         /// <summary>
@@ -333,5 +324,13 @@ namespace BPM_Piston_Pump
         {
             lblADC.Text = "Value: " + inter.get_analog_input(1).ToString() + " V";
         }
+        private void changeDir()
+        {
+            if (dir) inter.set_digital_output_high(int.Parse(config.param["piston_pump_dir_do_port"]));
+            else inter.set_digital_output_low(int.Parse(config.param["piston_pump_dir_do_port"]));
+            dir = !dir;
+        }
+
+
     }
 }

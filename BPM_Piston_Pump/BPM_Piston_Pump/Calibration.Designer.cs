@@ -352,7 +352,7 @@
             // 
             numStepSize.BackColor = Color.FromArgb(23, 21, 32);
             numStepSize.BorderStyle = BorderStyle.None;
-            numStepSize.DecimalPlaces = 1;
+            numStepSize.DecimalPlaces = 2;
             numStepSize.Dock = DockStyle.Right;
             numStepSize.ForeColor = SystemColors.ControlLightLight;
             numStepSize.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
@@ -364,7 +364,8 @@
             numStepSize.TabIndex = 14;
             numStepSize.TextAlign = HorizontalAlignment.Right;
             numStepSize.UpDownAlign = LeftRightAlignment.Left;
-            numStepSize.Value = new decimal(new int[] { 2, 0, 0, 65536 });
+            numStepSize.Value = new decimal(new int[] { 1, 0, 0, 65536 });
+            numStepSize.ValueChanged += numStepSize_ValueChanged_1;
             // 
             // label10
             // 
@@ -380,13 +381,13 @@
             // 
             numTolerance.BackColor = Color.FromArgb(23, 21, 32);
             numTolerance.BorderStyle = BorderStyle.None;
-            numTolerance.DecimalPlaces = 1;
+            numTolerance.DecimalPlaces = 2;
             numTolerance.Dock = DockStyle.Right;
             numTolerance.ForeColor = SystemColors.ControlLightLight;
-            numTolerance.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
+            numTolerance.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
             numTolerance.Location = new Point(238, 3);
             numTolerance.Maximum = new decimal(new int[] { 1, 0, 0, 0 });
-            numTolerance.Minimum = new decimal(new int[] { 1, 0, 0, 262144 });
+            numTolerance.Minimum = new decimal(new int[] { 1, 0, 0, 131072 });
             numTolerance.Name = "numTolerance";
             numTolerance.Size = new Size(59, 23);
             numTolerance.TabIndex = 7;
@@ -402,8 +403,10 @@
             numSpeedInflation.DecimalPlaces = 1;
             numSpeedInflation.Dock = DockStyle.Right;
             numSpeedInflation.ForeColor = SystemColors.ControlLightLight;
+            numSpeedInflation.Increment = new decimal(new int[] { 5, 0, 0, 65536 });
             numSpeedInflation.Location = new Point(4, 3);
-            numSpeedInflation.Maximum = new decimal(new int[] { 20, 0, 0, 0 });
+            numSpeedInflation.Maximum = new decimal(new int[] { 12, 0, 0, 0 });
+            numSpeedInflation.Minimum = new decimal(new int[] { 5, 0, 0, 65536 });
             numSpeedInflation.Name = "numSpeedInflation";
             numSpeedInflation.Size = new Size(83, 23);
             numSpeedInflation.TabIndex = 3;
@@ -498,7 +501,7 @@
             btnLeakproofTestStart.FlatStyle = FlatStyle.Flat;
             btnLeakproofTestStart.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
             btnLeakproofTestStart.ForeColor = SystemColors.ControlLightLight;
-            btnLeakproofTestStart.Location = new Point(149, 0);
+            btnLeakproofTestStart.Location = new Point(177, 0);
             btnLeakproofTestStart.Name = "btnLeakproofTestStart";
             btnLeakproofTestStart.Size = new Size(133, 25);
             btnLeakproofTestStart.TabIndex = 1;

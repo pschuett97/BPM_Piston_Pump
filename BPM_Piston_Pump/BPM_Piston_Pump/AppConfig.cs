@@ -42,8 +42,8 @@ namespace BPM_Piston_Pump
                     param["v_inflate_ao"] = "2,8";
                     param["v_deflate"] = "3";
                     param["v_deflate_ao"] = "2,8";
-                    param["tolerance"] = "0,5";
-                    param["step_size"] = "0,2";
+                    param["tolerance"] = "0,2";
+                    param["step_size"] = "0,05";
                     param["sample_rate"] = "500"; // max 20000Hz
                     param["volt_low_end"] = "3,0775";
                     param["volt_high_end"] = "7,3675";

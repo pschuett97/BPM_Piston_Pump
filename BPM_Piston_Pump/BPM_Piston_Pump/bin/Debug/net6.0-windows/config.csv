@@ -1,10 +1,10 @@
 developer;1
 v_inflate;3
-v_inflate_ao;3,2000003
+v_inflate_ao;2,3500006
 v_deflate;3
-v_deflate_ao;3,2000003
-tolerance;0,5
-step_size;0,2
+v_deflate_ao;2,3500006
+tolerance;0,2
+step_size;0,1
 sample_rate;500
 volt_low_end;3,0775
 volt_high_end;7,3675
