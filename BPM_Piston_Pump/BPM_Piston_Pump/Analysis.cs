@@ -163,7 +163,7 @@ namespace BPM_Piston_Pump
                 {
                     if (cnt > 3000) // wait for the transient response of the highpass filter
                     {
-                        if (hist.Count < (int.Parse(config.param["sample_rate"]) / 6.25)) // always looks at 100 samples at a time
+                        if (hist.Count < (int.Parse(config.param["sample_rate"]) / 5)) // always looks at 100 samples at a time
                         {
                             hist.Add(d);
                         }
@@ -177,7 +177,7 @@ namespace BPM_Piston_Pump
                             {
                                 min_cnt = 0;
                             }
-                            if (max_cnt > (int.Parse(config.param["sample_rate"]) / 6.25 - 1)) // last 100 values no change in maximum
+                            if (max_cnt > (int.Parse(config.param["sample_rate"]) / 5 - 1)) // last 100 values no change in maximum
                             {
                                 peaks.Add(hist.First()); // declare peak                  
                                 ascending = false; // now look for minimum
@@ -185,7 +185,7 @@ namespace BPM_Piston_Pump
                                 HR.Add(cnt - hr_cnt); // for Heart Rate calculation (drop the first value)
                                 hr_cnt = cnt;
                             }
-                            else if (min_cnt > (int.Parse(config.param["sample_rate"]) / 6.25 - 1)) // last 100 value no change in minimum
+                            else if (min_cnt > (int.Parse(config.param["sample_rate"]) / 5 - 1)) // last 100 value no change in minimum
                             {
                                 peaks.Add(hist.First()); // declare minumum
                                 min_cnt = 0;

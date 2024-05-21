@@ -117,7 +117,8 @@
             groupBox1.Size = new Size(742, 209);
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Pressure Snesor";
+            groupBox1.Text = "Pressure Sensor";
+            groupBox1.Enter += groupBox1_Enter;
             // 
             // tableLayoutPanel2
             // 

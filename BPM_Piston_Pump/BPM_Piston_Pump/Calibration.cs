@@ -331,6 +331,9 @@ namespace BPM_Piston_Pump
             dir = !dir;
         }
 
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
 
+        }
     }
 }

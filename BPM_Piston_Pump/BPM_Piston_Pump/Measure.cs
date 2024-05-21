@@ -425,7 +425,7 @@ namespace BPM_Piston_Pump
                             }
                             else
                             {
-                                maximas.Add(new Peaks(hist.First() - save, cnt - 96, dir));  // 96 = timeshift of the filter, empirisch ermittelt
+                                maximas.Add(new Peaks(hist.First() - save, cnt - 100, dir)); // -100 weil hist.count = 100
                                 linearPeakInterpolation();
                                 save = 0;
                                 artefact = false;
@@ -437,7 +437,7 @@ namespace BPM_Piston_Pump
                         {
                             if (artefact)
                             {
-                                maximas.Add(new Peaks(hist.First() * (-1), cnt - 96, dir));
+                                maximas.Add(new Peaks(hist.First() * (-1), cnt - 100, dir));
                                 linearPeakInterpolation();
                                 save = 0;
                                 artefact = false;
