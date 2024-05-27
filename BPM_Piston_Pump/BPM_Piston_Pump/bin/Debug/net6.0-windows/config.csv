@@ -1,22 +1,22 @@
 developer;1
 v_inflate;3
-v_inflate_ao;2,3500006
+v_inflate_ao;3,4
 v_deflate;3
-v_deflate_ao;2,3500006
+v_deflate_ao;3,4
 tolerance;0,2
 step_size;0,1
 sample_rate;500
-volt_low_end;3,0775
-volt_high_end;7,3675
-hg_low_end;60
-hg_high_end;160
+volt_low_end;2,7525
+volt_high_end;4,4325
+hg_low_end;40
+hg_high_end;80
 values_per_scan;2000
 values_per_run;250
 how_many_runs;2000
-log_file_name;testtt.csv
-log_file_path;C:\Users\pschu\OneDrive\Masterarbeit\Messungen\Messungen Pascal\testtt.csv
+log_file_name;nunzi_dyn.csv
+log_file_path;C:\Users\pschu\OneDrive\Masterarbeit\Messungen\Messungen Pascal\nunzi_dyn.csv
 start_pressure;180
-start_wait_time;10
+start_wait_time;8
 limit_switch1_do_port;1
 limit_switch2_do_port;2
 emergency_valve_do_port;5
@@ -28,3 +28,4 @@ limit_switch1_di_port;1
 limit_switch2_di_port;2
 piston_pump_ao_port;1
 pressure_sensor_ai_port;1
+v_inflation;4,0

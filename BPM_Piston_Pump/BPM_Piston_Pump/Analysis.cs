@@ -79,6 +79,10 @@ namespace BPM_Piston_Pump
             peaks.Clear();
             envelop.Clear();
             env_avg.Clear();
+            HR.Clear();
+            HighPass = new FilterButterworth((float)0.5, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Highpass, 1);
+            LowPass = new FilterButterworth((float)0.04, int.Parse(config.param["sample_rate"]), FilterButterworth.PassType.Lowpass, 1);
+
             checkSignal.Checked = false;
             checkHighpass.Checked = false;
             checkPeaks.Checked = false;
